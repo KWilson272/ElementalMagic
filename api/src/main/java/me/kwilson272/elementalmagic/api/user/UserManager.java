@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public interface UserManager {
     
     void enable();
-    void disable();
+    void disable(boolean shutDown);
 
     /**
      * Creates an {@link AbilityUser} object for the provided Player.
@@ -19,7 +19,23 @@ public interface UserManager {
      * @return the created AbilityUser object.
      */
     AbilityUser create(Player player);
-   
+
+    /** 
+     * Loads stored data for the provided {@link AbilityUser}. 
+     *
+     * Implementations of this method will likely block the main thread for
+     * noticeable amounts of time. Async calls are preferred where possible.
+     */
+    void loadData(AbilityUser user);
+
+    /**
+     * Stores the provided {@link AbilityUser}'s data.
+     *
+     * Implementations of this method will likely block the main thread for
+     * noticeable amounts of time. Async calls are preferred where possible.
+     */
+    void storeData(AbilityUser user);
+
     /**
      * Removes the provided {@link AbilityUser} from gameplay.
      *
