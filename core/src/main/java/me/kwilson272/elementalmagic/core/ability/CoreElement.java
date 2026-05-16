@@ -21,7 +21,7 @@ public class CoreElement implements Element {
 
     public static final Element EARTH = new CoreElement("Earth", ChatColor.GREEN, List.of("E"), Set.of(), ParentMode.NONE);
     public static final Element SAND = new CoreElement("Sand", ChatColor.DARK_GREEN, List.of(), Set.of(EARTH), ParentMode.ALL);
-    public static final Element MUD = new CoreElement("Metal", ChatColor.DARK_GREEN, List.of(), Set.of(EARTH), ParentMode.ANY);
+    public static final Element MUD = new CoreElement("Mud", ChatColor.DARK_GREEN, List.of(), Set.of(EARTH), ParentMode.ANY);
     public static final Element METAL = new CoreElement("Metal", ChatColor.DARK_GREEN, List.of(), Set.of(EARTH), ParentMode.ALL);
     public static final Element LAVA = new CoreElement("Lava", ChatColor.RED, List.of(), Set.of(EARTH), ParentMode.ALL);
 
