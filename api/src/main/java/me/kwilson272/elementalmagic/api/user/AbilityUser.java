@@ -195,5 +195,31 @@ public interface AbilityUser {
      * @param toggleOn if the element should be toggled on (true) or off (false).
      */
     void toggleElement(Element element, boolean toggleOn);
+    
+    /**
+     * Puts an object or action on cooldown for this AbilityUser.
+     *
+     * @param cooldownId the String identifier of the cooldown
+     * @param durationMillis how long in milliseconds the cooldown lasts
+     * @return true if the cooldown was applied successfully, false otherwise
+     */
+    boolean addCooldown(String cooldownId, long durationMillis);
+
+    /**
+     * Removes a cooldown from this AbilityUser.
+     *
+     * @param cooldownId the String identifier of the cooldown
+     * @return true if the cooldown was removed successfully, false otherwise
+     */
+    boolean removeCooldown(String cooldownId);
+    
+    /**
+     * Checks if this AbilityUser has a specific action on cooldown.
+     *
+     * @param cooldownId the String identifier of the cooldown
+     * @return true if the user has a cooldown with the provided identifier,
+     * false otherwise
+     */
+    boolean isOnCooldown(String cooldownId);
 }    
 

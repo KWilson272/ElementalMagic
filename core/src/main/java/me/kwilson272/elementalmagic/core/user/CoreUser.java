@@ -12,12 +12,16 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.ability.Element;
+import me.kwilson272.elementalmagic.api.event.user.UserAddCooldownEvent;
 import me.kwilson272.elementalmagic.api.event.user.UserAddElementEvent;
 import me.kwilson272.elementalmagic.api.event.user.UserPostChangeBindEvent;
 import me.kwilson272.elementalmagic.api.event.user.UserPreChangeBindEvent;
+import me.kwilson272.elementalmagic.api.event.user.UserRemoveCooldownEvent;
 import me.kwilson272.elementalmagic.api.event.user.UserRemoveElementEvent;
+import me.kwilson272.elementalmagic.api.revertible.Revertible;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.api.user.UserProfile;
 
@@ -29,11 +33,13 @@ public class CoreUser implements AbilityUser {
     private final AbilityController[] binds;
     /** True if toggled on, false otherwise **/
     private final Map<Element, Boolean> elements; 
+    private final Map<String, Cooldown> cooldowns;
 
     public CoreUser(Player player) {
         this.player = player;
         this.binds = new AbilityController[BINDS_SIZE];
         this.elements = new HashMap<>();
+        this.cooldowns = new HashMap<>();
     }
 
     @Override
@@ -222,4 +228,70 @@ public class CoreUser implements AbilityUser {
             elements.put(element, toggleOn);
         }
 	}
+
+	@Override
+	public boolean addCooldown(String cooldownId, long durationMillis) {
+        var event = new UserAddCooldownEvent(this, cooldownId, durationMillis);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        cooldownId = cooldownId.toUpperCase();
+        durationMillis = event.getDurationMillis();
+        Cooldown cd = new Cooldown(cooldownId, durationMillis);
+        ElementalMagicApi.revertibleManager().register(cd);
+        cooldowns.put(cooldownId, cd);
+
+        return true;
+	}
+
+	@Override
+	public boolean removeCooldown(String cooldownId) {
+        Cooldown cd = cooldowns.get(cooldownId);
+        if (cd != null) {
+            ElementalMagicApi.revertibleManager().revert(cd);
+        }
+        return true;
+	}
+
+	@Override
+	public boolean isOnCooldown(String cooldownId) {
+        return cooldowns.containsKey(cooldownId.toUpperCase());
+	}
+
+    private class Cooldown implements Revertible {
+        
+        private final String id;
+        private final long durationMillis;
+        private final long revertTimeMillis;
+
+        Cooldown(String id, long durationMillis) {
+            this.id = id;
+            this.durationMillis = durationMillis;
+            this.revertTimeMillis = System.currentTimeMillis() + durationMillis;
+        }
+
+		@Override
+		public long getDurationMillis() {
+            return durationMillis;
+		}
+
+		@Override
+		public long getRevertTimeMillis() {
+            return revertTimeMillis;
+		}
+
+		@Override
+		public void handleRevertTasks() {
+            cooldowns.remove(id);
+            var event = new UserRemoveCooldownEvent(CoreUser.this, id);
+            Bukkit.getPluginManager().callEvent(event);
+		}
+
+		@Override
+		public boolean isReverted() {
+            return isOnCooldown(id);
+		}
+    }
 }
