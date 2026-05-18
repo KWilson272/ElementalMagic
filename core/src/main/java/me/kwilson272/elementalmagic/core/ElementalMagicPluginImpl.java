@@ -13,6 +13,7 @@ import me.kwilson272.elementalmagic.core.ability.AbilityStorageImpl;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
 import me.kwilson272.elementalmagic.core.activation.ActivationManagerImpl;
 import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
+import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
 import me.kwilson272.elementalmagic.core.activation.ActivationListener;
 import me.kwilson272.elementalmagic.core.user.UserListener;
 
@@ -20,6 +21,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
 
     private BukkitTask abilityTask;
     private BukkitTask activationTask;
+    private BukkitTask revertTask;
 
     @Override
     public void onLoad() {
@@ -28,6 +30,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.registerAbilityManager(new AbilityManagerImpl());
         ElementalMagicApi.registerAbilityStorage(new AbilityStorageImpl());
         ElementalMagicApi.registerConfigManager(new ConfigManagerImpl());
+        ElementalMagicApi.registerRevertibleManager(new RevertibleManagerImpl());
         ElementalMagicApi.registerUserManager(new UserManagerImpl());
     }
 
@@ -40,6 +43,8 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
                 ElementalMagicApi.abilityManager()::progressAll, 1, 1);
         activationTask = Bukkit.getScheduler().runTaskTimer(this, 
                 ElementalMagicApi.activationManager()::createPassives, 1, 1);
+        revertTask = Bukkit.getScheduler().runTaskTimer(this,
+                ElementalMagicApi.revertibleManager()::revertExpired, 1, 1);
 
         storeCoreElements();
         storeCoreAbilities();
@@ -49,6 +54,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.abilityManager().enable();
         ElementalMagicApi.abilityStorage().enable();
         ElementalMagicApi.activationManager().enable();
+        ElementalMagicApi.revertibleManager().enable();
         ElementalMagicApi.userManager().enable();
     }
    
@@ -63,11 +69,13 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
 
         abilityTask.cancel();
         activationTask.cancel();
+        revertTask.cancel();
 
         ElementalMagicApi.abilityManager().disable(shutDown);
         ElementalMagicApi.abilityStorage().disable(shutDown);
         ElementalMagicApi.activationManager().disable(shutDown);
         ElementalMagicApi.configManager().disable(shutDown);
+        ElementalMagicApi.revertibleManager().disable(shutDown);
         ElementalMagicApi.userManager().disable(shutDown);
     }
 
