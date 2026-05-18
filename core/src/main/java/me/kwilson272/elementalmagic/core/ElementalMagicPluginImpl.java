@@ -19,10 +19,8 @@ import me.kwilson272.elementalmagic.core.activation.ActivationListener;
 import me.kwilson272.elementalmagic.core.user.UserListener;
 
 public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
-
-    private BukkitTask abilityTask;
-    private BukkitTask activationTask;
-    private BukkitTask revertTask;
+    
+    private BukkitTask tickTask;
 
     @Override
     public void onLoad() {
@@ -40,13 +38,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         Bukkit.getPluginManager().registerEvents(new ActivationListener(), this);
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
         Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
-
-        abilityTask = Bukkit.getScheduler().runTaskTimer(this, 
-                ElementalMagicApi.abilityManager()::progressAll, 1, 1);
-        activationTask = Bukkit.getScheduler().runTaskTimer(this, 
-                ElementalMagicApi.activationManager()::createPassives, 1, 1);
-        revertTask = Bukkit.getScheduler().runTaskTimer(this,
-                ElementalMagicApi.revertibleManager()::revertExpired, 1, 1);
+        tickTask = Bukkit.getScheduler().runTaskTimer(this, this::tick, 1, 1);
 
         storeCoreElements();
         storeCoreAbilities();
@@ -59,6 +51,13 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.revertibleManager().enable();
         ElementalMagicApi.userManager().enable();
     }
+    
+    private void tick() {
+        ElementalMagicApi.abilityManager().progressAll();
+        ElementalMagicApi.activationManager().createPassives();
+        ElementalMagicApi.effectHandler().clearVelocityPriorities();
+        ElementalMagicApi.revertibleManager().revertExpired();
+    }
    
     @Override
     public void reload() {
@@ -68,15 +67,13 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
 
     private void disable(boolean shutDown) {
         HandlerList.unregisterAll();
-
-        abilityTask.cancel();
-        activationTask.cancel();
-        revertTask.cancel();
+        tickTask.cancel();
 
         ElementalMagicApi.abilityManager().disable(shutDown);
         ElementalMagicApi.abilityStorage().disable(shutDown);
         ElementalMagicApi.activationManager().disable(shutDown);
         ElementalMagicApi.configManager().disable(shutDown);
+        ElementalMagicApi.effectHandler().disable(shutDown);
         ElementalMagicApi.revertibleManager().disable(shutDown);
         ElementalMagicApi.userManager().disable(shutDown);
     }

@@ -6,6 +6,7 @@ import me.kwilson272.elementalmagic.api.ability.AbilityManager;
 import me.kwilson272.elementalmagic.api.ability.AbilityStorage;
 import me.kwilson272.elementalmagic.api.activation.ActivationManager;
 import me.kwilson272.elementalmagic.api.config.ConfigManager;
+import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.user.UserManager;
 
@@ -15,8 +16,9 @@ public final class ElementalMagicApi {
     private static AbilityStorage abilityStorage = null;
     private static ActivationManager activationManager = null;
     private static ConfigManager configManager = null;
-    private static Logger logger = null;
+    private static EffectHandler effectHandler = null;
     private static ElementalMagicPlugin emPlugin = null;
+    private static Logger logger = null;
     private static RevertibleManager revertibleManager;
     private static UserManager userManager = null;
 
@@ -35,6 +37,9 @@ public final class ElementalMagicApi {
     public static ConfigManager configManager() {
         return configManager;
     }
+    public static EffectHandler effectHandler() {
+        return effectHandler;
+    }
 
     public static Logger logger() {
         return logger;
@@ -43,7 +48,7 @@ public final class ElementalMagicApi {
     public static ElementalMagicPlugin plugin() {
         return emPlugin;
     }
-    
+
     public static RevertibleManager revertibleManager() {
         return revertibleManager;
     }
@@ -82,6 +87,15 @@ public final class ElementalMagicApi {
                     "already been registered with class: " + configManager.getClass());
         }
         configManager = manager;
+    }
+
+    public static void registerEffectHandler(EffectHandler handler) {
+        if (effectHandler != null) {
+            throw new IllegalStateException("An EffectHandler instance has " +
+                    "already been registered with class: " + effectHandler.getClass());
+        }
+
+        effectHandler = handler;
     }
 
     public static void registerLogger(Logger log) {
