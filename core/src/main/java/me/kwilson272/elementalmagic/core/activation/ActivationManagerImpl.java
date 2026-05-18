@@ -1,6 +1,5 @@
 package me.kwilson272.elementalmagic.core.activation;
 
-import java.lang.constant.MethodHandleDesc;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -14,15 +13,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SequencedCollection;
 import java.util.logging.Logger;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.MultimapBuilder.MultimapBuilderWithKeys;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.Ability;
@@ -34,7 +28,6 @@ import me.kwilson272.elementalmagic.api.activation.ActionRecord;
 import me.kwilson272.elementalmagic.api.activation.Activation;
 import me.kwilson272.elementalmagic.api.activation.ActivationManager;
 import me.kwilson272.elementalmagic.api.activation.Activator;
-import me.kwilson272.elementalmagic.api.activation.activations.ActionActivation;
 import me.kwilson272.elementalmagic.api.activation.activations.PassiveActivation;
 import me.kwilson272.elementalmagic.api.event.ability.AbilityStartEvent;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
@@ -217,7 +210,7 @@ public class ActivationManagerImpl implements ActivationManager {
             postActivation(user, activation);
         }
     }
-
+    
     private class ActivationDispatcher {
         
         private final List<ReferencedActivator> noReqs;
@@ -257,10 +250,10 @@ public class ActivationManagerImpl implements ActivationManager {
             return found;
         }
     }
-
+    
     private record ReferencedActivator(AbilityController controller, 
                                        MethodHandle handle) {}
-
+    
     private class SequenceTree {
 
         private final Map<ActionRecord, SequenceTree> children;
@@ -278,11 +271,27 @@ public class ActivationManagerImpl implements ActivationManager {
             }
 
             ActionRecord nextAction = steps.next();
-            if (!children.containsKey(nextAction)) {
-                children.put(nextAction, new SequenceTree());
+            if (nextAction.action() != Action.LEFT_CLICK) {
+                children.computeIfAbsent(nextAction, k -> new SequenceTree())
+                    .insert(steps, controller);
+                return;
             }
-
-            children.get(nextAction).insert(steps, controller);
+        
+            // Java doesn't support cloning iterators:
+            List<ActionRecord> stepList = new ArrayList<>();
+            while (steps.hasNext()) {                 
+                stepList.add(steps.next());
+            }
+            
+            // Since its easy to hit an entity or left click a block during
+            // typical gameplay, we add extra sequence tracks for better feel.
+            String cName = nextAction.controllerName();
+            children.computeIfAbsent(nextAction, 
+                    k -> new SequenceTree()).insert(stepList.iterator(), controller);
+            children.computeIfAbsent(new ActionRecord(cName, Action.LEFT_CLICK_BLOCK),
+                    k -> new SequenceTree()).insert(stepList.iterator(), controller);
+            children.computeIfAbsent(new ActionRecord(cName, Action.HIT_ENTITY),
+                    k -> new SequenceTree()).insert(stepList.iterator(), controller);
         }
 
         SequenceController query(Iterator<ActionRecord> steps) {
