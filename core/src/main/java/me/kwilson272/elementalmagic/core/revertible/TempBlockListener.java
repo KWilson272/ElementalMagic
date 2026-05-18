@@ -1,6 +1,7 @@
 package me.kwilson272.elementalmagic.core.revertible;
 
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,9 +22,13 @@ import org.bukkit.event.block.FluidLevelChangeEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityCombustByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
+import me.kwilson272.elementalmagic.api.ability.Ability;
+import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 
@@ -191,6 +196,51 @@ public class TempBlockListener implements Listener {
         if (TempBlock.isTempBlock(event.getBlock())) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void onEntityCombustByBlock(EntityCombustByBlockEvent event) {
+        TempBlock.get(event.getCombuster()).ifPresent(tb -> {
+            EffectHandler effectHandler = ElementalMagicApi.effectHandler();
+            Entity entity = event.getEntity();
+
+            if (!effectHandler.canAffect(entity)) {
+                event.setCancelled(true);
+                return;
+            }
+
+            Ability cause = tb.ability();
+            long duration = tb.burnDurationMillis() > 0 ?
+                    tb.burnDurationMillis() : (long) (event.getDuration() * 1000L);
+            long instDuration = effectHandler.convertFire(entity, cause, duration);
+            if (instDuration > 0) {
+                event.setDuration(instDuration / 1000.0f);
+            } else {
+                event.setCancelled(true);
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void onEntityDamageByBlock(EntityDamageByBlockEvent event) {
+        TempBlock.get(event.getDamager()).ifPresent(tb -> {
+            EffectHandler effectHandler = ElementalMagicApi.effectHandler();
+            Entity entity = event.getEntity();
+
+            if (tb.damage() == 0 || !effectHandler.canAffect(entity)) {
+                event.setCancelled(true);
+                return;
+            }
+
+            Ability cause = tb.ability();
+            double damage = tb.damage() > 0 ? tb.damage() : event.getDamage();
+            double instDamage = effectHandler.convertDamage(entity, cause, damage);
+            if (instDamage > 0) {
+                event.setDamage(damage);
+            } else {
+                event.setCancelled(true);
+            }
+        });
     }
 }
 
