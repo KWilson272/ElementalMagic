@@ -119,4 +119,10 @@ public interface Ability {
      * @return the {@link AbilityUser} that owns this instance
      */
     AbilityUser user();
+
+    /**
+     * @return the {@link AbilityController} that holds this instance's
+     * static data.
+     */
+    AbilityController controller();
 }
