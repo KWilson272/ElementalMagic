@@ -2,6 +2,7 @@ package me.kwilson272.elementalmagic.core;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import org.bukkit.scheduler.BukkitTask;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ElementalMagicPlugin;
@@ -15,6 +16,9 @@ import me.kwilson272.elementalmagic.core.activation.ActivationListener;
 import me.kwilson272.elementalmagic.core.user.UserListener;
 
 public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
+
+    private BukkitTask abilityTask;
+    private BukkitTask activationTask;
 
     @Override
     public void onLoad() {
@@ -30,9 +34,9 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         Bukkit.getPluginManager().registerEvents(new ActivationListener(), this);
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
 
-        Bukkit.getScheduler().runTaskTimer(this, 
+        abilityTask = Bukkit.getScheduler().runTaskTimer(this, 
                 ElementalMagicApi.abilityManager()::progressAll, 1, 1);
-        Bukkit.getScheduler().runTaskTimer(this, 
+        activationTask = Bukkit.getScheduler().runTaskTimer(this, 
                 ElementalMagicApi.activationManager()::createPassives, 1, 1);
 
         storeCoreElements();
@@ -52,6 +56,10 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
 
     private void disable(boolean shutDown) {
         HandlerList.unregisterAll();
+
+        abilityTask.cancel();
+        activationTask.cancel();
+
         ElementalMagicApi.abilityManager().disable(shutDown);
         ElementalMagicApi.abilityStorage().disable(shutDown);
         ElementalMagicApi.activationManager().disable(shutDown);
