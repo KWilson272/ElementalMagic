@@ -12,6 +12,7 @@ import me.kwilson272.elementalmagic.core.ability.AbilityManagerImpl;
 import me.kwilson272.elementalmagic.core.ability.AbilityStorageImpl;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
 import me.kwilson272.elementalmagic.core.activation.ActivationManagerImpl;
+import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
 import me.kwilson272.elementalmagic.core.activation.ActivationListener;
 import me.kwilson272.elementalmagic.core.user.UserListener;
 
@@ -26,6 +27,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.registerActivationManager(new ActivationManagerImpl());
         ElementalMagicApi.registerAbilityManager(new AbilityManagerImpl());
         ElementalMagicApi.registerAbilityStorage(new AbilityStorageImpl());
+        ElementalMagicApi.registerConfigManager(new ConfigManagerImpl());
         ElementalMagicApi.registerUserManager(new UserManagerImpl());
     }
 
@@ -42,6 +44,8 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         storeCoreElements();
         storeCoreAbilities();
         
+        // Enable this first so the other managers can use it
+        ElementalMagicApi.configManager().enable();
         ElementalMagicApi.abilityManager().enable();
         ElementalMagicApi.abilityStorage().enable();
         ElementalMagicApi.activationManager().enable();
@@ -63,6 +67,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.abilityManager().disable(shutDown);
         ElementalMagicApi.abilityStorage().disable(shutDown);
         ElementalMagicApi.activationManager().disable(shutDown);
+        ElementalMagicApi.configManager().disable(shutDown);
         ElementalMagicApi.userManager().disable(shutDown);
     }
 

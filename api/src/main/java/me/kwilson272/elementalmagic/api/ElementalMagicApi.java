@@ -5,15 +5,15 @@ import java.util.logging.Logger;
 import me.kwilson272.elementalmagic.api.ability.AbilityManager;
 import me.kwilson272.elementalmagic.api.ability.AbilityStorage;
 import me.kwilson272.elementalmagic.api.activation.ActivationManager;
+import me.kwilson272.elementalmagic.api.config.ConfigManager;
 import me.kwilson272.elementalmagic.api.user.UserManager;
 
 public final class ElementalMagicApi {
     
-    // TODO: registration should probably be handled better
-
     private static AbilityManager abilityManager = null;
     private static AbilityStorage abilityStorage = null;
     private static ActivationManager activationManager = null;
+    private static ConfigManager configManager = null;
     private static Logger logger = null;
     private static ElementalMagicPlugin emPlugin = null;
     private static UserManager userManager = null;
@@ -28,6 +28,10 @@ public final class ElementalMagicApi {
 
     public static ActivationManager activationManager() {
         return activationManager;
+    }
+
+    public static ConfigManager configManager() {
+        return configManager;
     }
 
     public static Logger logger() {
@@ -64,6 +68,14 @@ public final class ElementalMagicApi {
                     "already been registered with class: " + activationManager.getClass());
         }
         activationManager = manager;
+    }
+
+    public static void registerConfigManager(ConfigManager manager) {
+        if (configManager != null) {
+            throw new IllegalStateException("A ConfigManager instance has " +
+                    "already been registered with class: " + configManager.getClass());
+        }
+        configManager = manager;
     }
 
     public static void registerLogger(Logger log) {
