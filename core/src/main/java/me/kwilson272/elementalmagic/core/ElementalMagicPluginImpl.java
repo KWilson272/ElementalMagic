@@ -14,6 +14,7 @@ import me.kwilson272.elementalmagic.core.ability.CoreElement;
 import me.kwilson272.elementalmagic.core.activation.ActivationManagerImpl;
 import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
+import me.kwilson272.elementalmagic.core.revertible.TempBlockListener;
 import me.kwilson272.elementalmagic.core.activation.ActivationListener;
 import me.kwilson272.elementalmagic.core.user.UserListener;
 
@@ -38,6 +39,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new ActivationListener(), this);
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
 
         abilityTask = Bukkit.getScheduler().runTaskTimer(this, 
                 ElementalMagicApi.abilityManager()::progressAll, 1, 1);
