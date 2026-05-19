@@ -35,7 +35,7 @@ public class PhaseChangeController extends CoreAbilityController {
 
     @Activator
     public Collection<Ability> onAction(AbilityUser user, ActionActivation activation) {
-        if (!canActivateBy(activation) || !user.canUse(this, true, false)) {
+        if (!canActivateBy(activation.action()) || !user.canUse(this, true, false)) {
             return List.of();
         }
 
@@ -50,14 +50,6 @@ public class PhaseChangeController extends CoreAbilityController {
             return List.of(new PhaseChangeFreeze(user, this));
         }
         return List.of();
-    }
-
-    public boolean canActivateBy(ActionActivation activation) {
-        Action action = activation.action();
-        return action == Action.LEFT_CLICK 
-            || action == Action.LEFT_CLICK_BLOCK
-            || action == Action.HIT_ENTITY 
-            || action == Action.SNEAK_DOWN;
     }
 
     @Override
@@ -89,4 +81,12 @@ public class PhaseChangeController extends CoreAbilityController {
 	public boolean isPassive() {
         return false;
 	}
+
+    @Override
+    public boolean canActivateBy(Action action) {
+        return action == Action.LEFT_CLICK 
+            || action == Action.LEFT_CLICK_BLOCK
+            || action == Action.HIT_ENTITY 
+            || action == Action.SNEAK_DOWN;
+    }
 }

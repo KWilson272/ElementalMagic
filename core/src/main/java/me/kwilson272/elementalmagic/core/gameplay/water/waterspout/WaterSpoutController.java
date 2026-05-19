@@ -34,7 +34,7 @@ public class WaterSpoutController extends CoreAbilityController {
 
     @Activator
     public Collection<Ability> onAction(AbilityUser user, ActionActivation activation) {
-        if (!canActivateBy(activation)) {
+        if (!canActivateBy(activation.action())) {
             return List.of();
         }
 
@@ -50,13 +50,6 @@ public class WaterSpoutController extends CoreAbilityController {
         }
 
         return List.of();
-    }
-
-    private boolean canActivateBy(ActionActivation activation) {
-        Action action = activation.action();
-        return action == Action.LEFT_CLICK 
-            || action == Action.LEFT_CLICK_BLOCK
-            || action == Action.HIT_ENTITY;
     }
 
     @Override
@@ -88,4 +81,11 @@ public class WaterSpoutController extends CoreAbilityController {
 	public boolean isPassive() {
         return false;
 	}
+
+    @Override
+    public boolean canActivateBy(Action action) {
+        return action == Action.LEFT_CLICK 
+            || action == Action.LEFT_CLICK_BLOCK
+            || action == Action.HIT_ENTITY;
+    }
 }

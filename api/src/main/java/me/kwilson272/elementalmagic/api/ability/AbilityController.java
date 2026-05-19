@@ -1,5 +1,7 @@
 package me.kwilson272.elementalmagic.api.ability;
 
+import me.kwilson272.elementalmagic.api.activation.Action;
+
 /**
  * Handles the static aspects of an ability, including display related code,
  * unchanging attributes, and the activation and creation of {@link Ability}
@@ -76,4 +78,13 @@ public interface AbilityController {
      * @return true if this controller is passive, false otherwise.
      */
     boolean isPassive();
+
+    /**
+     * Checks if the provided {@link Action} can be used to activate an 
+     * {@code AbilityController}.
+     *
+     * @param action the {@code Action} being checked
+     * @return true if the action can be used to activate this, false otherwise
+     */
+    boolean canActivateBy(Action action);
 }

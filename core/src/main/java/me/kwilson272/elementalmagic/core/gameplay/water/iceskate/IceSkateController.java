@@ -72,5 +72,10 @@ public class IceSkateController extends CoreAbilityController {
     public boolean isPassive() {
         return true;
     }
+
+	@Override
+	public boolean canActivateBy(Action action) {
+        return action == Action.TOGGLE_SPRINT_ON;
+	}
 }
 
