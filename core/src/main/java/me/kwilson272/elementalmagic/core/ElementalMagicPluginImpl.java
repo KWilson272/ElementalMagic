@@ -13,6 +13,8 @@ import me.kwilson272.elementalmagic.core.ability.AbilityStorageImpl;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
 import me.kwilson272.elementalmagic.core.activation.ActivationManagerImpl;
 import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
+import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
+import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
 import me.kwilson272.elementalmagic.core.revertible.TempBlockListener;
 import me.kwilson272.elementalmagic.core.activation.ActivationListener;
@@ -29,8 +31,11 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.registerAbilityManager(new AbilityManagerImpl());
         ElementalMagicApi.registerAbilityStorage(new AbilityStorageImpl());
         ElementalMagicApi.registerConfigManager(new ConfigManagerImpl());
+        ElementalMagicApi.registerEffectHandler(new EffectHandlerImpl());
+        ElementalMagicApi.registerLogger(this.getLogger());
         ElementalMagicApi.registerRevertibleManager(new RevertibleManagerImpl());
         ElementalMagicApi.registerUserManager(new UserManagerImpl());
+        ElementalMagicApi.registerUserStorage(new UserStorageImpl());
     }
 
     @Override
@@ -43,8 +48,10 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         storeCoreElements();
         storeCoreAbilities();
         
-        // Enable this first so the other managers can use it
+        // Enable these first so the other managers can use it
         ElementalMagicApi.configManager().enable();
+        ElementalMagicApi.userStorage().enable();
+
         ElementalMagicApi.abilityManager().enable();
         ElementalMagicApi.abilityStorage().enable();
         ElementalMagicApi.activationManager().enable();
@@ -72,10 +79,13 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.abilityManager().disable(shutDown);
         ElementalMagicApi.abilityStorage().disable(shutDown);
         ElementalMagicApi.activationManager().disable(shutDown);
-        ElementalMagicApi.configManager().disable(shutDown);
         ElementalMagicApi.effectHandler().disable(shutDown);
         ElementalMagicApi.revertibleManager().disable(shutDown);
         ElementalMagicApi.userManager().disable(shutDown);
+    
+        // Disable these last for last-minute usage
+        ElementalMagicApi.userStorage().disable(shutDown);
+        ElementalMagicApi.configManager().disable(shutDown);
     }
 
     @Override

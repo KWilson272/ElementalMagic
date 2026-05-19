@@ -12,6 +12,7 @@ import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
+import me.kwilson272.elementalmagic.api.database.UserStorage;
 import me.kwilson272.elementalmagic.api.event.user.UserCreationEvent;
 import me.kwilson272.elementalmagic.api.event.user.UserDestructionEvent;
 import me.kwilson272.elementalmagic.api.event.user.UserLoadEvent;
@@ -59,10 +60,16 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public void loadData(AbilityUser user) {
-        // TODO: Implement database connection/reference here
-        UserProfile profile = new UserProfile();
+        Player player = user.player();
+        UserStorage storage = ElementalMagicApi.userStorage();
+        
+        storage.initPlayerData(player);
+        storage.loadProfile(player.getUniqueId())
+            .ifPresent(p -> syncLoadProfile(user, p));
+    }
+    
+    private void syncLoadProfile(AbilityUser user, UserProfile profile) {
         Plugin plugin = ElementalMagicApi.plugin();
-
         Bukkit.getScheduler().runTask(plugin, () -> {
             user.loadProfile(profile);
             Event event = new UserLoadEvent(user);
@@ -73,7 +80,8 @@ public class UserManagerImpl implements UserManager {
     @Override
     public void storeData(AbilityUser user) {
         UserProfile profile = user.exportProfile();
-        // TODO: Implement database connection/reference here 
+        UserStorage storage = ElementalMagicApi.userStorage();
+        storage.storeProfile(user.player().getUniqueId(), profile);
     }
 
     @Override

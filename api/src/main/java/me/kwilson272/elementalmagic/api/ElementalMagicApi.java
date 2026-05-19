@@ -6,6 +6,7 @@ import me.kwilson272.elementalmagic.api.ability.AbilityManager;
 import me.kwilson272.elementalmagic.api.ability.AbilityStorage;
 import me.kwilson272.elementalmagic.api.activation.ActivationManager;
 import me.kwilson272.elementalmagic.api.config.ConfigManager;
+import me.kwilson272.elementalmagic.api.database.UserStorage;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.user.UserManager;
@@ -21,6 +22,7 @@ public final class ElementalMagicApi {
     private static Logger logger = null;
     private static RevertibleManager revertibleManager;
     private static UserManager userManager = null;
+    private static UserStorage userStorage = null;
 
     public static AbilityManager abilityManager() {
         return abilityManager;
@@ -55,6 +57,10 @@ public final class ElementalMagicApi {
 
     public static UserManager userManager() {
         return userManager;
+    }
+
+    public static UserStorage userStorage() {
+        return userStorage;
     }
 
     public static void registerAbilityManager(AbilityManager manager) {
@@ -128,5 +134,13 @@ public final class ElementalMagicApi {
                     "already been registered with class: " + userManager.getClass());
         }
         userManager = manager;
+    }
+
+    public static void registerUserStorage(UserStorage storage) {
+        if (userStorage != null) {
+            throw new IllegalStateException("A UserStorage instance has " +
+                "already been registered with class: " + userManager.getClass());
+        }
+        userStorage = storage;
     }
 }

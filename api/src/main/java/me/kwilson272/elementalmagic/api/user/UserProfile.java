@@ -1,9 +1,13 @@
 package me.kwilson272.elementalmagic.api.user;
 
+import java.util.Map;
+
+import me.kwilson272.elementalmagic.api.ability.AbilityController;
+import me.kwilson272.elementalmagic.api.ability.Element;
+
 /**
  * Holds a snapshot of the AbilityUser's non-player related data.
- *
- * @TODO: add controller support.
- * @TODO: add element support.
  */
-public record UserProfile() {}
+public record UserProfile(AbilityController[] binds, 
+                          Map<Element, Boolean> elements,
+                          Map<String, AbilityController[]> presets) {}

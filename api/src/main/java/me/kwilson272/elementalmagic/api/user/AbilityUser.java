@@ -2,6 +2,7 @@ package me.kwilson272.elementalmagic.api.user;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
@@ -195,6 +196,29 @@ public interface AbilityUser {
      * @param toggleOn if the element should be toggled on (true) or off (false).
      */
     void toggleElement(Element element, boolean toggleOn);
+
+    /**
+     * Gets the user's presets.
+     *
+     * @return an map of preset names to AbilityController arrays.
+     */
+    Map<String, AbilityController[]> getPresets();
+
+    /**
+     * Creates a new preset with the given name and provided bind array.
+     *
+     * @param presetName the {@link String} name of the preset.
+     * @param binds the {@link AbilityController} array of binds.
+     */
+    void createPreset(String presetName, AbilityController[] binds);
+    
+    /**
+     * Deletes the user's preset with the provided name. This function should
+     * support case insensitive names.
+     *
+     * @param presetName the {@link String} name of the preset.
+     */
+    void deletePreset(String presetName);
     
     /**
      * Puts an object or action on cooldown for this AbilityUser.

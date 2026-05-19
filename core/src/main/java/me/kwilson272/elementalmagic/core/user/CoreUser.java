@@ -33,12 +33,14 @@ public class CoreUser implements AbilityUser {
     private final AbilityController[] binds;
     /** True if toggled on, false otherwise **/
     private final Map<Element, Boolean> elements; 
+    private final Map<String, AbilityController[]> presets;
     private final Map<String, Cooldown> cooldowns;
 
     public CoreUser(Player player) {
         this.player = player;
         this.binds = new AbilityController[BINDS_SIZE];
         this.elements = new HashMap<>();
+        this.presets = new HashMap<>();
         this.cooldowns = new HashMap<>();
     }
 
@@ -53,7 +55,11 @@ public class CoreUser implements AbilityUser {
     
     @Override
     public UserProfile exportProfile() {
-        return new UserProfile();
+        return new UserProfile(
+            getBinds(),
+            Map.copyOf(elements),
+            getPresets()
+        );
     }
 
     @Override
@@ -227,6 +233,21 @@ public class CoreUser implements AbilityUser {
         if (elements.containsKey(element)) {
             elements.put(element, toggleOn);
         }
+	}
+
+    @Override
+    public Map<String, AbilityController[]> getPresets() {
+        return Map.copyOf(presets);
+    }
+
+	@Override
+	public void createPreset(String presetName, AbilityController[] binds) {
+        presets.put(presetName, binds);
+	}
+
+	@Override
+	public void deletePreset(String presetName) {
+        presets.remove(presetName);
 	}
 
 	@Override
