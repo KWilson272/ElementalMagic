@@ -61,20 +61,20 @@ public class BoardManager implements Listener {
 
     @EventHandler
     private void onBindChange(UserPostChangeBindEvent event) {
-        displayBind(event.getUser(), event.getSlotNumber()-1); 
+        displayBind(event.getUser(), event.getSlotNumber()-1, false); 
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onCooldownAdd(UserAddCooldownEvent event) {
-        displayCooldowns(event.getUser(), event.getCooldownId()); 
+        displayCooldowns(event.getUser(), event.getCooldownId(), true); 
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onCooldownRemove(UserRemoveCooldownEvent event) {
-        displayCooldowns(event.getUser(), event.getCooldownId());
+        displayCooldowns(event.getUser(), event.getCooldownId(), false);
     }
     
-    private void displayBind(AbilityUser user, int slotNumber) {
+    private void displayBind(AbilityUser user, int slotNumber, boolean onCooldown) {
         AbilityBoard board = boardsByUser.get(user);
         if (board == null) {
             return;
@@ -86,19 +86,19 @@ public class BoardManager implements Listener {
         
         } else {
             String color = bind.element().color().toString();
-            if (user.isOnCooldown(bind.name())) {
-                color += ChatColor.ITALIC;
+            if (onCooldown) {
+                color += ChatColor.STRIKETHROUGH;
             }
             board.display(slotNumber, color + bind.name());
         }
     }
 
-    private void displayCooldowns(AbilityUser user, String cooldownId) {
+    private void displayCooldowns(AbilityUser user, String cooldownId, boolean onCooldown) {
         AbilityController[] binds = user.getBinds();
         for (int i = 0; i < binds.length; ++i) {
             AbilityController bind = binds[i];
             if (bind != null && bind.name().equals(cooldownId)) {
-                displayBind(user, i);
+                displayBind(user, i, onCooldown);
             }
         }
     }

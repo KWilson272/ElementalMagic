@@ -253,24 +253,27 @@ public class CoreUser implements AbilityUser {
 
 	@Override
 	public boolean addCooldown(String cooldownId, long durationMillis) {
+        if (durationMillis <= 0) {
+            return false;
+        }
+
         var event = new UserAddCooldownEvent(this, cooldownId, durationMillis);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
 
-        cooldownId = cooldownId.toUpperCase();
         durationMillis = event.getDurationMillis();
         Cooldown cd = new Cooldown(cooldownId, durationMillis);
         ElementalMagicApi.revertibleManager().register(cd);
-        cooldowns.put(cooldownId, cd);
+        cooldowns.put(cooldownId.toUpperCase(), cd);
 
         return true;
 	}
 
 	@Override
 	public boolean removeCooldown(String cooldownId) {
-        Cooldown cd = cooldowns.get(cooldownId);
+        Cooldown cd = cooldowns.get(cooldownId.toUpperCase());
         if (cd != null) {
             ElementalMagicApi.revertibleManager().revert(cd);
         }
@@ -306,7 +309,7 @@ public class CoreUser implements AbilityUser {
 
 		@Override
 		public void handleRevertTasks() {
-            cooldowns.remove(id);
+            cooldowns.remove(id.toUpperCase());
             var event = new UserRemoveCooldownEvent(CoreUser.this, id);
             Bukkit.getPluginManager().callEvent(event);
 		}

@@ -32,6 +32,7 @@ public class UserManagerImpl implements UserManager {
     
     @Override 
     public void enable() {
+        Bukkit.getOnlinePlayers().forEach(this::create);
     }
 
     @Override

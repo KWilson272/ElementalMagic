@@ -3,3 +3,19 @@ main: me.kwilson272.elementalmagic.core.ElementalMagicPluginImpl
 version: 0.0.1
 api-version: 1.21
 
+commands:
+  elementalmagic:
+    description: Overarching Plugin Command
+    usage: /ElementalMagic
+    permission: elementalmagic.command
+    aliases: [elementalmagic, em, e, b, bending, tla, mtla, pk, projectkorra] # Support for PK users
+
+permissions:
+  elementalmagic.command:
+    default: true
+    description: Grants all basic command permissions
+    children:
+      elementalmagic.command.bind: true
+      elementalmagic.command.choose: true
+      elementalmagic.command.help: true
+      elementalmagic.command.reload: true # REMEMBER TO MAKE THIS ADMIN ONLY

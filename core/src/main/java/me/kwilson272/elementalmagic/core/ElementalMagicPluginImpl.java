@@ -6,16 +6,20 @@ import org.bukkit.scheduler.BukkitTask;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ElementalMagicPlugin;
+import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.ability.AbilityStorage;
 import me.kwilson272.elementalmagic.core.user.UserManagerImpl;
 import me.kwilson272.elementalmagic.core.ability.AbilityManagerImpl;
 import me.kwilson272.elementalmagic.core.ability.AbilityStorageImpl;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
 import me.kwilson272.elementalmagic.core.activation.ActivationManagerImpl;
+import me.kwilson272.elementalmagic.core.command.MasterCommand;
 import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
 import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
 import me.kwilson272.elementalmagic.core.display.BoardManager;
 import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
+import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
+import me.kwilson272.elementalmagic.core.listener.SpoutListener;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
 import me.kwilson272.elementalmagic.core.revertible.TempBlockListener;
 import me.kwilson272.elementalmagic.core.activation.ActivationListener;
@@ -41,18 +45,20 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new ActivationListener(), this);
-        Bukkit.getPluginManager().registerEvents(new BoardManager(), this);
-        Bukkit.getPluginManager().registerEvents(new UserListener(), this);
-        Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
-        tickTask = Bukkit.getScheduler().runTaskTimer(this, this::tick, 1, 1);
-
-        storeCoreElements();
-        storeCoreAbilities();
-        
         // Enable these first so the other managers can use it
         ElementalMagicApi.configManager().enable();
         ElementalMagicApi.userStorage().enable();
+        storeCoreElements();
+        storeCoreAbilities();
+
+        Bukkit.getPluginManager().registerEvents(new ActivationListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BoardManager(), this);
+        Bukkit.getPluginManager().registerEvents(new UserListener(), this);
+        Bukkit.getPluginManager().registerEvents(new SpoutListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
+        tickTask = Bukkit.getScheduler().runTaskTimer(this, this::tick, 1, 1);
+
+        Bukkit.getPluginCommand("elementalmagic").setExecutor(new MasterCommand());
 
         ElementalMagicApi.abilityManager().enable();
         ElementalMagicApi.abilityStorage().enable();
@@ -119,6 +125,11 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
     }
 
     private void storeCoreAbilities() {
+        registerAbility(new WaterSpoutController());
+    }
     
+    private void registerAbility(AbilityController controller) {
+        ElementalMagicApi.abilityStorage().registerController(controller);
+        ElementalMagicApi.activationManager().registerController(controller);
     }
 }
