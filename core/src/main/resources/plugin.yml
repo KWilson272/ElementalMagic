@@ -1,0 +1,5 @@
+name: ElementalMagic
+main: me.kwilson272.elementalmagic.core.ElementalMagicPluginImpl
+version: 0.0.1
+api-version: 1.21
+
