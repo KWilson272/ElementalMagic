@@ -41,9 +41,8 @@ public class IceSkate extends CoreAbility {
     }
 
     public boolean isOnIce() {
-        Location loc = user().player().getLocation();
-        Block block = loc.getBlock().getRelative(BlockFace.DOWN);
-        return (AbilityUtil.isIce(block));
+        Location loc = user().player().getLocation().add(0, -0.2, 0);
+        return (AbilityUtil.isIce(loc.getBlock()));
     }
 
     @Override
