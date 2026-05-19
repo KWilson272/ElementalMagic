@@ -33,8 +33,9 @@ public class CoreUser implements AbilityUser {
     private final AbilityController[] binds;
     /** True if toggled on, false otherwise **/
     private final Map<Element, Boolean> elements; 
-    private final Map<String, AbilityController[]> presets;
     private final Map<String, Cooldown> cooldowns;
+    /* Not final because no events need to fire for preset changes. */
+    private Map<String, AbilityController[]> presets;
 
     public CoreUser(Player player) {
         this.player = player;
@@ -51,8 +52,35 @@ public class CoreUser implements AbilityUser {
 
     @Override
     public void loadProfile(UserProfile profile) {
+        addAllElements(profile.elements());
+        bindAll(profile.binds());
+        presets = profile.presets();
     }
-    
+   
+    private void bindAll(AbilityController[] binds) {
+        for (int i = 0; i < BINDS_SIZE; ++i) {
+            AbilityController bind = binds[i];
+            if (bind == null 
+                    || (player.hasPermission(bind.permission()) && hasElement(bind.element()))) {
+                bindController(binds[i], i+1);
+            }
+        }
+    }
+
+    private void addAllElements(Map<Element, Boolean> elements) {
+        // Ensure we don't accidentally give people multiple elements
+        for (Element element : this.elements.keySet()) {
+            removeElement(element);
+        }
+
+        for (Element element : elements.keySet()) {
+            if (player.hasPermission(element.permission())) {
+                addElement(element);
+                toggleElement(element, elements.get(element));
+            }
+        }
+    }
+
     @Override
     public UserProfile exportProfile() {
         return new UserProfile(

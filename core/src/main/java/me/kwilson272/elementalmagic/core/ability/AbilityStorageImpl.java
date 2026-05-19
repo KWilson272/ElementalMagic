@@ -80,6 +80,7 @@ public class AbilityStorageImpl implements AbilityStorage {
         }
 
         elements.add(element);
+        elementsByAlias.put(element.name().toUpperCase(), element);
         for (String alias : element.aliases()) {
             elementsByAlias.put(alias.toUpperCase(), element);
         }
