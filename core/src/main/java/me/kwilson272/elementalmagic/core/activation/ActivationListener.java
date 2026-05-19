@@ -5,11 +5,14 @@ import me.kwilson272.elementalmagic.api.activation.Action;
 import me.kwilson272.elementalmagic.api.activation.Activation;
 import me.kwilson272.elementalmagic.api.activation.ActivationManager;
 import me.kwilson272.elementalmagic.api.activation.activations.ActionActivation;
+import me.kwilson272.elementalmagic.api.activation.activations.FallDamageActivation;
 import me.kwilson272.elementalmagic.api.user.UserManager;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -83,6 +86,26 @@ public class ActivationListener implements Listener {
             Activation activation = new ActionActivation(action);
             activationManager.postActivation(user, activation);
             activationManager.handleAction(user, action);
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onFall(EntityDamageEvent event) {
+        if (event.getCause() != EntityDamageEvent.DamageCause.FALL
+                || !(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+        UserManager userManager = ElementalMagicApi.userManager();
+        ActivationManager activationManager = ElementalMagicApi.activationManager();
+
+        userManager.get(player).ifPresent(user -> {
+            FallDamageActivation fd = new FallDamageActivation(event.getDamage());
+            activationManager.postActivation(user, fd);
+            if (fd.getDamage() <= 0) {
+                event.setCancelled(true);
+            }
         });
     }
 }
