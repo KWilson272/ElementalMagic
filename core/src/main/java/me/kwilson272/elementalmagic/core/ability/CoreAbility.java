@@ -1,14 +1,17 @@
 package me.kwilson272.elementalmagic.core.ability;
 
 import me.kwilson272.elementalmagic.api.ability.Ability;
+import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 
 public abstract class CoreAbility implements Ability {
         
-    public AbilityUser user;
+    private AbilityUser user;
+    private final AbilityController controller;
    
-    public CoreAbility(AbilityUser user) {
+    public CoreAbility(AbilityUser user, AbilityController controller) {
         this.user = user;
+        this.controller = controller;
     }
 
     @Override
@@ -24,5 +27,10 @@ public abstract class CoreAbility implements Ability {
     @Override
     public AbilityUser user() {
         return user;
+    }
+
+    @Override
+    public AbilityController controller() {
+        return controller;
     }
 }
