@@ -103,13 +103,14 @@ public class CoreUser implements AbilityUser {
                                                         boolean checkCooldowns) {
         return canGenerallyUse(controller)
             && (!checkSelected || hasSelected(controller))
-            && (!checkCooldowns /* || !isOnCooldown(controller.name()) */);
+            && (!checkCooldowns || !isOnCooldown(controller.name()));
 	}
 
 	@Override
 	public boolean canGenerallyUse(AbilityController controller) {
         return controller != null
             && !player.isDead()
+            && player.isOnline()
             && canUseElement(controller.element())
             && player.hasPermission(controller.permission());
 	}
