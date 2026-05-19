@@ -2,8 +2,6 @@ package me.kwilson272.elementalmagic.api.ability;
 
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 
-import org.bukkit.World;
-
 /**
  * Handles the dynamic and instance-specific aspects of an {@code Ability},
  * managing per-tick updates and interactions with a world.<p>
