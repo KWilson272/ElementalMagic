@@ -41,6 +41,24 @@ public class ChooseCommand implements SubCommand {
             sender.sendMessage("You can not choose the element '" + display + "' at this time.");
         } else {
             sender.sendMessage("You have chosen '" + display + "'!");
+            removeOtherElements(user, element);
+            addSubElements(user, element);
+            user.removeInvalidBinds();
+        }
+    }
+
+    private void removeOtherElements(AbilityUser user, Element element) {
+        for (Element e : user.getElements()) {
+            if (!element.equals(e)) {
+                user.removeElement(e);
+            }
+        }
+    }
+
+    private void addSubElements(AbilityUser user, Element element) {
+        AbilityStorage storage = ElementalMagicApi.abilityStorage();
+        for (Element sub : storage.getElementsByParent(element)) {
+            user.addElement(sub);
         }
     }
 
