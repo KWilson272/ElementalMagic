@@ -18,6 +18,7 @@ import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
 import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
 import me.kwilson272.elementalmagic.core.display.BoardManager;
 import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
+import me.kwilson272.elementalmagic.core.gameplay.water.iceskate.IceSkateController;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
 import me.kwilson272.elementalmagic.core.listener.SpoutListener;
@@ -126,6 +127,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
     }
 
     private void storeCoreAbilities() {
+        registerAbility(new IceSkateController());
         registerAbility(new PhaseChangeController());
         registerAbility(new WaterSpoutController());
 
