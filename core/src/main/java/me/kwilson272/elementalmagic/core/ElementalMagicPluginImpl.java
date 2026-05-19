@@ -14,6 +14,7 @@ import me.kwilson272.elementalmagic.core.ability.CoreElement;
 import me.kwilson272.elementalmagic.core.activation.ActivationManagerImpl;
 import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
 import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
+import me.kwilson272.elementalmagic.core.display.BoardManager;
 import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
 import me.kwilson272.elementalmagic.core.revertible.TempBlockListener;
@@ -41,6 +42,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new ActivationListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BoardManager(), this);
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
         Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
         tickTask = Bukkit.getScheduler().runTaskTimer(this, this::tick, 1, 1);
