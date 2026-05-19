@@ -19,6 +19,7 @@ import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
 import me.kwilson272.elementalmagic.core.display.BoardManager;
 import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
 import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimController;
+import me.kwilson272.elementalmagic.core.gameplay.water.hydrosink.HydroSinkController;
 import me.kwilson272.elementalmagic.core.gameplay.water.iceskate.IceSkateController;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
@@ -130,6 +131,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
     private void storeCoreAbilities() {
         // Per-element alphabetical ordering!!
         registerAbility(new FastSwimController());
+        registerAbility(new HydroSinkController());
         registerAbility(new IceSkateController());
         registerAbility(new PhaseChangeController());
         registerAbility(new WaterSpoutController());
