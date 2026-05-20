@@ -1,5 +1,7 @@
 package me.kwilson272.elementalmagic.core;
 
+import javax.imageio.spi.RegisterableService;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitTask;
@@ -22,6 +24,7 @@ import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimControl
 import me.kwilson272.elementalmagic.core.gameplay.water.hydrosink.HydroSinkController;
 import me.kwilson272.elementalmagic.core.gameplay.water.iceskate.IceSkateController;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeController;
+import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
 import me.kwilson272.elementalmagic.core.listener.SpoutListener;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
@@ -134,6 +137,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new HydroSinkController());
         registerAbility(new IceSkateController());
         registerAbility(new PhaseChangeController());
+        registerAbility(new SurgeController());
         registerAbility(new WaterSpoutController());
 
     }
