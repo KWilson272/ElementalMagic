@@ -23,6 +23,7 @@ import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
 import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimController;
 import me.kwilson272.elementalmagic.core.gameplay.water.hydrosink.HydroSinkController;
 import me.kwilson272.elementalmagic.core.gameplay.water.iceskate.IceSkateController;
+import me.kwilson272.elementalmagic.core.gameplay.water.icewall.IceWallController;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
@@ -136,6 +137,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new FastSwimController());
         registerAbility(new HydroSinkController());
         registerAbility(new IceSkateController());
+        registerAbility(new IceWallController());
         registerAbility(new PhaseChangeController());
         registerAbility(new SurgeController());
         registerAbility(new WaterSpoutController());
