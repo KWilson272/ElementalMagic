@@ -1,0 +1,304 @@
+package me.kwilson272.elementalmagic.core.gameplay.water.icicle;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.Vector;
+
+import me.kwilson272.elementalmagic.api.ElementalMagicApi;
+import me.kwilson272.elementalmagic.api.ability.Ability;
+import me.kwilson272.elementalmagic.api.ability.AbilityController;
+import me.kwilson272.elementalmagic.api.config.Config;
+import me.kwilson272.elementalmagic.api.config.Configure;
+import me.kwilson272.elementalmagic.api.effect.EffectHandler;
+import me.kwilson272.elementalmagic.api.revertible.TempBlock;
+import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
+import me.kwilson272.elementalmagic.api.user.AbilityUser;
+import me.kwilson272.elementalmagic.api.util.BlockUtil;
+import me.kwilson272.elementalmagic.core.ability.CoreAbility;
+import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
+import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
+import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.icewall.IceWall;
+import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeFreeze;
+import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
+
+public class Icicle extends CoreAbility {
+
+    protected static final ConfigValues CONFIG = new ConfigValues();
+    
+    private long cooldown;
+    private long revertTime;
+    private double selectRange;
+    private int icicleCount;
+    private double range;
+    private double speed;
+    private double damage;
+    private double hitboxSize;
+    private double knockback;
+    private double breakRadius;
+    private boolean breakUnusableIce;
+   
+    private boolean hasFired;
+    private boolean canFire;
+    private Block source;
+    private List<Spike> spikes;
+
+    public Icicle(AbilityUser user, AbilityController controller) {
+		super(user, controller);
+        
+        cooldown = CONFIG.cooldown;
+        revertTime = CONFIG.revertTime;
+        selectRange = CONFIG.selectRange;
+        icicleCount = CONFIG.icicleCount;
+        range = CONFIG.range;
+        speed = CONFIG.speed;
+        damage = CONFIG.damage;
+        hitboxSize = CONFIG.hitboxSize;
+        knockback = CONFIG.knockback;
+        breakRadius = CONFIG.breakRadius;
+        breakUnusableIce = CONFIG.breakUnusableIce;
+
+        hasFired = false;
+        canFire = true;
+        spikes = new ArrayList<>();
+	}
+
+	@Override
+	public boolean start() {
+        var opts = new WaterSourceOptions(user()).noPlant();
+        source = WaterUtil.getSourceBlock(user(), range, opts);
+        return source != null;
+	}
+
+    protected boolean hasFired() {
+        return hasFired;
+    }
+
+    protected void fire() {
+        if (!canFire) {
+            return;
+        }
+
+        hasFired = true;
+        if (--icicleCount <= 0) {
+            user().addCooldown("Icicle", cooldown);
+            canFire = false;
+        }
+
+        // So no configs make targeting awkward
+        double targRange = selectRange + range;
+        Location target = EntityUtil.getTarget(user().player(), targRange);
+        Location start = source.getLocation().add(0.5, 0.5, 0.5);
+        Vector direction = VectorUtil.getDirection(start, target).normalize();
+        
+        spikes.add(new Spike(start, direction, range));
+    }
+
+	@Override
+	public boolean progress() {
+        if (!user().canUse(controller(), true, false)
+                || (!hasFired && !isSourceViable())) {
+            return false;
+        }
+        
+        WaterUtil.playSourceSelectedEffect(source);
+        spikes.removeIf(spike -> !spike.progress());
+        return canFire || !spikes.isEmpty();
+	}
+
+    private boolean isSourceViable() {
+        Location eyeLoc = user().player().getEyeLocation();
+        Location sourceLoc = source.getLocation().add(0.5, 0.5, 0.5);
+        double maxDist = Math.pow(selectRange + 1, 2);
+        var opts = new WaterSourceOptions(user()).noPlant();
+        return eyeLoc.distanceSquared(sourceLoc) <= maxDist 
+            && WaterUtil.canUse(source, opts);
+    }
+
+	@Override
+	public void onDestruction() {
+	}
+
+    private class Spike {
+        
+        private Location location;
+        private Vector direction;
+        private double rangeCounter;
+        Block previous;
+
+        Spike(Location location, Vector direction, double range) {
+            this.location = location;
+            this.direction = direction;
+            this.rangeCounter = range;
+        }
+
+        private boolean progress() {
+            double remainder = speed;
+            while (remainder > 0) {
+                Block block = location.getBlock();
+                
+                if (!block.equals(previous)) {
+                    breakIce(block);
+                    if (collidesWith(block)) {
+                        return false;
+                    }
+                }
+
+                previous = block;
+                affectEntities(block);
+                createBlock(block);
+
+                double speed = Math.min(remainder, 0.5);
+                remainder--;
+                location.add(direction.clone().multiply(speed));
+                rangeCounter -= speed;
+                if (rangeCounter <= 0) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private boolean collidesWith(Block block) {
+            if (block.equals(source) || !BlockUtil.isSolid(block)) {
+                return false;
+            }
+
+            TempBlock tb = TempBlock.get(block).orElse(null);
+            if (tb == null) {
+                return true;
+            }
+
+            return !(tb.ability() instanceof Icicle)
+                && !(tb.ability() instanceof PhaseChangeFreeze);
+        }
+
+        private void breakIce(Block block) {
+            if (!canBreak(block)) {
+                return;
+            }
+           
+            BlockData airData = Material.AIR.createBlockData();
+            TempBlockBuilder airBuilder = TempBlock.builder(Icicle.this, airData)
+                .setCollidable(false)
+                .setUsable(true)
+                .setDuration(revertTime);
+
+
+            Location loc = block.getLocation().add(0.5, 0.5, 0.5);
+            for (Block b : BlockUtil.collectSphere(loc, breakRadius)) {
+                if (!canBreak(block)) continue;
+
+                airBuilder.buildAt(b).ifPresent(tb -> {
+                    World World = b.getWorld();
+                    Particle particle = Particle.BLOCK;
+                    BlockData breakData = b.getBlockData();
+                    Location display = b.getLocation().add(0.5, 0.5, 0.5);
+                    World.spawnParticle(particle, display, 2, breakData);
+                });
+            }
+        }
+
+        private void affectEntities(Block block) {
+            Vector knock = direction.clone().multiply(knockback);
+            Location loc = block.getLocation().add(0.5, 0.5, 0.5);
+            EffectHandler handler = ElementalMagicApi.effectHandler();
+
+            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+                if (!e.equals(user().player()) && e instanceof LivingEntity le) {
+                    handler.setVelocity(le, Icicle.this, knock);
+                    handler.damageEntity(le, Icicle.this, damage);
+                }
+            }
+        }
+
+        private boolean canBreak(Block block) {
+            if (!AbilityUtil.isIce(block)) {
+                return false;
+            }
+
+            TempBlock tb = TempBlock.get(block).orElse(null);
+            if (tb == null) {
+                return true;
+            }
+
+            Ability abil = tb.ability();
+            // Don't break PhaseChange for less annoying gameplay
+            if (tb.isUsable() && !(abil instanceof PhaseChangeFreeze)) {
+                return true;
+            }
+
+            return breakUnusableIce 
+                && (abil instanceof SurgeWave || abil instanceof IceWall);
+        }
+
+        private void createBlock(Block block) {
+            BlockData data = Material.ICE.createBlockData();
+            TempBlock.builder(Icicle.this, data)
+                .setDuration(revertTime)
+                .addRevertTask(this::playEffects)
+                .buildAt(block)
+                .ifPresent(this::playEffects);
+        }
+
+        private void playEffects(TempBlock tb) {
+            Block block = tb.block();
+            // If it's been reverted or isn't the active block - looks weird
+            if (!AbilityUtil.isIce(block)) {
+                return;
+            }
+
+            World world = tb.block().getWorld();
+            Particle particle = Particle.BLOCK;
+            BlockData data = tb.block().getBlockData();
+            Location loc = tb.block().getLocation().add(0.5, 0.5, 0.5);
+            world.spawnParticle(particle, loc, 3, 0, 0, 0, data);
+
+            if (ThreadLocalRandom.current().nextInt(4) == 0) {
+                world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1, 0.5f);
+            }
+        }
+    }
+    
+    protected static class ConfigValues {
+        
+        private static final String CONFIG_PATH = IcicleController.CONFIG_PATH;
+
+        @Configure(path = CONFIG_PATH + "Cooldown", config = Config.ABILITIES)
+        private long cooldown = 5600;
+        @Configure(path = CONFIG_PATH + "RevertTime", config = Config.ABILITIES)
+        private long revertTime = 6500;
+        @Configure(path = CONFIG_PATH + "SelectRange", config = Config.ABILITIES)
+        private double selectRange = 12;
+        @Configure(path = CONFIG_PATH + "IcicleCount", config = Config.ABILITIES)
+        private int icicleCount = 3;
+        @Configure(path = CONFIG_PATH + "Range", config = Config.ABILITIES)
+        private double range = 14;
+        @Configure(path = CONFIG_PATH + "Speed", config = Config.ABILITIES)
+        private double speed = 2.5;
+        @Configure(path = CONFIG_PATH + "Damage", config = Config.ABILITIES)
+        private double damage = 2.0;
+        @Configure(path = CONFIG_PATH + "Knockback", config = Config.ABILITIES)
+        private double knockback = 1.5;
+        @Configure(path = CONFIG_PATH + "HitboxSize", config = Config.ABILITIES)
+        private double hitboxSize = 2.0;
+        @Configure(path = CONFIG_PATH + "IceBreakRadius", config = Config.ABILITIES)
+        private double breakRadius = 2.0;
+        @Configure(path = CONFIG_PATH + "BreakUnusableIce", config = Config.ABILITIES)
+        private boolean breakUnusableIce = true;
+    }
+}
