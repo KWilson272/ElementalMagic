@@ -101,10 +101,9 @@ public class WaterSpout extends CoreAbility {
     }
 
     private boolean canSpoutOn(Block block) {
-        return !spoutBlocks.containsKey(block) 
-            && (AbilityUtil.isWater(block) 
-            || AbilityUtil.isIce(block) 
-            || AbilityUtil.isSnow(block));
+        return (AbilityUtil.isWater(block) && !spoutBlocks.containsKey(block))
+            || AbilityUtil.isIce(block)
+            || AbilityUtil.isSnow(block);
     }
 
 	@Override
