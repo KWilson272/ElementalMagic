@@ -93,10 +93,7 @@ public class Icicle extends CoreAbility {
         }
 
         hasFired = true;
-        if (--icicleCount <= 0) {
-            user().addCooldown("Icicle", cooldown);
-            canFire = false;
-        }
+        canFire = --icicleCount > 0;
 
         // So no configs make targeting awkward
         double targRange = selectRange + range;
@@ -130,6 +127,9 @@ public class Icicle extends CoreAbility {
 
 	@Override
 	public void onDestruction() {
+        if (hasFired) {
+            user().addCooldown("Icicle", cooldown);
+        }
 	}
 
     private class Spike {
