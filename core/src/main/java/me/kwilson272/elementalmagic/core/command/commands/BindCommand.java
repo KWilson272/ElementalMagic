@@ -29,14 +29,15 @@ public class BindCommand implements SubCommand {
 
         AbilityStorage storage = ElementalMagicApi.abilityStorage();
         AbilityController controller = storage.getController(abilityName).orElse(null);
-        ChatColor color = controller.element().color();
-        String cDisplay = color + controller.name() + ChatColor.RESET;
-        String eDisplay = color + controller.element().name() + ChatColor.RESET;
-
         if (controller == null || controller.isHidden()) {
             sender.sendMessage("Unknown Ability: '" + abilityName + "'.");
             return;
-        } else if (!controller.isBindable()) {
+        } 
+
+        ChatColor color = controller.element().color();
+        String cDisplay = color + controller.name() + ChatColor.RESET;
+        String eDisplay = color + controller.element().name() + ChatColor.RESET;
+        if (!controller.isBindable()) {
             sender.sendMessage("The Ability: '" + cDisplay + "' Cannot be bound.");
             return;
         }
