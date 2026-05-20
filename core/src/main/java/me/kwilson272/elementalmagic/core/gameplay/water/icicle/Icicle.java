@@ -243,7 +243,8 @@ public class Icicle extends CoreAbility {
             }
 
             return breakUnusableIce 
-                && (abil instanceof SurgeWave || abil instanceof IceWall);
+                && !(abil instanceof Icicle) 
+                && !(abil instanceof PhaseChangeFreeze);
         }
 
         private void createBlock(Block block) {
