@@ -1,5 +1,7 @@
 package me.kwilson272.elementalmagic.core.gameplay.water.phasechange;
 
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -94,7 +96,14 @@ public class PhaseChangeMelt extends CoreAbility {
             return false;
         }
         
-        return TempBlock.isUsableTempBlock(block);
+        TempBlock tb = TempBlock.get(block).orElse(null);
+        if (tb == null || tb.isUsable()) {
+            return true;
+        }
+
+        // Melt these abilities regardless of usability, for gameplay 
+        AbilityController controller = tb.ability().controller();
+        return controller.name().equals("Surge");
     }
 
     @Override
