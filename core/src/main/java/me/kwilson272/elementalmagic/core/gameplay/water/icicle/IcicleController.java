@@ -18,7 +18,7 @@ import me.kwilson272.elementalmagic.core.ability.CoreElement;
 
 public class IcicleController extends CoreAbilityController {
     
-    protected static final String CONFIG_PATH = "Abilities.Water.Icicle";
+    protected static final String CONFIG_PATH = "Abilities.Water.Icicle.";
 
     @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Create giant spikes of ice to impale opponents and shatter ice.";
