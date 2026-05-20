@@ -26,14 +26,13 @@ import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
+import me.kwilson272.elementalmagic.core.gameplay.components.BlockStream;
 import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
 import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
 import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
-import me.kwilson272.elementalmagic.core.gameplay.water.icewall.IceWall;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeFreeze;
-import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
 
 public class Icicle extends CoreAbility {
 
@@ -101,7 +100,7 @@ public class Icicle extends CoreAbility {
         Location start = source.getLocation().add(0.5, 0.5, 0.5);
         Vector direction = VectorUtil.getDirection(start, target).normalize();
         
-        spikes.add(new Spike(start, direction, range));
+        spikes.add(new Spike(start, direction));
     }
 
 	@Override
@@ -132,49 +131,19 @@ public class Icicle extends CoreAbility {
         }
 	}
 
-    private class Spike {
+    private class Spike extends BlockStream {
         
-        private Location location;
         private Vector direction;
-        private double rangeCounter;
-        Block previous;
 
-        Spike(Location location, Vector direction, double range) {
-            this.location = location;
+        Spike(Location location, Vector direction) {
+            super(location, speed, range);
             this.direction = direction;
-            this.rangeCounter = range;
         }
-
-        private boolean progress() {
-            double remainder = speed;
-            while (remainder > 0) {
-                Block block = location.getBlock();
-                
-                if (!block.equals(previous)) {
-                    breakIce(block);
-                    if (collidesWith(block)) {
-                        return false;
-                    }
-                }
-
-                previous = block;
-                affectEntities(block);
-                createBlock(block);
-
-                double speed = Math.min(remainder, 0.5);
-                remainder--;
-                location.add(direction.clone().multiply(speed));
-                rangeCounter -= speed;
-                if (rangeCounter <= 0) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private boolean collidesWith(Block block) {
-            if (block.equals(source) || !BlockUtil.isSolid(block)) {
+    
+        @Override
+        public boolean collidesWith(Block block) {
+            if (block.equals(source) || !BlockUtil.isSolid(block) 
+                    || canBreak(block)) {
                 return false;
             }
 
@@ -186,12 +155,44 @@ public class Icicle extends CoreAbility {
             return !(tb.ability() instanceof Icicle)
                 && !(tb.ability() instanceof PhaseChangeFreeze);
         }
+        
+		@Override
+		public void createBlock(Block block) {
+            if (canBreak(block)) {
+                breakIce(block);
+            }
+            
+            affectEntities(block);
+            BlockData data = Material.ICE.createBlockData();
+            TempBlock.builder(Icicle.this, data)
+                .setDuration(revertTime)
+                .addRevertTask(this::playEffects)
+                .buildAt(block)
+                .ifPresent(this::playEffects);
+		}
+
+        private boolean canBreak(Block block) {
+            if (!AbilityUtil.isIce(block)) {
+                return false;
+            }
+
+            TempBlock tb = TempBlock.get(block).orElse(null);
+            if (tb == null) {
+                return true;
+            }
+
+            Ability abil = tb.ability();
+            // Don't break PhaseChange for less annoying gameplay
+            if (tb.isUsable() && !(abil instanceof PhaseChangeFreeze)) {
+                return true;
+            }
+
+            return breakUnusableIce 
+                && !(abil instanceof Icicle) 
+                && !(abil instanceof PhaseChangeFreeze);
+        }
 
         private void breakIce(Block block) {
-            if (!canBreak(block)) {
-                return;
-            }
-           
             BlockData airData = Material.AIR.createBlockData();
             TempBlockBuilder airBuilder = TempBlock.builder(Icicle.this, airData)
                 .setCollidable(false)
@@ -226,36 +227,6 @@ public class Icicle extends CoreAbility {
             }
         }
 
-        private boolean canBreak(Block block) {
-            if (!AbilityUtil.isIce(block)) {
-                return false;
-            }
-
-            TempBlock tb = TempBlock.get(block).orElse(null);
-            if (tb == null) {
-                return true;
-            }
-
-            Ability abil = tb.ability();
-            // Don't break PhaseChange for less annoying gameplay
-            if (tb.isUsable() && !(abil instanceof PhaseChangeFreeze)) {
-                return true;
-            }
-
-            return breakUnusableIce 
-                && !(abil instanceof Icicle) 
-                && !(abil instanceof PhaseChangeFreeze);
-        }
-
-        private void createBlock(Block block) {
-            BlockData data = Material.ICE.createBlockData();
-            TempBlock.builder(Icicle.this, data)
-                .setDuration(revertTime)
-                .addRevertTask(this::playEffects)
-                .buildAt(block)
-                .ifPresent(this::playEffects);
-        }
-
         private void playEffects(TempBlock tb) {
             Block block = tb.block();
             // If it's been reverted or isn't the active block - looks weird
@@ -273,6 +244,11 @@ public class Icicle extends CoreAbility {
                 world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1, 0.5f);
             }
         }
+
+		@Override
+		public Vector getDirection() {
+            return direction.clone();
+		}
     }
     
     protected static class ConfigValues {
