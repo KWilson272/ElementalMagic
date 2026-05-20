@@ -177,14 +177,14 @@ public final class BlockUtil {
         int halfX = (int) Math.round(lenX / 2);
         int halfY = (int) Math.round(lenY / 2);
         int halfZ = (int) Math.round(lenZ / 2);
-
+    
         int startX = center.getBlockX() - halfX;
         int endX = center.getBlockX() + halfX;
         int startY = center.getBlockY() - halfY;
-        int endY = center.getBlockX() + halfY;
+        int endY = center.getBlockY() + halfY;
         int startZ = center.getBlockZ() - halfZ;
         int endZ = center.getBlockZ() + halfZ;
-
+        
         List<Block> blocks = new ArrayList<>();
         for (int x = startX; x <= endX; ++x) {
             for (int y = startY; y <= endY; ++y) {
