@@ -161,7 +161,7 @@ public class PhaseChangeFreeze extends CoreAbility {
         @Configure(path = CONFIG_PATH + "SelectRange", config = Config.ABILITIES)
         private double range = 25.0;
         @Configure(path = CONFIG_PATH + "Radius", config = Config.ABILITIES)
-        private double radius = 4.0;
+        private double radius = 3.8;
         @Configure(path = CONFIG_PATH + "RevertDistance", config = Config.ABILITIES)
         private double revertDistance = 25.0;
     }
