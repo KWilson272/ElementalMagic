@@ -5,10 +5,12 @@ import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.Tag;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.entity.boat.JungleChestBoat;
 
 public final class AbilityUtil {
 
@@ -79,5 +81,61 @@ public final class AbilityUtil {
 
     public static boolean isPlant(Block block) {
         return PLANT_MATERIALS.contains(block.getType());
+    }
+
+    public static BlockData getSolidPlant(Block block) {
+        Material material = block.getType();
+        if (material.isSolid()) {
+            return block.getBlockData();
+        }
+
+        Material mat = switch(material) {
+            case PALE_HANGING_MOSS: 
+                yield Material.PALE_MOSS_BLOCK;
+            case OAK_SAPLING:
+                yield Material.OAK_LEAVES;
+            case SPRUCE_SAPLING:
+                yield Material.SPRUCE_LEAVES;
+            case BIRCH_SAPLING:
+                yield Material.BIRCH_LEAVES;
+            case JUNGLE_SAPLING:
+                yield Material.JUNGLE_LEAVES;
+            case ACACIA_SAPLING:
+                yield Material.ACACIA_LEAVES;
+            case DARK_OAK_SAPLING:
+                yield Material.DARK_OAK_LEAVES;
+            case MANGROVE_PROPAGULE:
+                yield Material.MANGROVE_LEAVES;
+            case CHERRY_SAPLING:
+                yield Material.CHERRY_LEAVES;
+            case PALE_OAK_SAPLING:
+                yield Material.PALE_OAK_LEAVES;
+            case BROWN_MUSHROOM:
+                yield Material.BROWN_MUSHROOM_BLOCK;
+            case RED_MUSHROOM:
+                yield Material.RED_MUSHROOM_BLOCK;
+            case CRIMSON_FUNGUS:
+            case CRIMSON_ROOTS:
+            case NETHER_WART:
+            case WEEPING_VINES:
+                yield Material.NETHER_WART_BLOCK;
+            case WARPED_FUNGUS:
+            case TWISTING_VINES:
+            case WARPED_ROOTS:
+            case NETHER_SPROUTS:
+                yield Material.WARPED_WART_BLOCK;
+            case MELON_STEM:
+                yield Material.MELON;
+            case PUMPKIN_STEM:
+                yield Material.PUMPKIN;
+            case WHEAT:
+                yield Material.HAY_BLOCK;
+            case KELP:
+                yield Material.DRIED_KELP_BLOCK;
+            default:
+                yield Material.OAK_LEAVES;
+        };
+
+        return mat.createBlockData(); 
     }
 }

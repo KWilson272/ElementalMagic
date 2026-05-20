@@ -24,6 +24,7 @@ import me.kwilson272.elementalmagic.core.gameplay.water.iceskate.IceSkateControl
 import me.kwilson272.elementalmagic.core.gameplay.water.icewall.IceWallController;
 import me.kwilson272.elementalmagic.core.gameplay.water.icicle.IcicleController;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeController;
+import me.kwilson272.elementalmagic.core.gameplay.water.plantwhip.PlantWhipController;
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
 import me.kwilson272.elementalmagic.core.listener.SpoutListener;
@@ -139,6 +140,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new IceWallController());
         registerAbility(new IcicleController());
         registerAbility(new PhaseChangeController());
+        registerAbility(new PlantWhipController());
         registerAbility(new SurgeController());
         registerAbility(new WaterSpoutController());
 
