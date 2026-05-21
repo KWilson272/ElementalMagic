@@ -280,7 +280,7 @@ public class IceWall extends CoreAbility {
             iceBuilder.buildAt(block).ifPresent(tb -> {
                 wallBlocks.put(tb.block(), tb);
                 if (ThreadLocalRandom.current().nextInt(5) == 0) {
-                    playBlockEffect(tb.block());
+                    WaterUtil.playIceSound(tb.block().getLocation());
                 }
             });
                 
@@ -291,14 +291,6 @@ public class IceWall extends CoreAbility {
         }
 
         riseBlocks = newRise;
-    }
-
-    private void playBlockEffect(Block block) {
-        World world = block.getWorld();
-        Location loc = block.getLocation().add(0.5, 0.5, 0.5);
-        Particle particle = Particle.SNOWFLAKE;
-        world.spawnParticle(particle, loc, 3, 0.55, 0.55, 0.55, 0);
-        WaterUtil.playIceSound(loc);
     }
 
     private void removeExpiredBlocks() {
