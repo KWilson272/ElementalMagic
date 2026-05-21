@@ -18,7 +18,7 @@ import me.kwilson272.elementalmagic.core.ability.CoreElement;
 
 public class PlantWhipController extends CoreAbilityController {
 
-    protected static final String CONFIG_PATH = "Abilities.Water.PlantWhip";
+    protected static final String CONFIG_PATH = "Abilities.Water.PlantWhip.";
     
     @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Manipulate the water in plants and send the surrounding flora towards your enemies!";
