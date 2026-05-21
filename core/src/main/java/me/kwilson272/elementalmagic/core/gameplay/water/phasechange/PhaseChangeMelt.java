@@ -9,6 +9,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
+import me.kwilson272.elementalmagic.api.ability.Ability;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
@@ -20,6 +21,8 @@ import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
+import me.kwilson272.elementalmagic.core.gameplay.water.torrent.Torrent;
 
 public class PhaseChangeMelt extends CoreAbility {
 
@@ -102,8 +105,8 @@ public class PhaseChangeMelt extends CoreAbility {
         }
 
         // Melt these abilities regardless of usability, for gameplay 
-        AbilityController controller = tb.ability().controller();
-        return controller.name().equals("Surge");
+        Ability ability = tb.ability();
+        return ability instanceof SurgeWave || ability instanceof Torrent;
     }
 
     @Override
