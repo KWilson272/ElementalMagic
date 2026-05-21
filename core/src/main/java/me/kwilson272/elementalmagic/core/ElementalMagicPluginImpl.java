@@ -22,6 +22,7 @@ import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimControl
 import me.kwilson272.elementalmagic.core.gameplay.water.frostbreath.FrostBreathController;
 import me.kwilson272.elementalmagic.core.gameplay.water.hydrosink.HydroSinkController;
 import me.kwilson272.elementalmagic.core.gameplay.water.iceskate.IceSkateController;
+import me.kwilson272.elementalmagic.core.gameplay.water.icespike.IceSpikeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.icewall.IceWallController;
 import me.kwilson272.elementalmagic.core.gameplay.water.icicle.IcicleController;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeController;
@@ -141,6 +142,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new FrostBreathController());
         registerAbility(new HydroSinkController());
         registerAbility(new IceSkateController());
+        registerAbility(new IceSpikeController());
         registerAbility(new IceWallController());
         registerAbility(new IcicleController());
         registerAbility(new PhaseChangeController());

@@ -1,6 +1,7 @@
 package me.kwilson272.elementalmagic.api.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -246,6 +247,40 @@ public final class BlockUtil {
                     if (dx*dx + dy*dy + dz*dz <= radSqrd) {
                         blocks.add(world.getBlockAt(x, y, z));
                     }
+                }
+            }
+        }
+
+        return blocks;
+    }
+   
+    /**
+     * Collects all blocks in a flat circle and returns them.
+     *
+     * @param center the {@link Location} center of the circle.
+     * @param radius the Double radius of the circle.
+     */
+    public static Collection<Block> collectCircle(Location center, double radius) {
+        World world = center.getWorld();
+        if (world == null) {
+            return List.of();
+        }
+
+        int rad = (int) (Math.round(radius));
+        double radSqrd =  radius * radius;
+
+        int centerX = center.getBlockX();
+        int centerY = center.getBlockY();
+        int centerZ = center.getBlockZ();
+        
+        List<Block> blocks = new ArrayList<>();
+        for (int x = -(rad+1); x <= rad+1; ++x) {
+            for (int z = -(rad+1); z <= rad+1; ++z) {
+                double distSqrd = x*x + z*z;
+                if (distSqrd <= radSqrd) {
+                    int bx = centerX + x;
+                    int bz = centerZ + z;
+                    blocks.add(world.getBlockAt(bx, centerY, bz));
                 }
             }
         }
