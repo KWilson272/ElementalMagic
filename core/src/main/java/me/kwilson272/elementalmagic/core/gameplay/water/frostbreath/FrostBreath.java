@@ -38,9 +38,11 @@ public class FrostBreath extends CoreAbility {
     private long frostDuration;
     private boolean doIceTrap;
     private long iceTrapDuration;
-
+    private long globalFreezeCooldown;
+    
     private boolean isInfinite;
     private long endTime;
+    private boolean frozeAny;
 
 	public FrostBreath(AbilityUser user, AbilityController controller) {
 		super(user, controller);
@@ -52,6 +54,9 @@ public class FrostBreath extends CoreAbility {
         frostDuration = CONFIG.frostDuration;
         doIceTrap = CONFIG.doIceTrap;
         iceTrapDuration = CONFIG.iceTrapDuration;
+        globalFreezeCooldown = CONFIG.globalFreezeCooldown;
+
+        frozeAny = false;
 	}
 
 	@Override
@@ -150,6 +155,7 @@ public class FrostBreath extends CoreAbility {
                 continue;
             }
             createIceTrap(entity);
+            frozeAny = true;
         }
     }
 
@@ -169,6 +175,9 @@ public class FrostBreath extends CoreAbility {
 	@Override
 	public void onDestruction() {
         user().addCooldown("FrostBreath", cooldown);
+        if (frozeAny) {
+            user().addCooldown("GlobalFreeze", globalFreezeCooldown);
+        }
 	}
 
     protected static class ConfigValues {
@@ -189,5 +198,7 @@ public class FrostBreath extends CoreAbility {
         private boolean doIceTrap = true;
         @Configure(path = CONFIG_PATH + "IceTrapDuration", config = Config.ABILITIES)       
         private long iceTrapDuration = 3000;
+        @Configure(path = CONFIG_PATH + "GlobalFreezeCooldown", config = Config.ABILITIES)
+        private long globalFreezeCooldown = 7000;
     }
 }
