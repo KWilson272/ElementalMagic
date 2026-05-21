@@ -15,6 +15,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
+import me.kwilson272.elementalmagic.api.ability.Ability;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
@@ -26,6 +27,7 @@ import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpout;
 
 public class FrostBreath extends CoreAbility {
 
@@ -36,6 +38,7 @@ public class FrostBreath extends CoreAbility {
     private double range;
     private double spread;
     private long frostDuration;
+    private boolean freezeAbilityWater;
     private boolean doIceTrap;
     private long iceTrapDuration;
     private long globalFreezeCooldown;
@@ -52,6 +55,7 @@ public class FrostBreath extends CoreAbility {
         range = CONFIG.range;
         spread = CONFIG.spread;
         frostDuration = CONFIG.frostDuration;
+        freezeAbilityWater = CONFIG.freezeAbilityWater;
         doIceTrap = CONFIG.doIceTrap;
         iceTrapDuration = CONFIG.iceTrapDuration;
         globalFreezeCooldown = CONFIG.globalFreezeCooldown;
@@ -133,13 +137,24 @@ public class FrostBreath extends CoreAbility {
                 continue;
             }
 
-            if (AbilityUtil.isWater(b)) {
+            if (AbilityUtil.isWater(b) && isWaterFreezable(b)) {
                 builder.setData(iceData).buildAt(b);
             } else if (!BlockUtil.isSolid(b) 
                     && BlockUtil.isSolid(b.getRelative(BlockFace.DOWN))) {
                 builder.setData(snowData).buildAt(b);        
             }
         }
+    }
+    
+    private boolean isWaterFreezable(Block block) {
+        TempBlock tb = TempBlock.get(block).orElse(null);
+        if (tb == null || tb.isUsable()) {
+            return true;
+        }
+
+        Ability ability = tb.ability();
+        // Blacklist WaterSpout for comfort while playing
+        return freezeAbilityWater && !(ability instanceof WaterSpout);
     }
 
     private void affectEntities(Location loc, double radius) {
@@ -194,6 +209,8 @@ public class FrostBreath extends CoreAbility {
         private double spread = 0.2;
         @Configure(path = CONFIG_PATH + "FrostDuration", config = Config.ABILITIES)       
         private long frostDuration = 7500;
+        @Configure(path = CONFIG_PATH + "FreezeAbilityWater", config = Config.ABILITIES)
+        private boolean freezeAbilityWater = true;
         @Configure(path = CONFIG_PATH + "DoIceTrap", config = Config.ABILITIES)       
         private boolean doIceTrap = true;
         @Configure(path = CONFIG_PATH + "IceTrapDuration", config = Config.ABILITIES)       
