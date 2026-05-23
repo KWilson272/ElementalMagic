@@ -1,5 +1,6 @@
 package me.kwilson272.elementalmagic.core.gameplay.water.waterspout;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +30,9 @@ public class WaterSpoutController extends CoreAbilityController {
         """;
 
     public WaterSpoutController() {
+        ElementalMagicApi.configManager().configure(this);
         ElementalMagicApi.configManager().configure(WaterSpout.CONFIG);
+        ElementalMagicApi.configManager().configure(WaterWave.CONFIG);
     }
 
     @Activator
@@ -45,11 +48,27 @@ public class WaterSpoutController extends CoreAbilityController {
             manager.destroyAbility(spout);
             spout.hop();
             return List.of();
-        } else if (user.canUse(this, true, true)) {
-            return List.of(new WaterSpout(user, this));
         }
 
-        return List.of();
+        WaterWave wave = manager.getAbility(user, WaterWave.class).orElse(null);
+        if (wave != null) {
+            if (wave.isSourced()) {
+                manager.destroyAbility(wave);
+            } else {
+                return List.of();
+            }
+        }
+    
+        // Order matters so spout can detect the newly created wave
+        List<Ability> abilities = new ArrayList<>();
+        if (!user.isOnCooldown("WaterWave")) {
+            abilities.add(new WaterWave(user, this));
+        } 
+        if (!user.isOnCooldown("WaterSpout")) {
+            abilities.add(new WaterSpout(user, this));
+        }
+        
+        return abilities;
     }
 
     @Override

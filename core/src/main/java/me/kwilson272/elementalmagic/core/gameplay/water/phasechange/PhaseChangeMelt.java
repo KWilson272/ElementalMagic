@@ -21,6 +21,7 @@ import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.icewave.IceWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.torrent.Torrent;
 
@@ -106,7 +107,9 @@ public class PhaseChangeMelt extends CoreAbility {
 
         // Melt these abilities regardless of usability, for gameplay 
         Ability ability = tb.ability();
-        return ability instanceof SurgeWave || ability instanceof Torrent;
+        return ability instanceof SurgeWave 
+            || ability instanceof Torrent
+            || ability instanceof IceWave;
     }
 
     @Override

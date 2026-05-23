@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
+import me.kwilson272.elementalmagic.api.ability.AbilityManager;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
@@ -81,6 +82,12 @@ public class WaterSpout extends CoreAbility {
 
 	@Override
 	public boolean start() {
+        AbilityManager manager = ElementalMagicApi.abilityManager();
+        WaterWave wave = manager.getAbility(user(), WaterWave.class).orElse(null);
+        if (wave != null && wave.isSourced()) {
+            return false;
+        }
+
         breakHeight = height + 4;
         isInfinite = duration < 0;
         endTime = System.currentTimeMillis() + duration;
