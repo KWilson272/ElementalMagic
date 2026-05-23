@@ -226,7 +226,7 @@ public class WallOfFire extends FireAbility {
 
 	@Override
 	public void onDestruction() {
-        user().addCooldown("WallOffFire", cooldown);
+        user().addCooldown("WallOfFire", cooldown);
 	}
     
     protected static class ConfigValues {
