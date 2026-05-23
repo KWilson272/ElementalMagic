@@ -1,7 +1,10 @@
 package me.kwilson272.elementalmagic.core.gameplay.fire;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
 
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
@@ -14,6 +17,11 @@ public abstract class FireAbility extends CoreAbility {
 	public FireAbility(AbilityUser user, AbilityController controller) {
 		super(user, controller);
 	}
+
+    public void playFireSound(Location location) {
+        World world = location.getWorld();
+        world.playSound(location, Sound.BLOCK_FIRE_AMBIENT, 1.2f, 1);
+    }
     
     public BlockData getFireData() {
         return canUseBlueFire(user()) ? 
