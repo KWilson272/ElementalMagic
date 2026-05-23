@@ -139,8 +139,9 @@ public class EffectHandlerImpl implements EffectHandler {
        if (!canAffect(entity)) {
             return false;
         }
-
+        
         var event = new AbilitySetFireTicksEvent(cause, entity, durationMillis);
+        Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
