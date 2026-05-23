@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -55,11 +54,10 @@ public class HydroSinkController extends CoreAbilityController {
     }
 
     private Block getImpactBlock(AbilityUser user) {
-        double yOffset = -0.1;
         Player player = user.player();
-        Location impactLoc = player.getLocation().add(0, yOffset, 0);
+        Location impactLoc = player.getLocation().add(0, -0.2, 0);
         BoundingBox userBox = player.getBoundingBox();
-        userBox.shift(0, yOffset, 0); // Will be on top otherwise
+        userBox.expand(0.5);
 
         // Get ANY possible block that could stop the fall damage, it isn't the
         // most accurate, however it feels better gameplay wise
@@ -79,6 +77,7 @@ public class HydroSinkController extends CoreAbilityController {
                 }
             }
         }
+        
         return null;
     }
 
