@@ -429,7 +429,7 @@ public class Torrent extends CoreAbility {
             collided = true;    
         }
 
-        if (!oldBlock.equals(newBlock)) {
+        if (!oldBlock.equals(newBlock) && !collided) {
             placeWater(newBlock);
             cleanOldBlocks(1);
         }
