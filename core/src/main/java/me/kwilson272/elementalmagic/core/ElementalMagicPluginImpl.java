@@ -33,6 +33,7 @@ import me.kwilson272.elementalmagic.core.gameplay.water.plantwhip.PlantWhipContr
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeController;
 import me.kwilson272.elementalmagic.core.gameplay.water.torrent.TorrentController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterflow.WaterFlowController;
+import me.kwilson272.elementalmagic.core.gameplay.water.watergimbal.WaterGimbalController;
 import me.kwilson272.elementalmagic.core.gameplay.water.watermanipulation.WaterManipulationController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
 import me.kwilson272.elementalmagic.core.listener.SpoutListener;
@@ -157,6 +158,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new SurgeController());
         registerAbility(new TorrentController());
         registerAbility(new WaterFlowController());
+        registerAbility(new WaterGimbalController());
         registerAbility(new WaterManipulationController());
         registerAbility(new WaterSpoutController());
     }

@@ -15,6 +15,7 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.ability.CoreAbilityController;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
+import me.kwilson272.elementalmagic.core.gameplay.water.watergimbal.WaterGimbal;
 
 public class OctopusFormController extends CoreAbilityController {
 
@@ -40,6 +41,10 @@ public class OctopusFormController extends CoreAbilityController {
         }
         
         AbilityManager manager = ElementalMagicApi.abilityManager();
+        if (manager.hasAbility(user, WaterGimbal.class)) {
+            return List.of();
+        }
+
         boolean create = !manager.hasAbility(user, OctopusForm.class);
         create |= !manager.destroyIf(user, OctopusForm.class,
                 OctopusForm::isSourced).isEmpty();
