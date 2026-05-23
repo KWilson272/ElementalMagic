@@ -19,7 +19,7 @@ import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
 import me.kwilson272.elementalmagic.core.display.BoardManager;
 import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
 import me.kwilson272.elementalmagic.core.gameplay.fire.blaze.BlazeController;
-import me.kwilson272.elementalmagic.core.gameplay.fire.walloffire.WallOfFire;
+import me.kwilson272.elementalmagic.core.gameplay.fire.firebreath.FireBreathController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.walloffire.WallOfFireController;
 import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimController;
 import me.kwilson272.elementalmagic.core.gameplay.water.frostbreath.FrostBreathController;
@@ -149,6 +149,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         // Per-element alphabetical ordering!!
         // -- Fire --
         registerAbility(new BlazeController());
+        registerAbility(new FireBreathController());
         registerAbility(new WallOfFireController());
 
         // -- Water --
