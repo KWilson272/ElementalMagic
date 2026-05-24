@@ -84,8 +84,8 @@ public class FireBlast extends FireAbility {
 
         for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player()) && e instanceof LivingEntity) {
-                affected |= effectHandler.damageEntity(e, this, damage);
                 affected |= effectHandler.setVelocity(e, this, knock);
+                affected |= effectHandler.damageEntity(e, this, damage);
                 if (e.getFireTicks() * 50 < burnDuration) {
                     affected |= effectHandler.setFireDuration(e, this, burnDuration);
                 }
