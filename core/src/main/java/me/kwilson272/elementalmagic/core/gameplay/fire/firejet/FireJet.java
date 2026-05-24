@@ -83,7 +83,7 @@ public class FireJet extends FireAbility {
 
     private void applyVelocity() {
         // Math taken from ProjectKorra 1.8.0-BETA-9
-        long timeElapsed = System.currentTimeMillis() - startTime;
+        long timeElapsed = duration - (System.currentTimeMillis() - startTime);
         double timeFactor = 1 - (timeElapsed / (2.0 * duration));
         Vector dir = user().player().getEyeLocation().getDirection();
         dir.multiply(timeFactor * speed);
