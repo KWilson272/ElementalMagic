@@ -134,7 +134,7 @@ public class FireBreath extends FireAbility {
     private void melt(Block block) {
         if (AbilityUtil.isSnow(block)) {
             BlockData data = Material.AIR.createBlockData();
-            TempBlock.builder(this, data).setDuration(duration).buildAt(block);
+            TempBlock.builder(this, data).setDuration(meltDuration).buildAt(block);
             return;
         }
 
