@@ -71,7 +71,6 @@ public class ActivationListener implements Listener {
                     Action.TOGGLE_FLIGHT_ON : Action.TOGGLE_FLIGHT_OFF;
             Activation activation = new ActionActivation(action);
             activationManager.postActivation(user, activation);
-            activationManager.handleAction(user, action);
         });
     }
 
@@ -85,7 +84,6 @@ public class ActivationListener implements Listener {
                     Action.TOGGLE_SPRINT_ON : Action.TOGGLE_SPRINT_OFF;
             Activation activation = new ActionActivation(action);
             activationManager.postActivation(user, activation);
-            activationManager.handleAction(user, action);
         });
     }
 
