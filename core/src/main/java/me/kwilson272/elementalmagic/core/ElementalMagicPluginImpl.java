@@ -25,6 +25,7 @@ import me.kwilson272.elementalmagic.core.gameplay.fire.firejet.FireJetController
 import me.kwilson272.elementalmagic.core.gameplay.fire.firekick.FireKickController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.fireshield.FireShieldController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firespin.FireSpinController;
+import me.kwilson272.elementalmagic.core.gameplay.fire.jetblast.JetBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.walloffire.WallOfFireController;
 import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimController;
 import me.kwilson272.elementalmagic.core.gameplay.water.frostbreath.FrostBreathController;
@@ -160,6 +161,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new FireKickController());
         registerAbility(new FireShieldController());
         registerAbility(new FireSpinController());
+        registerAbility(new JetBlastController());
         registerAbility(new WallOfFireController());
 
         // -- Water --
