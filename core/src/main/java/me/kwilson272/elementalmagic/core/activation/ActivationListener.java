@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 /**
  * Handles dispatch of various Activations to the ActivationManager.
@@ -26,7 +27,8 @@ public class ActivationListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     private void onInteract(PlayerInteractEvent event) {
         if (event.getAction() == org.bukkit.event.block.Action.PHYSICAL
-            || event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR) {
+            || event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
+            || event.getHand() == EquipmentSlot.OFF_HAND) {
             return;
         }
 
