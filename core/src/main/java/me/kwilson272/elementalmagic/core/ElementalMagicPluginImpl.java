@@ -27,6 +27,7 @@ import me.kwilson272.elementalmagic.core.gameplay.fire.fireshield.FireShieldCont
 import me.kwilson272.elementalmagic.core.gameplay.fire.fireshots.FireShotsController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firespin.FireSpinController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firewheel.FireWheelController;
+import me.kwilson272.elementalmagic.core.gameplay.fire.heatcontrol.HeatControlController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblast.JetBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblaze.JetBlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.walloffire.WallOfFireController;
@@ -49,6 +50,7 @@ import me.kwilson272.elementalmagic.core.gameplay.water.waterflow.WaterFlowContr
 import me.kwilson272.elementalmagic.core.gameplay.water.watergimbal.WaterGimbalController;
 import me.kwilson272.elementalmagic.core.gameplay.water.watermanipulation.WaterManipulationController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
+import me.kwilson272.elementalmagic.core.listener.HeatControlHelper;
 import me.kwilson272.elementalmagic.core.listener.SpoutListener;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
 import me.kwilson272.elementalmagic.core.revertible.TempBlockListener;
@@ -86,6 +88,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
         Bukkit.getPluginManager().registerEvents(new SpoutListener(), this);
         Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
+        Bukkit.getPluginManager().registerEvents(new HeatControlHelper(), this); 
         tickTask = Bukkit.getScheduler().runTaskTimer(this, this::tick, 1, 1);
 
         Bukkit.getPluginCommand("elementalmagic").setExecutor(new MasterCommand());
@@ -166,6 +169,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new FireShotsController());
         registerAbility(new FireSpinController());
         registerAbility(new FireWheelController());
+        registerAbility(new HeatControlController());
         registerAbility(new JetBlastController());
         registerAbility(new JetBlazeController());
         registerAbility(new WallOfFireController());
