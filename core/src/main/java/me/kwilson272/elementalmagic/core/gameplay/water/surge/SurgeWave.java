@@ -276,7 +276,6 @@ public class SurgeWave extends CoreAbility {
                 if (e.getLocation().distanceSquared(blockLoc) <= hitDist) {
                     entities.add(e);
                 }
-            
             }
         }
         
@@ -326,6 +325,11 @@ public class SurgeWave extends CoreAbility {
         clearWave();
         RevertibleManager revertManager = ElementalMagicApi.revertibleManager();
         iceBlocks.forEach(revertManager::revert);
+    }
+
+    @Override
+    public String name() {
+        return "SurgeWave";
     }
 
     protected static class ConfigValues {

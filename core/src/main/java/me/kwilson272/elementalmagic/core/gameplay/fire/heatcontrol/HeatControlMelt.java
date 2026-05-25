@@ -104,6 +104,11 @@ public class HeatControlMelt extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "HeatControlMelt";
+    }
+
     protected static class ConfigValues {
         
         private static final String CONFIG_PATH = HeatControlController.CONFIG_PATH + "Melt.";

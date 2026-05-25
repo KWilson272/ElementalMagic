@@ -112,6 +112,11 @@ public class FireShieldRing extends FireAbility {
 	public void onDestruction() {
         user().addCooldown("FireShield", cooldown);
 	}
+
+    @Override
+    public String name() {
+        return "FireShieldRing";
+    }
     
 
     protected static class ConfigValues {

@@ -90,6 +90,11 @@ public class IceSpikePillar extends CoreAbility {
         pillar.revertAll();
     }
 
+    @Override
+    public String name() {
+        return "IceSpikePillar";
+    }
+
     private class Pillar extends IcePillar {
 
 		public Pillar(int maxHeight, Block base, Ability ability) {

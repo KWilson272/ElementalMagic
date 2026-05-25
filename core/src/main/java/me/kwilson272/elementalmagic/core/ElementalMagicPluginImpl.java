@@ -50,6 +50,7 @@ import me.kwilson272.elementalmagic.core.gameplay.water.waterflow.WaterFlowContr
 import me.kwilson272.elementalmagic.core.gameplay.water.watergimbal.WaterGimbalController;
 import me.kwilson272.elementalmagic.core.gameplay.water.watermanipulation.WaterManipulationController;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
+import me.kwilson272.elementalmagic.core.listener.FallDamageListener;
 import me.kwilson272.elementalmagic.core.listener.HeatControlHelper;
 import me.kwilson272.elementalmagic.core.listener.SpoutListener;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
@@ -88,7 +89,8 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
         Bukkit.getPluginManager().registerEvents(new SpoutListener(), this);
         Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
-        Bukkit.getPluginManager().registerEvents(new HeatControlHelper(), this); 
+        Bukkit.getPluginManager().registerEvents(new HeatControlHelper(), this);
+        Bukkit.getPluginManager().registerEvents(new FallDamageListener(), this);
         tickTask = Bukkit.getScheduler().runTaskTimer(this, this::tick, 1, 1);
 
         Bukkit.getPluginCommand("elementalmagic").setExecutor(new MasterCommand());

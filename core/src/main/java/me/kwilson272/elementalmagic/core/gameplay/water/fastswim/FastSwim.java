@@ -73,6 +73,11 @@ public class FastSwim extends CoreAbility {
     public void onDestruction() {
         user().addCooldown(controller().name(), cooldown);
     }
+    
+    @Override
+    public String name() {
+        return "FastSwim";
+    }
 
     protected static class ConfigValues {
 

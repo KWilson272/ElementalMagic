@@ -132,6 +132,11 @@ public class FireShieldSphere extends FireAbility {
 	public void onDestruction() {
         user().addCooldown("FireShield", cooldown);
 	}
+
+    @Override
+    public String name() {
+        return "FireShieldSphere";
+    };
     
     protected static class ConfigValues {
        

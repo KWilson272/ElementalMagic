@@ -404,6 +404,11 @@ public class WaterBlade extends CoreAbility {
         cleanLayers(layers.size());
 	}
 
+    @Override
+    public String name() {
+        return "WaterBlade";
+    }
+
     protected boolean isSourced() {
         return state == State.SOURCED;
     }

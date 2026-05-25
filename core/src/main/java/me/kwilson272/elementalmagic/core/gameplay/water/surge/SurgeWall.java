@@ -166,6 +166,11 @@ public class SurgeWall extends CoreAbility {
             user().addCooldown("SurgeWall", cooldown);
         }
     }
+    
+    @Override
+    public String name() {
+        return "SurgeWall";
+    }
 
     protected static class ConfigValues {
 

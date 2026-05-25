@@ -308,6 +308,11 @@ public class IceWall extends CoreAbility {
         revertWall();
 	}
 
+    @Override
+    public String name() {
+        return "IceWall";
+    }
+
     protected static class ConfigValues {
         
         private static final String CONFIG_PATH = IceWallController.CONFIG_PATH; 

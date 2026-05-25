@@ -77,6 +77,11 @@ public class IceSkate extends CoreAbility {
 
     }
 
+    @Override
+    public String name() {
+        return "IceSkate";
+    }
+
     protected static class ConfigValues {
 
         private static final String CONFIG_PATH = IceSkateController.CONFIG_PATH;

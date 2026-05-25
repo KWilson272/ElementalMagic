@@ -197,6 +197,11 @@ public class WaterFlow extends CoreAbility {
         revertBlocks(blocks.size());
         user().addCooldown("WaterFlow", cooldown);
 	}
+
+    @Override
+    public String name() {
+        return "WaterFlow";
+    }
     
     protected static class ConfigValues {
     

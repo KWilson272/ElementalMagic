@@ -152,6 +152,11 @@ public class PhaseChangeFreeze extends CoreAbility {
         tempBlocks.forEach(revertManager::revert);
     }
 
+    @Override
+    public String name() {
+        return "PhaseChangeFreeze";
+    }
+
     protected static class ConfigValues {
 
         private static final String CONFIG_PATH = PhaseChangeController.CONFIG_PATH + "Freeze.";

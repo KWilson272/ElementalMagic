@@ -287,6 +287,11 @@ public class OctopusForm extends CoreAbility {
         revertOctopus();
 	}
 
+    @Override
+    public String name() {
+        return "OctopusForm";
+    }
+
     protected static class ConfigValues {
     
         private static final String CONFIG_PATH = OctopusFormController.CONFIG_PATH;

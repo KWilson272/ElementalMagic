@@ -232,6 +232,11 @@ public class Torrent extends CoreAbility {
         frozenBlocks.values().forEach(revertManager::revert);
     }
 
+    @Override
+    public String name() {
+        return "Torrent";
+    }
+
 /*********************************
  * SOURCED
  *********************************/

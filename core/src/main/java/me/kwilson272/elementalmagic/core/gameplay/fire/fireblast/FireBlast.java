@@ -77,6 +77,11 @@ public class FireBlast extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "FireBlast";
+    }
+
     private boolean affectEntities(Location loc) {
         boolean affected = false;
         Vector knock = ray.direction.clone().multiply(knockback);

@@ -123,4 +123,9 @@ public interface Ability {
      * static data.
      */
     AbilityController controller();
+
+    /**
+     * @return the String name of this {@code Ability}.
+     */
+    String name();
 }

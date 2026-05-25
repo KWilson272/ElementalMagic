@@ -268,6 +268,11 @@ public class IceSpikeBlast extends CoreAbility {
         });
     }
 
+    @Override
+    public String name() {
+        return "IceSpikeBlast";
+    }
+
     protected boolean isSourced() {
         return source != null && blast.getState() == BlockBlast.State.SOURCED;
     }

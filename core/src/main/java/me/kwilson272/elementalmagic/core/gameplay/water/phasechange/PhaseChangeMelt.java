@@ -117,6 +117,11 @@ public class PhaseChangeMelt extends CoreAbility {
         user().addCooldown("PhaseChangeMelt", cooldown);
     }
 
+    @Override
+    public String name() {
+        return "PhaseChangeMelt";
+    }
+
     protected static class ConfigValues {
 
         private static final String CONFIG_PATH = PhaseChangeController.CONFIG_PATH + "Melt.";

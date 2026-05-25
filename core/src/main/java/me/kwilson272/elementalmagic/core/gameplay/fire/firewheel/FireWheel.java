@@ -196,6 +196,11 @@ public class FireWheel extends FireAbility {
     public void onDestruction() {
     }
 
+    @Override
+    public String name() {
+        return "FireWheel";
+    }
+
     protected static class ConfigValues {
         
         private static final String CONFIG_PATH = FireWheelController.CONFIG_PATH;

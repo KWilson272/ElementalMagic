@@ -98,6 +98,11 @@ public class FireShots extends FireAbility {
 	public void onDestruction() {
         user().addCooldown("FireShots", cooldown);
 	}
+
+    @Override
+    public String name() {
+        return "FireShots";
+    }
     
     protected boolean isHolding() {
         return shotsLeft > 0;

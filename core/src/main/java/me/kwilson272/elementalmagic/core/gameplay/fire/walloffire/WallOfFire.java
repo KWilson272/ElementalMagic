@@ -228,7 +228,12 @@ public class WallOfFire extends FireAbility {
 	public void onDestruction() {
         user().addCooldown("WallOfFire", cooldown);
 	}
-    
+
+    @Override
+    public String name() {
+        return "WallOfFire";
+    }
+
     protected static class ConfigValues {
         
         private static final String CONFIG_PATH = WallOfFireController.CONFIG_PATH;

@@ -101,6 +101,11 @@ public class PlantWhip extends CoreAbility {
 	@Override
 	public void onDestruction() {
 	}
+
+    @Override
+    public String name() {
+        return "PlantWhip";
+    }
     
     protected void fire() {
         if (isFired) {

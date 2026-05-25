@@ -120,6 +120,11 @@ public class Blaze extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "Blaze";
+    }
+
     private class BlazeStream {
         
         private Location location;

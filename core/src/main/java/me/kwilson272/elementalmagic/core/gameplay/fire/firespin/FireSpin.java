@@ -90,6 +90,11 @@ public class FireSpin extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "FireSpin";
+    }
+
     private void playParticles(Location loc) {
         World world = loc.getWorld();
         Particle particle;

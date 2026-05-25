@@ -200,6 +200,11 @@ public class WaterSpout extends CoreAbility {
         spiralBlocks.forEach(revertManager::revert);
 	}
 
+    @Override
+    public String name() {
+        return "WaterSpout";
+    }
+
     private void setFlying(boolean flying) {
         user().player().setAllowFlight(flying);
         user().player().setFlying(flying);

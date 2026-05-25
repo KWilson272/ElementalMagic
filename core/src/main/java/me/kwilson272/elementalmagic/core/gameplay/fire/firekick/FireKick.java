@@ -110,6 +110,11 @@ public class FireKick extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "FireKick";
+    }
+
     private void affectEntities(Location loc) {
         for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player())) {

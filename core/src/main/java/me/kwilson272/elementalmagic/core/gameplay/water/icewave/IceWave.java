@@ -178,6 +178,11 @@ public class IceWave extends CoreAbility {
             ElementalMagicApi.revertibleManager().revert(tb);
         }
     }
+
+    @Override
+    public String name() {
+        return "IceWave";
+    }
     
     protected static class ConfigValues {
         

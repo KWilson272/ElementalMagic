@@ -131,6 +131,11 @@ public class Icicle extends CoreAbility {
         }
 	}
 
+    @Override
+    public String name() {
+        return "Icicle";
+    }
+
     private class Spike extends BlockStream {
         
         private Vector direction;

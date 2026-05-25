@@ -124,6 +124,11 @@ public class JetBlaze extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "JetBlaze";
+    }
+
     protected static class ConfigValues {
 
         private static final String CONFIG_PATH = JetBlazeController.CONFIG_PATH;

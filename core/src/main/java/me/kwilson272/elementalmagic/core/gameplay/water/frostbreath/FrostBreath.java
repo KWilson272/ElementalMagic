@@ -195,6 +195,11 @@ public class FrostBreath extends CoreAbility {
         }
 	}
 
+    @Override
+    public String name() {
+        return "FrostBreath";
+    }
+
     protected static class ConfigValues {
     
         private static final String CONFIG_PATH = FrostBreathController.CONFIG_PATH;

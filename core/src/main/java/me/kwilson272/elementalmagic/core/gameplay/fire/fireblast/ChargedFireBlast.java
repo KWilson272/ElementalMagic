@@ -138,6 +138,11 @@ public class ChargedFireBlast extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "ChargedFireBlast";
+    }
+
     protected boolean isCharging() {
         return state != State.FIRED; 
     }

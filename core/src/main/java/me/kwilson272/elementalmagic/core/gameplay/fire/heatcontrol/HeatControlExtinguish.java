@@ -83,6 +83,11 @@ public class HeatControlExtinguish extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "HeatControlExtinguish";
+    }
+
     protected static class ConfigValues {
         
         private static final String CONFIG_PATH = HeatControlController.CONFIG_PATH + "Extinguish.";

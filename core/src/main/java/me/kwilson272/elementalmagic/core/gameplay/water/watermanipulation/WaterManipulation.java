@@ -247,6 +247,11 @@ public class WaterManipulation extends CoreAbility {
         });
     }
 
+    @Override
+    public String name() {
+        return "WaterManipulation";
+    }
+
 /*********************************
  * BLAST
  *********************************/

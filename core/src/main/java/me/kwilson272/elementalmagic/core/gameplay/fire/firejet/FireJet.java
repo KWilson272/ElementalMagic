@@ -96,6 +96,11 @@ public class FireJet extends FireAbility {
 	public void onDestruction() {
 	}
 
+    @Override
+    public String name() {
+        return "FireJet";
+    }
+
     public void setDuration(long duration) {
         this.duration = duration;
         this.isInfinite = duration < 0; 

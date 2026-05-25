@@ -145,6 +145,11 @@ public class IceSpikeField extends CoreAbility {
         pillars.forEach(IcePillar::revertAll);
     }
 
+    @Override
+    public String name() {
+        return "IceSpikeField";
+    }
+
     private class Pillar extends IcePillar {
 
 		public Pillar(int maxHeight, Block base, Ability ability) {

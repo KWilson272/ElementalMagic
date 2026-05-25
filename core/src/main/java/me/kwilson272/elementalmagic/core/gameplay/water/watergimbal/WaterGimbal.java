@@ -228,6 +228,11 @@ public class WaterGimbal extends CoreAbility {
         clearRings();
     }
 
+    @Override
+    public String name() {
+        return "WaterGimbal";
+    }
+
     protected void fire() {
         if (!firedFirst) {
             firedFirst = true; 

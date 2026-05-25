@@ -193,6 +193,11 @@ public class FireBreath extends FireAbility {
         user().addCooldown("FireBreath", cooldown);
 	}
 
+    @Override
+    public String name() {
+        return "FireBreath";
+    }
+
     protected static class ConfigValues {
     
         private static final String CONFIG_PATH = FireBreathController.CONFIG_PATH;

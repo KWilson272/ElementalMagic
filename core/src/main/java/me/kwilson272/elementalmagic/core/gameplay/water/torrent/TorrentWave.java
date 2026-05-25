@@ -150,6 +150,11 @@ public class TorrentWave extends CoreAbility {
         waveBlocks.values().forEach(revertManager::revert);
     }
 
+    @Override
+    public String name() {
+        return "TorrentWave";
+    }
+
     private record Point(Location loc, Vector dir) {}
 
     protected static class ConfigValues {

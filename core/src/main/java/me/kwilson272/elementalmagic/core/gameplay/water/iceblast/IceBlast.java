@@ -243,6 +243,11 @@ public class IceBlast extends CoreAbility {
             world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 2, 1.1f);
         }
 	}
+
+    @Override
+    public String name() {
+        return "IceBlast";
+    }
     
     protected static class ConfigValues {
         

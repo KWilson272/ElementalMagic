@@ -301,6 +301,11 @@ public class WaterWave extends CoreAbility {
         ringBlocks.clear();
     }
 
+    @Override
+    public String name() {
+        return "WaterWave";
+    }
+
     protected boolean isSourced() {
         return state == State.SOURCED;
     }
