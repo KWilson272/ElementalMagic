@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import me.kwilson272.elementalmagic.api.ability.Ability;
 import me.kwilson272.elementalmagic.api.ability.AbilityManager;
+import me.kwilson272.elementalmagic.api.event.ability.AbilityDestructionEvent;
 import me.kwilson272.elementalmagic.api.event.ability.AbilityOwnerChangeEvent;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 
@@ -118,7 +119,9 @@ public class AbilityManagerImpl implements AbilityManager {
     // Extraction since we can remove from different points of execution
     private void destroySafely(Ability ability) {
         try {
-            ability.onDestruction(); 
+            ability.onDestruction();
+            var event = new AbilityDestructionEvent(ability);
+            Bukkit.getPluginManager().callEvent(event);
         } catch (Exception e) {
             e.printStackTrace();
             // TODO: we need better logging
