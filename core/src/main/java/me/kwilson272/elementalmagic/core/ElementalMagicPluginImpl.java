@@ -28,6 +28,7 @@ import me.kwilson272.elementalmagic.core.gameplay.fire.fireshots.FireShotsContro
 import me.kwilson272.elementalmagic.core.gameplay.fire.firespin.FireSpinController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firewheel.FireWheelController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.heatcontrol.HeatControlController;
+import me.kwilson272.elementalmagic.core.gameplay.fire.immolate.ImmolateController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblast.JetBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblaze.JetBlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.walloffire.WallOfFireController;
@@ -172,6 +173,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new FireSpinController());
         registerAbility(new FireWheelController());
         registerAbility(new HeatControlController());
+        registerAbility(new ImmolateController());
         registerAbility(new JetBlastController());
         registerAbility(new JetBlazeController());
         registerAbility(new WallOfFireController());
