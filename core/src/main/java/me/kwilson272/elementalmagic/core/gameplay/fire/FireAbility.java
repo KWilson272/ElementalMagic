@@ -5,10 +5,13 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
+import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
 
@@ -36,5 +39,10 @@ public abstract class FireAbility extends CoreAbility {
     public static boolean canUseBlueFire(AbilityUser user) {
         String perm = CoreElement.FIRE.permission() + ".bluefire";
         return user.player().hasPermission(perm);
+    }
+
+    public boolean canIgnite(Block block) {
+        return !BlockUtil.isSolid(block) && !BlockUtil.isLiquid(block)
+            && BlockUtil.isSolid(block.getRelative(BlockFace.DOWN));
     }
 }
