@@ -12,13 +12,16 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.Ability;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.event.ability.AbilityAffectVelocityEvent;
 import me.kwilson272.elementalmagic.api.event.ability.AbilityDamageEvent;
+import me.kwilson272.elementalmagic.api.event.ability.AbilityImmobilizeEvent;
 import me.kwilson272.elementalmagic.api.event.ability.AbilityPotionAddEvent;
 import me.kwilson272.elementalmagic.api.event.ability.AbilityPotionRemoveEvent;
 import me.kwilson272.elementalmagic.api.event.ability.AbilitySetFireTicksEvent;
+import me.kwilson272.elementalmagic.api.revertible.Revertible;
 
 public class EffectHandlerImpl implements EffectHandler {
 
@@ -29,9 +32,11 @@ public class EffectHandlerImpl implements EffectHandler {
     private Entity currentDamager = null;
     private Entity currentVictim = null;
     private final Map<Entity, Integer> velocityPriorities;
+    private final Map<Entity, Immobilization> immobilizedEntities;
 
     public EffectHandlerImpl() {
         velocityPriorities = new HashMap<>();
+        immobilizedEntities = new HashMap<>();
     }
 
     @Override
@@ -190,5 +195,73 @@ public class EffectHandlerImpl implements EffectHandler {
 
         entity.removePotionEffect(type);
         return true;
+    }
+
+	@Override
+	public boolean stopMovement(LivingEntity entity, Ability cause, long durationMillis) {
+        if (!canAffect(entity) || durationMillis <= 0) {
+            return false;
+        }
+
+        var event = new AbilityImmobilizeEvent(cause, entity, durationMillis);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        // Remove the old immobilization to prevent competition
+        allowMovement(entity);
+        Immobilization immo = new Immobilization(entity, event.getDurationMillis());
+        immobilizedEntities.put(entity, immo);
+        return true;
+	}
+
+	@Override
+	public boolean isImmobilized(LivingEntity entity) {
+        return immobilizedEntities.containsKey(entity);
+	}
+
+	@Override
+	public void allowMovement(LivingEntity entity) {
+        Immobilization immo = immobilizedEntities.get(entity);
+        if (immo != null) {
+            ElementalMagicApi.revertibleManager().revert(immo);
+        }
+	}
+
+    private class Immobilization implements Revertible {
+
+        private long duration;
+        private long revertTime;
+        private boolean isReverted;
+        private LivingEntity entity;
+
+        public Immobilization(LivingEntity entity, long durationMillis) {
+            this.duration = durationMillis;
+            this.revertTime = System.currentTimeMillis() + duration;
+            this.isReverted = false;
+            this.entity = entity;
+        }
+		
+        @Override
+		public long getDurationMillis() {
+            return duration;
+		}
+
+		@Override
+		public long getRevertTimeMillis() {
+            return revertTime;
+		}
+
+		@Override
+		public void handleRevertTasks() {
+            isReverted = true;
+            immobilizedEntities.remove(entity);
+		}
+
+		@Override
+		public boolean isReverted() {
+            return isReverted;
+		}
     }
 }

@@ -1,0 +1,45 @@
+package me.kwilson272.elementalmagic.core.gameplay.fire.lightning;
+
+import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
+
+public class Lightning extends FireAbility {
+
+    
+    private long cooldown;
+    private double range;
+    private double speed;
+    private double hitboxSize;
+    private double subArcChance;
+    private int maxSubArcs;
+    private double waterArcRange;
+    private int maxWaterArcs;
+
+    private 
+
+    private List<Arc> arcs;
+    private List<Bolt> bolts;
+
+	@Override
+	public boolean start() {
+	}
+
+	@Override
+	public boolean progress() {
+	}
+
+	@Override
+	public void onDestruction() {
+	}
+
+	@Override
+	public String name() {
+	}
+
+    private class Arc {
+    
+    }
+
+    private class Bolt {
+    
+    }
+}

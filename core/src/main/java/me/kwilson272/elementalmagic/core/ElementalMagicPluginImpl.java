@@ -32,6 +32,7 @@ import me.kwilson272.elementalmagic.core.gameplay.fire.heatcontrol.HeatControlCo
 import me.kwilson272.elementalmagic.core.gameplay.fire.immolate.ImmolateController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblast.JetBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblaze.JetBlazeController;
+import me.kwilson272.elementalmagic.core.gameplay.fire.lightning.LightningController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.walloffire.WallOfFireController;
 import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimController;
 import me.kwilson272.elementalmagic.core.gameplay.water.frostbreath.FrostBreathController;
@@ -54,6 +55,7 @@ import me.kwilson272.elementalmagic.core.gameplay.water.watermanipulation.WaterM
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpoutController;
 import me.kwilson272.elementalmagic.core.listener.FallDamageListener;
 import me.kwilson272.elementalmagic.core.listener.HeatControlHelper;
+import me.kwilson272.elementalmagic.core.listener.MovementLimiter;
 import me.kwilson272.elementalmagic.core.listener.SpoutListener;
 import me.kwilson272.elementalmagic.core.revertible.RevertibleManagerImpl;
 import me.kwilson272.elementalmagic.core.revertible.TempBlockListener;
@@ -93,6 +95,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         Bukkit.getPluginManager().registerEvents(new TempBlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new HeatControlHelper(), this);
         Bukkit.getPluginManager().registerEvents(new FallDamageListener(), this);
+        Bukkit.getPluginManager().registerEvents(new MovementLimiter(), this);
         tickTask = Bukkit.getScheduler().runTaskTimer(this, this::tick, 1, 1);
 
         Bukkit.getPluginCommand("elementalmagic").setExecutor(new MasterCommand());
@@ -178,6 +181,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new ImmolateController());
         registerAbility(new JetBlastController());
         registerAbility(new JetBlazeController());
+        registerAbility(new LightningController());
         registerAbility(new WallOfFireController());
 
         // -- Water --

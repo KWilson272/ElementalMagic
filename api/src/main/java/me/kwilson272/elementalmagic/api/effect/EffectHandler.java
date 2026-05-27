@@ -168,4 +168,31 @@ public interface EffectHandler {
      * @return boolean true if the PotionEffect was removed, false otherwise
      */
     boolean removePotionEffect(LivingEntity entity, Ability cause, PotionEffectType type);
+
+    /**
+     * Stops a {@link LivingEntity} from moving for the provided duration.
+     *
+     * @param entity the {@code LivingEntity} being immobilized
+     * @param cause the {@link Ability} responsible
+     * @param durationMillis the Long duration of immobilization in milliseconds.
+     * @return true if the entity was immobilized, false otherwise
+     */
+    boolean stopMovement(LivingEntity entity, Ability cause, long durationMillis);
+
+    /**
+     * Checks if a {@link LivingEntity} is currently immobilized.
+     *
+     * @param entity the [@code LivingEntity} being checked.
+     * @return true if the entity is immobilized, false otherwise.
+     */
+    boolean isImmobilized(LivingEntity entity);
+
+    /**
+     * Allows an immobilized {@link LivingEntity} to move again. This function
+     * should do nothing if {@link #isImmobilized} returns false for the given
+     * entity.
+     *
+     * @param entity the {@link LivingEntity} whose movement is allowed.
+     */
+    void allowMovement(LivingEntity entity);
 }
