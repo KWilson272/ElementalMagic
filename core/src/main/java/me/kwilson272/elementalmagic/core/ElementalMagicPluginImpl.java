@@ -37,6 +37,7 @@ import me.kwilson272.elementalmagic.core.gameplay.fire.immolate.ImmolateControll
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblast.JetBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.jetblaze.JetBlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.lightning.LightningController;
+import me.kwilson272.elementalmagic.core.gameplay.fire.lightningburst.LightningBurstController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.walloffire.WallOfFireController;
 import me.kwilson272.elementalmagic.core.gameplay.water.fastswim.FastSwimController;
 import me.kwilson272.elementalmagic.core.gameplay.water.frostbreath.FrostBreathController;
@@ -193,6 +194,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new JetBlastController());
         registerAbility(new JetBlazeController());
         registerAbility(new LightningController());
+        registerAbility(new LightningBurstController());
         registerAbility(new WallOfFireController());
 
         // -- Water --
