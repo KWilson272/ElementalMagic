@@ -45,8 +45,7 @@ public class ImmolateController extends CoreAbilityController {
                 return List.of(new Immolate(user, this));
             }
 
-        } else if (immolate != null) {
-            immolate.detonate();
+        } else if (immolate != null && immolate.detonate()) {
             manager.removeAbility(immolate);
         }
 

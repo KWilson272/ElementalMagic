@@ -209,10 +209,12 @@ public class Immolate extends FireAbility {
 	public void onDestruction() {
 	}
 
-    protected void detonate() {
+    protected boolean detonate() {
         if (!isCharging) {
             explode(ray.lastLoc);
+            return true;
         }
+        return false;
     }
 
 	@Override
