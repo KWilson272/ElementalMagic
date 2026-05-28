@@ -25,6 +25,7 @@ import me.kwilson272.elementalmagic.core.gameplay.fire.discharge.DischargeContro
 import me.kwilson272.elementalmagic.core.gameplay.fire.fireball.FireBallController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.fireblast.FireBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firebreath.FireBreathController;
+import me.kwilson272.elementalmagic.core.gameplay.fire.fireburst.FireBurstController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firejet.FireJetController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firekick.FireKickController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.fireshield.FireShieldController;
@@ -180,6 +181,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new FireBallController());
         registerAbility(new FireBlastController());
         registerAbility(new FireBreathController());
+        registerAbility(new FireBurstController());
         registerAbility(new FireJetController());
         registerAbility(new FireKickController());
         registerAbility(new FireShieldController());
