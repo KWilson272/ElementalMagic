@@ -1,5 +1,6 @@
 package me.kwilson272.elementalmagic.core.gameplay.chi.wallrun;
 
+import java.awt.Taskbar.Feature;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,14 +53,20 @@ public class WallRun extends CoreAbility {
 
 	@Override
 	public boolean start() {
+        Location loc = user().player().getLocation();
+        Block feetBlock = loc.getBlock();
+        if (!user().player().isSprinting() && !AbilityUtil.isWater(feetBlock)) {
+            return false;
+        }
+
         cacheElements();
         if (!canWallRun()) {
             return false;
         }
-
-
+    
         isInfinite = duration < 0;
         endTime = System.currentTimeMillis() + duration;
+        pushPlayer();
         return true;
 	}
 
@@ -84,14 +91,8 @@ public class WallRun extends CoreAbility {
         }
          
         Location loc = user().player().getLocation();
-        Block feetBlock = loc.getBlock();
-        Block below = loc.add(0, -0.05, 0).getBlock();
-        boolean inWater = AbilityUtil.isWater(feetBlock);
+        Block below = loc.add(0, -0.01, 0).getBlock();
         if (below.getType().isSolid()) {
-            return false;
-        }
-
-        if (!user().player().isSprinting() && !inWater) {
             return false;
         }
 
@@ -115,8 +116,12 @@ public class WallRun extends CoreAbility {
                 || (!isInfinite && System.currentTimeMillis() > endTime)) {
             return false;
         }
+        
+        pushPlayer();
+        return true;
+	}
 
-
+    private void pushPlayer() {
         Player player = user().player();
         Vector dir = player.getEyeLocation().getDirection().multiply(power);
         ElementalMagicApi.effectHandler().setVelocity(player, this, dir);
@@ -124,11 +129,10 @@ public class WallRun extends CoreAbility {
         World world = user().player().getWorld();
         Location loc = user().player().getLocation();
         BlockData data = Material.STONE.createBlockData();
-        world.spawnParticle(Particle.BLOCK, loc, 1, 0.2, 0.2, 0.2, data);
-        world.spawnParticle(Particle.CRIT, loc, 2, 0.2, 0.2, 0.2, 0);
+        world.spawnParticle(Particle.BLOCK, loc, 2, 0.2, 0.2, 0.2, data);
+        world.spawnParticle(Particle.CRIT, loc, 3, 0.2, 0.2, 0.2, 0); 
+    }
 
-        return true;
-	}
 
 	@Override
 	public void onDestruction() {
