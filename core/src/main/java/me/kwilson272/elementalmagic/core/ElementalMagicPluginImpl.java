@@ -18,6 +18,7 @@ import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
 import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
 import me.kwilson272.elementalmagic.core.display.BoardManager;
 import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
+import me.kwilson272.elementalmagic.core.gameplay.chi.wallrun.WallRunController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.blaze.BlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.combustion.CombustionController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.fireblast.FireBlastController;
@@ -166,6 +167,10 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
 
     private void storeCoreAbilities() {
         // Per-element alphabetical ordering!!
+        
+        //-- Chi --
+        registerAbility(new WallRunController());
+
         // -- Fire --
         registerAbility(new BlazeController());
         registerAbility(new CombustionController());
