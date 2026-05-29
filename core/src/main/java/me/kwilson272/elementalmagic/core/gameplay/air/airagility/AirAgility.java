@@ -67,11 +67,11 @@ public class AirAgility extends CoreAbility {
         private static final String CONFIG_PATH = AirAgilityController.CONFIG_PATH;
      
         @Configure(path = CONFIG_PATH + "SpeedPower", config = Config.ABILITIES)
-        private int speedPower = 4; 
+        private int speedPower = 2; 
         @Configure(path = CONFIG_PATH + "SpeedDuration", config = Config.ABILITIES)
         private int speedDuration = 60;
         @Configure(path = CONFIG_PATH + "JumpPower", config = Config.ABILITIES)
-        private int jumpPower = 3;
+        private int jumpPower = 2;
         @Configure(path = CONFIG_PATH + "JumpDuration", config = Config.ABILITIES)
         private int jumpDuration = 60; 
 
