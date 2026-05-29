@@ -53,6 +53,10 @@ public abstract class Ray {
         }
         return range > 0;
     }
+
+    public Location getLocation() {
+        return location;
+    }
     
     public abstract boolean collides(Block block);
 
