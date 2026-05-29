@@ -18,6 +18,7 @@ import me.kwilson272.elementalmagic.core.config.ConfigManagerImpl;
 import me.kwilson272.elementalmagic.core.database.UserStorageImpl;
 import me.kwilson272.elementalmagic.core.display.BoardManager;
 import me.kwilson272.elementalmagic.core.effect.EffectHandlerImpl;
+import me.kwilson272.elementalmagic.core.gameplay.air.airagility.AirAgilityController;
 import me.kwilson272.elementalmagic.core.gameplay.air.airswipe.AirSwipeController;
 import me.kwilson272.elementalmagic.core.gameplay.air.gracefuldescent.GracefulDescentController;
 import me.kwilson272.elementalmagic.core.gameplay.chi.wallrun.WallRunController;
@@ -175,6 +176,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         // Per-element alphabetical ordering!!
        
         // -- Air --
+        registerAbility(new AirAgilityController());
         registerAbility(new AirSwipeController());
         registerAbility(new GracefulDescentController());
 
