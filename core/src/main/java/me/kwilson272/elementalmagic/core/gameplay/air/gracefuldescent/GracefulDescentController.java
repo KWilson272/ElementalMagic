@@ -3,6 +3,7 @@ package me.kwilson272.elementalmagic.core.gameplay.air.gracefuldescent;
 import java.util.Collection;
 import java.util.List;
 
+import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.Ability;
 import me.kwilson272.elementalmagic.api.ability.Element;
 import me.kwilson272.elementalmagic.api.activation.Action;
@@ -23,6 +24,10 @@ public class GracefulDescentController extends CoreAbilityController {
     private String description = "Air users can negate fall damage passively.";
     @Configure(path = CONFIG_PATH  + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Fall from a large height.";
+
+    public GracefulDescentController() {
+        ElementalMagicApi.configManager().configure(this);
+    }
 
     @Activator(requireSelected = false)
     private Collection<Ability> handleFall(AbilityUser user,
