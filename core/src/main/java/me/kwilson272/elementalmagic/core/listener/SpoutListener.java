@@ -10,6 +10,7 @@ import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.AbilityManager;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.api.user.UserManager;
+import me.kwilson272.elementalmagic.core.gameplay.air.airspout.AirSpout;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpout;
 
 public class SpoutListener implements Listener {
@@ -25,23 +26,34 @@ public class SpoutListener implements Listener {
                 || event.getTo().equals(event.getFrom())) {
             return;
         }
-    
-        WaterSpout spout = abilityManager.getAbility(user, WaterSpout.class).orElse(null);
-        if (spout == null) {
-            return;
-        }
 
         double x = event.getTo().getX() - event.getFrom().getX();
         double y = event.getTo().getY() - event.getFrom().getY();
         double z = event.getTo().getZ() - event.getFrom().getZ();
         Vector movement = new Vector(x, y, z);
-
-        // Up max speed to prevent feedback loop of movement
-        double maxSpeed = Math.pow(spout.getSpeed() + 0.01, 2);
-        if (movement.lengthSquared() > maxSpeed) {
-            movement.normalize().multiply(spout.getSpeed());
-            event.getPlayer().setVelocity(movement);
+    
+        WaterSpout wSpout = abilityManager.getAbility(user, WaterSpout.class).orElse(null);
+        if (wSpout != null) {
+            // Up max speed to prevent feedback loop of movement
+            double maxSpeed = Math.pow(wSpout.getSpeed() + 0.01, 2);
+            if (movement.lengthSquared() > maxSpeed) {
+                movement.normalize().multiply(wSpout.getSpeed());
+                event.getPlayer().setVelocity(movement);
+            }
+            return;
         }
+
+        AirSpout aSpout = abilityManager.getAbility(user, AirSpout.class).orElse(null);
+        if (aSpout != null) {
+            // Up max speed to prevent feedback loop of movement
+            double maxSpeed = Math.pow(aSpout.getSpeed() + 0.01, 2);
+            if (movement.lengthSquared() > maxSpeed) {
+                movement.normalize().multiply(aSpout.getSpeed());
+                event.getPlayer().setVelocity(movement);
+            }
+            return;
+        }
+
     }
 }
 
