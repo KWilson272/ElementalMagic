@@ -26,13 +26,12 @@ import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class TorrentWave extends CoreAbility {
+public class TorrentWave extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
     private static final double SPEED = 0.5;
@@ -65,9 +64,9 @@ public class TorrentWave extends CoreAbility {
         // Rather than spamming clients with packets every tick we're going to
         // play a few here one time to give it a similar 'thick sound' feel
         Location loc = user().player().getLocation();
-        WaterUtil.playWaterSound(loc);
-        WaterUtil.playWaterSound(loc);
-        WaterUtil.playWaterSound(loc);
+        playWaterSound(loc);
+        playWaterSound(loc);
+        playWaterSound(loc);
 
         user().addCooldown("TorrentWave", cooldown);
         return true;
@@ -81,7 +80,7 @@ public class TorrentWave extends CoreAbility {
         double spacing = 1.0;
         double step = 2 * Math.asin(spacing / (2 * maxRadius));
         int count = (int) Math.ceil(Math.toRadians(360) / step);
-        for (Vector v : VectorUtil.getRing(count)) {
+        for (Vector v : Vectors.getRing(count)) {
             v.multiply(SPEED);
             wavePoints.add(new Point(loc.clone(), v));
             wavePoints.add(new Point(loc.clone().add(0, 1, 0), v));
@@ -112,7 +111,7 @@ public class TorrentWave extends CoreAbility {
             Vector vec = point.dir;
 
             Block block = loc.getBlock();
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 pointIter.remove();
                 continue;
             }
@@ -136,7 +135,7 @@ public class TorrentWave extends CoreAbility {
         Vector knock = dir.clone().multiply(knockBack/SPEED);
         BoundingVolume bv = AABB.fromBlock(block, hitboxSize);
 
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             if (!e.equals(user().player())) {
                 Vector vec = e.getVelocity().add(knock);
                 ElementalMagicApi.effectHandler().setVelocity(e, this, vec);

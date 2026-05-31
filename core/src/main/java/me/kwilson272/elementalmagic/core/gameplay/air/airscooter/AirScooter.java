@@ -16,8 +16,8 @@ import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 /**
  * To preserve the 'feel' of AirScooter, much of the math in this class
@@ -67,7 +67,7 @@ public class AirScooter extends AirAbility {
         }
 
         Location eyeLoc = user().player().getEyeLocation();
-        if (BlockUtil.isLiquid(eyeLoc.getBlock())) {
+        if (Blocks.isLiquid(eyeLoc.getBlock())) {
             return false;
         }
 
@@ -105,7 +105,7 @@ public class AirScooter extends AirAbility {
         }
 
         Location eyeLoc = user().player().getEyeLocation();
-        if (BlockUtil.isLiquid(eyeLoc.getBlock())) {
+        if (Blocks.isLiquid(eyeLoc.getBlock())) {
             return false;
         }
 

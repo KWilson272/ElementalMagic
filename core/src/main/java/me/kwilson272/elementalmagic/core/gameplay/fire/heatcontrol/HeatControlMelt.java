@@ -12,12 +12,12 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.water.icewave.IceWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.torrent.Torrent;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class HeatControlMelt extends FireAbility {
 
@@ -50,7 +50,7 @@ public class HeatControlMelt extends FireAbility {
         if (isSneak) {
             meltAround(player.getLocation(), sneakRadius);
         } else {
-            Block b = BlockUtil.getTargetBlock(player, selectRange, BlockUtil::isSolid);
+            Block b = Entities.getTargetBlock(player, selectRange, Blocks::isSolid);
             meltAround(b.getLocation().add(0.5, 0.5, 0.5), clickRadius);
         }
 
@@ -59,7 +59,7 @@ public class HeatControlMelt extends FireAbility {
 	}
 
     private void meltAround(Location loc, double radius) {
-        for (Block b : BlockUtil.collectSphere(loc, radius)) {
+        for (Block b : Blocks.collectSphere(loc, radius)) {
             if (canMelt(b)) {
                 melt(b);
             }
@@ -67,7 +67,7 @@ public class HeatControlMelt extends FireAbility {
     }
 
     private boolean canMelt(Block block) {
-        if (!AbilityUtil.isSnow(block) && !AbilityUtil.isIce(block)) {
+        if (!Blocks.isSnow(block) && !Blocks.isIce(block)) {
             return false;
         }
 
@@ -79,7 +79,7 @@ public class HeatControlMelt extends FireAbility {
     }
 
     private void melt(Block block) {
-        if (AbilityUtil.isSnow(block)) {
+        if (Blocks.isSnow(block)) {
             BlockData data = Material.AIR.createBlockData();
             TempBlock.builder(this, data).setDuration(revertTime).buildAt(block);
             return;

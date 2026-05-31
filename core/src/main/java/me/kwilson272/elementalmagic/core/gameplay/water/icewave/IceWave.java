@@ -27,13 +27,12 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterWave;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class IceWave extends CoreAbility {
+public class IceWave extends WaterAbility {
 
 	protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -136,15 +135,15 @@ public class IceWave extends CoreAbility {
             }
 
             boolean frozeAny = false;
-            for (Block b : BlockUtil.collectSphere(loc, size)) {
-                if (!BlockUtil.isSolid(b) || TempBlock.isTempBlock(b)) {
+            for (Block b : Blocks.collectSphere(loc, size)) {
+                if (!Blocks.isSolid(b) || TempBlock.isTempBlock(b)) {
                     frozeAny = true;
                     builder.buildAt(b).ifPresent(iceBlocks::add);
                 }
             }
 
             if (frozeAny) {
-                WaterUtil.playIceSound(loc);    
+                playIceSound(loc);    
             }
         }
 
@@ -155,7 +154,7 @@ public class IceWave extends CoreAbility {
         World world = user().player().getWorld();
         Location loc = user().player().getLocation();
         BoundingVolume bv = Sphere.at(loc, affectRadius); 
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             if (!noAffect.contains(e) && e instanceof LivingEntity) {
                 ElementalMagicApi.effectHandler().damageEntity(e, this, damage);
                 noAffect.add(e);

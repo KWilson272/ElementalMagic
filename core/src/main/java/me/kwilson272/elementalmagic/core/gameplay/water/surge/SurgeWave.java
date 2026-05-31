@@ -1,6 +1,5 @@
 package me.kwilson272.elementalmagic.core.gameplay.water.surge;
 
-import java.security.cert.CertPathBuilderException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,16 +25,13 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
-import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class SurgeWave extends CoreAbility {
+public class SurgeWave extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -116,7 +112,7 @@ public class SurgeWave extends CoreAbility {
 
     protected boolean handleLeftClick() {
         if (state == State.SOURCED) {
-            WaterUtil.consumeSource(this, source, sourceRevertTime);
+            consumeSource(source, sourceRevertTime);
             state = State.FIRED;
             initWave();
 
@@ -128,21 +124,21 @@ public class SurgeWave extends CoreAbility {
 
     private void initWave() {
         location = source.getLocation().add(0.5, 0.5, 0.5);
-        Location target = EntityUtil.getTarget(user().player(), range);
-        direction = VectorUtil.getDirection(location, target).normalize();
-        Vector ortho = VectorUtil.getOrthogonal(direction);
+        Location target = Entities.getTargetLocation(user().player(), range);
+        direction = Vectors.getDirection(location, target).normalize();
+        Vector ortho = Vectors.getOrthogonal(direction);
 
         double blockSpacing = 0.5;
         double step = 2 * Math.asin(blockSpacing / (2 * maxRadius));
         for (double angle = 0; angle < Math.PI * 2; angle += step) {
-            Vector vec = VectorUtil.rotateAroundVector(direction, ortho, angle);
+            Vector vec = Vectors.rotateAroundVector(direction, ortho, angle);
             drawVecs.add(vec.multiply(0.5));
         }
     }
 
     @Override
     public boolean start() {
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange);
         return source != null;
     }
 
@@ -157,7 +153,7 @@ public class SurgeWave extends CoreAbility {
                 if (!isSourceViable()) {
                     return false;
                 }
-                WaterUtil.playSourceSelectedEffect(source);
+                playSourceSelectedEffect(source);
             }
 
             case FIRED -> {
@@ -174,7 +170,7 @@ public class SurgeWave extends CoreAbility {
                 clearWave();
                 createWave();
                 affectEntities();
-                WaterUtil.playWaterSound(location);
+                playWaterSound(location);
 
                 // If doFreeze is true the state should have changed to
                 // FREEZE_MAINTENANCE, so don't remove
@@ -194,15 +190,15 @@ public class SurgeWave extends CoreAbility {
         Location loc = source.getLocation().add(0.5, 0.5, 0.5);
         // Added range for comfort
         double maxDist = Math.pow(selectRange + 1, 2);
-        return WaterUtil.canUse(source, user()) 
+        return canUse(source, user()) 
             && loc.distanceSquared(eyes) <= maxDist;
     }
 
     private boolean isLocationPassable() {
         Block block = location.getBlock();
-        return !BlockUtil.isSolid(block) ||
+        return !Blocks.isSolid(block) ||
                 // Allows surge to interact more nicely with PhaseChange ice
-                (TempBlock.isUsableTempBlock(block) && AbilityUtil.isIce(block));
+                (TempBlock.isUsableTempBlock(block) && Blocks.isIce(block));
     }
 
     private void clearWave() {
@@ -220,11 +216,11 @@ public class SurgeWave extends CoreAbility {
                 Block block = loc.getBlock();
                 loc.add(vec);
                 
-                if (BlockUtil.isSolid(block) || created.contains(block)) {
+                if (Blocks.isSolid(block) || created.contains(block)) {
                     continue;
                 }
 
-                BlockData data = WaterUtil.getFilledData(block, 0);
+                BlockData data = getFilledData(block, 0);
                 TempBlock.builder(this, data).buildAt(block).ifPresent(tb -> {
                     waveBlocks.add(tb);
                     created.add(block);
@@ -271,7 +267,7 @@ public class SurgeWave extends CoreAbility {
             Location blockLoc = tb.block().getLocation().add(0.5, 0.5, 0.5);
             BoundingVolume bv = AABB.fromBlock(tb.block(), hitboxSize);
 
-            for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity e : Entities.getNearbyEntities(world, bv)) {
                 // Surge push feels quite poor when using complete hitboxes
                 if (e.getLocation().distanceSquared(blockLoc) <= hitDist) {
                     entities.add(e);
@@ -288,7 +284,7 @@ public class SurgeWave extends CoreAbility {
         TempBlock.TempBlockBuilder ice = TempBlock.builder(this, data)
                 .setUsable(isFreezeUsable).setDuration(freezeRevertTime);
         
-        for (Block b : BlockUtil.collectSphere(location, freezeRadius)) {
+        for (Block b : Blocks.collectSphere(location, freezeRadius)) {
             ice.buildAt(b).ifPresent(tb -> {
                 iceBlocks.add(tb);
                 if (ThreadLocalRandom.current().nextInt(5) == 0) {

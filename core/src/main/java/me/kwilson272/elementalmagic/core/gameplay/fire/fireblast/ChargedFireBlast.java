@@ -22,11 +22,11 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class ChargedFireBlast extends FireAbility {
   
@@ -76,7 +76,7 @@ public class ChargedFireBlast extends FireAbility {
 	@Override
 	public boolean start() {
         Block eyeBlock = user().player().getEyeLocation().getBlock();
-        if (BlockUtil.isLiquid(eyeBlock)) {
+        if (Blocks.isLiquid(eyeBlock)) {
             return false;
         }
 
@@ -120,7 +120,7 @@ public class ChargedFireBlast extends FireAbility {
         Vector dir = loc.getDirection();
         loc.add(dir.clone().multiply(1.5));
 
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
         Particle particle = getFireParticle();
         World world = loc.getWorld();
 
@@ -128,7 +128,7 @@ public class ChargedFireBlast extends FireAbility {
         double step = 2 * Math.PI / count;
         for (int i = 0; i < count; ++i) {
             double angle = step * i;
-            Vector vec = VectorUtil.rotateAroundVector(dir, ortho, angle);
+            Vector vec = Vectors.rotateAroundVector(dir, ortho, angle);
             Location spawnLoc = loc.clone().add(vec.clone().multiply(0.5));
             world.spawnParticle(particle, spawnLoc, 0, vec.getX(), vec.getY(), vec.getZ(), 0.2);    
         }
@@ -148,7 +148,7 @@ public class ChargedFireBlast extends FireAbility {
     }
 
     private boolean hitsEntities(Location loc) {
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player()) && e instanceof LivingEntity) {
                 return true;
             }
@@ -169,7 +169,7 @@ public class ChargedFireBlast extends FireAbility {
         World world = location.getWorld();
         BoundingVolume bv = Sphere.at(location, explosionRadius);
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             effectHandler.damageEntity(e, this, damage);
             if (e.getFireTicks() * 50 < fireDuration) {
                 effectHandler.setFireDuration(e, this, burnDuration);
@@ -181,9 +181,9 @@ public class ChargedFireBlast extends FireAbility {
         TempBlockBuilder builder = TempBlock.builder(this, getFireData())
             .setDuration(fireDuration).setDamage(fireDamage);
 
-        for (Block b : BlockUtil.collectSphere(location, fireRadius)) {
-            if (!BlockUtil.isSolid(b) && !BlockUtil.isLiquid(b) 
-                    && BlockUtil.isSolid(b.getRelative(BlockFace.DOWN))) {
+        for (Block b : Blocks.collectSphere(location, fireRadius)) {
+            if (!Blocks.isSolid(b) && !Blocks.isLiquid(b) 
+                    && Blocks.isSolid(b.getRelative(BlockFace.DOWN))) {
                 builder.buildAt(b);
             }
         }
@@ -200,12 +200,12 @@ public class ChargedFireBlast extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 Location loc = block.getLocation().add(0.5, 0.5, 0.5);
                 explode(loc);
                 return true;
             }
-            return BlockUtil.isLiquid(block);
+            return Blocks.isLiquid(block);
 		}
 
 		@Override

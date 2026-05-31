@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,15 +29,13 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource.TravelState;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class WaterBlade extends CoreAbility {
+public class WaterBlade extends WaterAbility {
     
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -116,7 +113,7 @@ public class WaterBlade extends CoreAbility {
 
 	@Override
 	public boolean start() {
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange); 
         return source != null;
 	}
 
@@ -145,7 +142,7 @@ public class WaterBlade extends CoreAbility {
             initSourceTraveling();
         }
 
-        WaterUtil.playSourceSelectedEffect(source);
+        playSourceSelectedEffect(source);
         return true;
     }
 
@@ -156,7 +153,7 @@ public class WaterBlade extends CoreAbility {
 
         return eyeLoc.getWorld().equals(sourceLoc.getWorld())
             && eyeLoc.distanceSquared(sourceLoc) <= maxDist
-            && WaterUtil.canUse(source, user());
+            && canUse(source, user());
     }
 
     private void initSourceTraveling() {
@@ -165,14 +162,14 @@ public class WaterBlade extends CoreAbility {
         // Water default because some water blocks have things 
         // inside them and it would look bad, ex: Kelp 
         bladeData = Material.WATER.createBlockData();
-        if (AbilityUtil.isIce(source)) {
+        if (Blocks.isIce(source)) {
             bladeData = source.getBlockData();
             isIce = true;
-        } else if (AbilityUtil.isSnow(source)) {
+        } else if (Blocks.isSnow(source)) {
             bladeData = Material.SNOW_BLOCK.createBlockData();
             isSnow = true;
-        } else if (AbilityUtil.isPlant(source)) {
-            bladeData = AbilityUtil.getSolidPlant(source);
+        } else if (Blocks.isPlant(source)) {
+            bladeData = getSolidPlant(source);
             isPlant = true;
         } 
         
@@ -261,7 +258,7 @@ public class WaterBlade extends CoreAbility {
         location = eyes.add(dir.clone().multiply(spawnDist));
         dir.multiply(checkStep);
 
-        while (BlockUtil.isSolid(location.getBlock()) && spawnDist > 0) {
+        while (Blocks.isSolid(location.getBlock()) && spawnDist > 0) {
             location.subtract(dir); 
             spawnDist -= checkStep;
         }
@@ -313,7 +310,7 @@ public class WaterBlade extends CoreAbility {
             Block block = loc.getBlock();
            
             if (isCollidable(block) 
-                    || BlockUtil.collidesDiagonally(prevLoc, loc, this::isCollidable)) {
+                    || Blocks.collidesDiagonally(prevLoc, loc, this::isCollidable)) {
                 continue;
             }
             
@@ -333,7 +330,7 @@ public class WaterBlade extends CoreAbility {
     }
 
     private boolean isCollidable(Block block) {
-        if (!BlockUtil.isSolid(block)) {
+        if (!Blocks.isSolid(block)) {
             return false;
         }
 
@@ -347,7 +344,7 @@ public class WaterBlade extends CoreAbility {
         Vector knock = direction.clone().multiply(knockback);
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             if (noAffect.contains(e)) {
                 continue;    
             }
@@ -376,14 +373,14 @@ public class WaterBlade extends CoreAbility {
     private void playSound() {
         World world = location.getWorld();
         if (isSnow) {
-            WaterUtil.playSnowSound(location); 
+            playSnowSound(location); 
         } else if (isIce) {
             Sound sound = Sound.ITEM_AXE_STRIP;
             world.playSound(location, sound, 1.5f, 0.65f);
         } else if (isPlant) {
-            WaterUtil.playPlantSound(location); 
+            playPlantSound(location); 
         } else {
-            WaterUtil.playWaterSound(location);
+            playWaterSound(location);
         }
     }
 

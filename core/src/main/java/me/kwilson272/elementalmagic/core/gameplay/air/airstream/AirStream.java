@@ -19,8 +19,8 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class AirStream extends AirAbility {
 
@@ -71,8 +71,8 @@ public class AirStream extends AirAbility {
         }
 
         Player player = user().player();
-        Location target = EntityUtil.getTarget(player, range);
-        Vector direction = VectorUtil.getDirection(location, target);
+        Location target = Entities.getTargetLocation(player, range);
+        Vector direction = Vectors.getDirection(location, target);
         direction.normalize().multiply(speed);
         location.add(direction);
 
@@ -114,7 +114,7 @@ public class AirStream extends AirAbility {
 
     private void collectNearbyEntities() {
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-        for (Entity e : EntityUtil.getNearbyEntities(location, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(location, hitboxSize)) {
             if (!e.equals(user().player()) && effectHandler.canAffect(e)) {
                 affected.add(e);
             }
@@ -123,7 +123,7 @@ public class AirStream extends AirAbility {
 
     private void dragEntities(Vector direction) {
         for (Entity e : affected) {
-            Vector drag = VectorUtil.getDirection(e.getLocation(), location);
+            Vector drag = Vectors.getDirection(e.getLocation(), location);
             drag.multiply(speed);
             
             double force = drag.lengthSquared();
@@ -143,12 +143,12 @@ public class AirStream extends AirAbility {
         List<Location> locs = new ArrayList<>(count);
 
         Vector axis = direction.normalize();
-        Vector ortho = VectorUtil.getOrthogonal(axis);
+        Vector ortho = Vectors.getOrthogonal(axis);
         double step = (2 * Math.PI) / count;
 
         for (int i = 0; i < count; ++i) {
             double angle = step * i;
-            Vector vec = VectorUtil.rotateAroundVector(axis, ortho, angle);
+            Vector vec = Vectors.rotateAroundVector(axis, ortho, angle);
             locs.add(location.clone().add(vec.multiply(0.5)));
         }
 

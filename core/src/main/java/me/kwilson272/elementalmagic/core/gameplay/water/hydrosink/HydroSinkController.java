@@ -22,8 +22,8 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.ability.CoreAbilityController;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class HydroSinkController extends CoreAbilityController {
 
@@ -82,10 +82,10 @@ public class HydroSinkController extends CoreAbilityController {
     }
 
     private boolean canPreventFall(AbilityUser user, Block block) {
-        return (user.canUseElement(CoreElement.PLANT) && AbilityUtil.isPlant(block) 
+        return (user.canUseElement(CoreElement.PLANT) && Blocks.isPlant(block) 
                 && block.getType().isSolid())
-            || (user.canUseElement(CoreElement.ICE) && (AbilityUtil.isIce(block) 
-                || AbilityUtil.isSnow(block)));
+            || (user.canUseElement(CoreElement.ICE) && (Blocks.isIce(block) 
+                || Blocks.isSnow(block)));
     }
 
     private void playParticles(AbilityUser user, Block block) {
@@ -94,10 +94,10 @@ public class HydroSinkController extends CoreAbilityController {
         World world = player.getWorld();
 
         double radius = 0.7; // Looks good
-        Particle particle = AbilityUtil.isIce(block) || AbilityUtil.isSnow(block) ?
+        Particle particle = Blocks.isIce(block) || Blocks.isSnow(block) ?
                                         Particle.SNOWFLAKE : Particle.FALLING_WATER;
 
-        for (Vector v : VectorUtil.getRing(15)) {
+        for (Vector v : Vectors.getRing(15)) {
             Vector offset = v.clone().multiply(radius);
             Location display = loc.clone().add(offset);
             double x = v.getX();

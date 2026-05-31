@@ -1,7 +1,5 @@
 package me.kwilson272.elementalmagic.core.gameplay.air.airspout;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,8 +11,8 @@ import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public class AirSpout extends AirAbility {
 
@@ -84,7 +82,7 @@ public class AirSpout extends AirAbility {
         Block block = loc.getBlock();
 
         for (int i = 0; i <= breakHeight; ++i) {
-            if (BlockUtil.isSolid(block) || BlockUtil.isLiquid(block)) {
+            if (Blocks.isSolid(block) || Blocks.isLiquid(block)) {
                 return block;
             }
             block = block.getRelative(BlockFace.DOWN);

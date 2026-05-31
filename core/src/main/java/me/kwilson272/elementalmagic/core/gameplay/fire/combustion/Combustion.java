@@ -17,11 +17,11 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class Combustion extends FireAbility {
 
@@ -80,7 +80,7 @@ public class Combustion extends FireAbility {
     }
 
     private boolean hitsEntity(Location loc) {
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player()) 
                     && ElementalMagicApi.effectHandler().canAffect(e)) {
                 return true;
@@ -93,14 +93,14 @@ public class Combustion extends FireAbility {
     private void explode(Location loc) {
         World world = loc.getWorld();
         BoundingVolume bv = Sphere.at(loc, damageRadius);
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             ElementalMagicApi.effectHandler().damageEntity(e, this, damage);
         }
        
         TempBlockBuilder builder = TempBlock.builder(this, getFireData())
             .setDuration(fireDuration)
             .setUsable(true);
-        for (Block b : BlockUtil.collectSphere(loc, fireRadius)) {
+        for (Block b : Blocks.collectSphere(loc, fireRadius)) {
             if (canIgnite(b)) {
                 builder.buildAt(b);
             }
@@ -126,7 +126,7 @@ public class Combustion extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 Location loc = block.getLocation().add(0.5, 0.5, 0.5);
                 explode(loc);
                 return true;
@@ -158,8 +158,8 @@ public class Combustion extends FireAbility {
             double spacing = Math.toRadians(5);
             for (int i = 0; i < 3; ++i) {
                 animAngle += spacing;
-                Vector vec = VectorUtil.getOrthogonal(direction);
-                vec = VectorUtil.rotateAroundVector(direction, vec, animAngle); 
+                Vector vec = Vectors.getOrthogonal(direction);
+                vec = Vectors.rotateAroundVector(direction, vec, animAngle); 
                 double x = vec.getX();
                 double y = vec.getY();
                 double z = vec.getZ();
@@ -172,12 +172,12 @@ public class Combustion extends FireAbility {
 
         private void playParticleRing(Location loc) {
             World world = loc.getWorld();
-            Vector rotate = VectorUtil.getOrthogonal(direction);
+            Vector rotate = Vectors.getOrthogonal(direction);
 
             int count = 15;
             for (int i = 0; i < count; ++i) {
                 double angle = 2 * Math.PI * ((double) i / count);
-                Vector dir = VectorUtil.rotateAroundVector(direction, rotate, angle);
+                Vector dir = Vectors.rotateAroundVector(direction, rotate, angle);
                 double x = dir.getX();
                 double y = dir.getY();
                 double z = dir.getZ();

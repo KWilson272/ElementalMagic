@@ -15,13 +15,12 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firejet.FireJet;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.water.icewave.IceWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.torrent.Torrent;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public class JetBlast extends FireAbility {
 
@@ -89,7 +88,7 @@ public class JetBlast extends FireAbility {
 
     private void meltIce() {
         Location loc = user().player().getLocation();
-        for (Block b : BlockUtil.collectSphere(loc, meltRadius)) {
+        for (Block b : Blocks.collectSphere(loc, meltRadius)) {
             if (canMelt(b)) {
                 melt(b);
             }
@@ -97,7 +96,7 @@ public class JetBlast extends FireAbility {
     }
 
     private boolean canMelt(Block block) {
-        if (!AbilityUtil.isSnow(block) && !AbilityUtil.isIce(block)) {
+        if (!Blocks.isSnow(block) && !Blocks.isIce(block)) {
             return false;
         }
 
@@ -109,7 +108,7 @@ public class JetBlast extends FireAbility {
     }
 
     private void melt(Block block) {
-        if (AbilityUtil.isSnow(block)) {
+        if (Blocks.isSnow(block)) {
             BlockData data = Material.AIR.createBlockData();
             TempBlock.builder(this, data).setDuration(meltDuration).buildAt(block);
             return;

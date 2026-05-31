@@ -23,12 +23,11 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class Immolate extends FireAbility {
 
@@ -170,14 +169,14 @@ public class Immolate extends FireAbility {
     private void affectEntities(Location loc) {
         World world = loc.getWorld();
         BoundingVolume bv = Sphere.at(loc, explosionAffectRadius);
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             ElementalMagicApi.effectHandler().damageEntity(e, this, damage);
         }
     }
 
     private void affectBlocks(Location loc) {
         Collection<Block> affected = 
-            BlockUtil.collectSphere(loc, explosionDestroyRadius);
+            Blocks.collectSphere(loc, explosionDestroyRadius);
         // Two passes in case we destroy a hole, so we can properly place fire
         if (destroyBlocks) {
             BlockData data = Material.AIR.createBlockData();
@@ -185,7 +184,7 @@ public class Immolate extends FireAbility {
                 .setDuration(revertTime);
 
             for (Block block : affected) {
-                if (!block.getType().isAir() && !BlockUtil.isLiquid(block)) {
+                if (!block.getType().isAir() && !Blocks.isLiquid(block)) {
                     builder.buildAt(block);
                 }
             }
@@ -197,8 +196,8 @@ public class Immolate extends FireAbility {
 
             for (Block block : affected) {
                 Block below = block.getRelative(BlockFace.DOWN);
-                if (!BlockUtil.isSolid(block) && !AbilityUtil.isWater(block)
-                        && BlockUtil.isSolid(below)) {
+                if (!Blocks.isSolid(block) && !Blocks.isWater(block)
+                        && Blocks.isSolid(below)) {
                     builder.buildAt(block);
                 }
             }
@@ -238,12 +237,12 @@ public class Immolate extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 Location loc = block.getLocation().add(0.5, 0.5, 0.5);
                 explode(loc);
                 return true;
             }
-            return BlockUtil.isLiquid(block);
+            return Blocks.isLiquid(block);
 		}
 
 		@Override
@@ -272,8 +271,8 @@ public class Immolate extends FireAbility {
             double spacing = Math.toRadians(5);
             for (int i = 0; i < 3; ++i) {
                 angle += spacing;
-                Vector vec = VectorUtil.getOrthogonal(direction);
-                vec = VectorUtil.rotateAroundVector(direction, vec, angle); 
+                Vector vec = Vectors.getOrthogonal(direction);
+                vec = Vectors.rotateAroundVector(direction, vec, angle); 
                 double x = vec.getX();
                 double y = vec.getY();
                 double z = vec.getZ();
@@ -286,12 +285,12 @@ public class Immolate extends FireAbility {
 
         private void playParticleRing(Location loc) {
             World world = loc.getWorld();
-            Vector rotate = VectorUtil.getOrthogonal(direction);
+            Vector rotate = Vectors.getOrthogonal(direction);
 
             int count = 15;
             for (int i = 0; i < count; ++i) {
                 double angle = 2 * Math.PI * ((double) i / count);
-                Vector dir = VectorUtil.rotateAroundVector(direction, rotate, angle);
+                Vector dir = Vectors.rotateAroundVector(direction, rotate, angle);
                 double x = dir.getX();
                 double y = dir.getY();
                 double z = dir.getZ();
@@ -301,7 +300,7 @@ public class Immolate extends FireAbility {
         }
 
         private boolean hitsEntity(Location loc) {
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (!e.equals(user().player()) 
                         && ElementalMagicApi.effectHandler().canAffect(e)) {
                     return true;        

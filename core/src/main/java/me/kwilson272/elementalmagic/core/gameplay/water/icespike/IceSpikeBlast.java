@@ -31,14 +31,12 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.BlockBlast;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class IceSpikeBlast extends CoreAbility {
+public class IceSpikeBlast extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -91,7 +89,7 @@ public class IceSpikeBlast extends CoreAbility {
 
     @Override
     public boolean start() {
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange);
         if (source == null) {
             return false;
         }
@@ -103,9 +101,9 @@ public class IceSpikeBlast extends CoreAbility {
     }
 
     private BlockData getBodyData() {
-        if (AbilityUtil.isIce(source)) {
+        if (Blocks.isIce(source)) {
             return source.getBlockData();
-        } else if (AbilityUtil.isSnow(source)) {
+        } else if (Blocks.isSnow(source)) {
             return Material.SNOW_BLOCK.createBlockData();
         } else {
             return Material.ICE.createBlockData();
@@ -120,7 +118,7 @@ public class IceSpikeBlast extends CoreAbility {
         Player player = user().player();
         World world = player.getWorld();
 
-        Block block = BlockUtil.getTargetBlock(player, range, this::canTargetBlock);
+        Block block = Entities.getTargetBlock(player, range, this::canTargetBlock);
 
         Location start = player.getEyeLocation();
         Vector dir = start.getDirection();
@@ -149,7 +147,7 @@ public class IceSpikeBlast extends CoreAbility {
     }
 
     private boolean canTargetBlock(Block block) {
-        if (!BlockUtil.isSolid(block)) {
+        if (!Blocks.isSolid(block)) {
             return false;
         }
 
@@ -195,7 +193,7 @@ public class IceSpikeBlast extends CoreAbility {
                 && tether.distanceSquared(blast.getLocation()) <= range * range;
         }
         
-        WaterUtil.playSourceSelectedEffect(source);
+        playSourceSelectedEffect(source);
         return isSourceViable();
     }
 
@@ -235,7 +233,7 @@ public class IceSpikeBlast extends CoreAbility {
         );
         
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-        for (Entity entity : EntityUtil.getNearbyEntities(loc, hitBoxSize)) {
+        for (Entity entity : Entities.getNearbyEntities(loc, hitBoxSize)) {
             if (entity.equals(user().player())) {
                 continue;
             }
@@ -256,7 +254,7 @@ public class IceSpikeBlast extends CoreAbility {
         double dist = eyeLoc.distanceSquared(loc);
         // + 1 makes it less strict to those sourcing at the edge of the range
         double removalDist = Math.pow(selectRange + 1, 2);
-        return dist <= removalDist && WaterUtil.canUse(source, user());
+        return dist <= removalDist && canUse(source, user());
     }
 
     @Override
@@ -288,7 +286,7 @@ public class IceSpikeBlast extends CoreAbility {
 
         @Override
         public boolean isCollidable(Block block) {
-            return BlockUtil.isSolid(block) && !affectedBlocks.contains(block);
+            return Blocks.isSolid(block) && !affectedBlocks.contains(block);
         }
 
         @Override
@@ -311,16 +309,16 @@ public class IceSpikeBlast extends CoreAbility {
 
         private void playParticles(Block block) {
             Location loc = block.getLocation().add(0.5, 0.5, 0.5);
-            Particle particle = AbilityUtil.isWater(block) ?
+            Particle particle = Blocks.isWater(block) ?
                 Particle.BUBBLE : Particle.SNOWFLAKE;
             world.spawnParticle(particle, loc, 2, 0.3, 0.3, 0.3, 0);
         }
 
         private void playSound(Block block) {
             if (bodyData.getMaterial() == Material.SNOW_BLOCK) {
-                WaterUtil.playSnowSound(block.getLocation());
+                playSnowSound(block.getLocation());
             } else {
-                WaterUtil.playIceSound(block.getLocation());
+                playIceSound(block.getLocation());
             }
         }
 
@@ -336,7 +334,7 @@ public class IceSpikeBlast extends CoreAbility {
             riseLoc.setY(riseY);
 
             Block block = loc.getBlock();
-            WaterUtil.consumeSource(IceSpikeBlast.this, block, srcRevertTime);
+            consumeSource(block, srcRevertTime);
             user().addCooldown("IceSpikeBlast", cooldown);
 
             // Ensure we render AT the current block or spike will appear

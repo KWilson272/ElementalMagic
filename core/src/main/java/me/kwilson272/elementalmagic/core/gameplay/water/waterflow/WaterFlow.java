@@ -3,9 +3,7 @@ package me.kwilson272.elementalmagic.core.gameplay.water.waterflow;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Location;
@@ -28,14 +26,13 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class WaterFlow extends CoreAbility {
+public class WaterFlow extends WaterAbility {
     
     protected static final ConfigValues CONFIG = new ConfigValues();
     
@@ -48,6 +45,9 @@ public class WaterFlow extends CoreAbility {
     private int maxBlocks;
     private double hitboxSize;
     private long freezeDuration;
+    private boolean allowIceSource;
+    private boolean allowSnowSource;
+    private boolean allowPlantSource;
 
     private boolean isInifinte;
     private long endTime;
@@ -70,6 +70,9 @@ public class WaterFlow extends CoreAbility {
         maxBlocks = CONFIG.maxBlocks;
         hitboxSize = CONFIG.hitboxSize;
         freezeDuration = CONFIG.freezeDuration;
+        allowIceSource = CONFIG.allowIceSource;
+        allowSnowSource = CONFIG.allowSnowSource;
+        allowPlantSource = CONFIG.allowPlantSource;
         
         health = user().player().getHealth();
 
@@ -79,8 +82,13 @@ public class WaterFlow extends CoreAbility {
 
 	@Override
 	public boolean start() {
-        var opts = new WaterSourceOptions(user()).noPlant().noIce().noSnow();
-        Block source = WaterUtil.getSourceBlock(user(), selectRange, opts); 
+        WaterUsePolicy opts = new WaterUsePolicy();
+        opts.setIce(allowIceSource)
+            .setSnow(allowSnowSource)
+            .setPlant(allowPlantSource)
+            .validate(user());
+
+        Block source = selectSourceBlock(selectRange, opts); 
         if (source == null) {
             return false;
         }
@@ -107,12 +115,12 @@ public class WaterFlow extends CoreAbility {
         }
 
         double holdRange = player.isSneaking() ? minHoldRange : maxHoldRange;
-        Location targetLoc = EntityUtil.getTarget(player, holdRange);
+        Location targetLoc = Entities.getTargetLocation(player, holdRange);
 
         moveTo(targetLoc);
         revertBlocks(blocks.size() - maxBlocks);
         affectEntities();
-        WaterUtil.playWaterSound(location);
+        playWaterSound(location);
 
         return true;
     }
@@ -124,13 +132,13 @@ public class WaterFlow extends CoreAbility {
             return;
         }
 
-        Vector dir = VectorUtil.getDirection(location, target);
+        Vector dir = Vectors.getDirection(location, target);
         location.add(dir.normalize());
 
         BlockData data = Material.WATER.createBlockData();
         TempBlockBuilder blockBuilder = TempBlock.builder(this, data);
         
-        for (Block b : BlockUtil.collectSphere(location, radius)) {
+        for (Block b : Blocks.collectSphere(location, radius)) {
             blockBuilder.buildAt(b).ifPresent(tb -> {
                 blocks.offerFirst(tb);
                 directions.put(b, dir);
@@ -159,9 +167,9 @@ public class WaterFlow extends CoreAbility {
 
             World world = block.getWorld();
             BoundingVolume bv = AABB.fromBlock(block, hitboxSize);
-            for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity e : Entities.getNearbyEntities(world, bv)) {
                 Location eLoc = e.getLocation();
-                Vector vec = VectorUtil.getDirection(eLoc, projection).normalize();
+                Vector vec = Vectors.getDirection(eLoc, projection).normalize();
                 ElementalMagicApi.effectHandler().setVelocity(e, this, vec, 1); 
             }
         }
@@ -225,5 +233,11 @@ public class WaterFlow extends CoreAbility {
         private double hitboxSize = 2.5;
         @Configure(path = CONFIG_PATH + "FreezeDuration", config = Config.ABILITIES) 
         private long freezeDuration = 6500;
+        @Configure(path = CONFIG_PATH + "AllowIceSource", config = Config.ABILITIES)
+        private boolean allowIceSource = false;
+        @Configure(path = CONFIG_PATH + "AllowSnowSource", config = Config.ABILITIES)
+        private boolean allowSnowSource = false;
+        @Configure(path = CONFIG_PATH + "AllowPlantSource", config = Config.ABILITIES)
+        private boolean allowPlantSource = false;
     }
 }

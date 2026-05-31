@@ -1,14 +1,14 @@
 package me.kwilson272.elementalmagic.core.gameplay.components;
 
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -49,12 +49,12 @@ public abstract class BlockBlast {
         Block target = state == State.SETTING_UP ? setUpDest : finalDest;
         Location targetLoc = target.getLocation();
         Location blockLoc = location.getBlock().getLocation();
-        direction = VectorUtil.getDirection(blockLoc, targetLoc).normalize();
+        direction = Vectors.getDirection(blockLoc, targetLoc).normalize();
 
         Block block = getNextBlock();
         Location dest = block.getLocation();
         if (isCollidable(block)
-                || BlockUtil.collidesDiagonally(location, dest, this::isCollidable)) {
+                || Blocks.collidesDiagonally(location, dest, this::isCollidable)) {
             return false;
         }
 
@@ -83,7 +83,7 @@ public abstract class BlockBlast {
         Vector dir = eye.getDirection();
         Block block = location.getBlock();
         Location center = block.getLocation().add(0.5, 0.5, 0.5);
-        Vector toCenter = VectorUtil.getDirection(eye, center);
+        Vector toCenter = Vectors.getDirection(eye, center);
 
         double distance = toCenter.length();
         if (distance == 0 || !Double.isFinite(distance)) {
@@ -105,7 +105,7 @@ public abstract class BlockBlast {
             // We will try to check if the player was looking at the top of the block
             // and raise the target location if so, to make it feel better to use
             Player player = user.player();
-            BlockFace face = BlockUtil.getTargetFace(player, targetBlock);
+            BlockFace face = Entities.getTargetFace(player, targetBlock);
             if (face == BlockFace.UP) {
                 targetLoc.add(0, 1, 0);
             }
@@ -121,7 +121,7 @@ public abstract class BlockBlast {
             // destination is somewhat consistent
             Location start = location.getBlock().getLocation();
             Location end = finalDest.getLocation();
-            direction = VectorUtil.getDirection(start, end).normalize();
+            direction = Vectors.getDirection(start, end).normalize();
         }
 
         // If the final dest is an entity location and the entity moves away, the
@@ -130,7 +130,7 @@ public abstract class BlockBlast {
         if (targetEntity != null) {
             Location loc = state == State.SETTING_UP ?
                 setUpDest.getLocation() : location.getBlock().getLocation();
-            Vector toDest = VectorUtil.getDirection(loc, finalDest.getLocation());
+            Vector toDest = Vectors.getDirection(loc, finalDest.getLocation());
             toDest.normalize().multiply(range);
             finalDest = loc.clone().add(toDest).getBlock();
         }

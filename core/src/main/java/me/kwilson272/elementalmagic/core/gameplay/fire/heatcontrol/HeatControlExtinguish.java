@@ -14,8 +14,9 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class HeatControlExtinguish extends FireAbility {
 
@@ -46,7 +47,7 @@ public class HeatControlExtinguish extends FireAbility {
         if (isSneak) {
             extinguishAround(player.getLocation(), sneakRadius);
         } else {
-            Block b = BlockUtil.getTargetBlock(player, selectRange, BlockUtil::isSolid);
+            Block b = Entities.getTargetBlock(player, selectRange, Blocks::isSolid);
             extinguishAround(b.getLocation().add(0.5, 0.5, 0.5), clickRadius);
         }
 
@@ -60,7 +61,7 @@ public class HeatControlExtinguish extends FireAbility {
             .setDuration(revertTime);
     
         boolean extinguishedAny = false;
-        for (Block b : BlockUtil.collectSphere(loc, radius)) {
+        for (Block b : Blocks.collectSphere(loc, radius)) {
             Material type = b.getType();
             if (type == Material.FIRE || type == Material.SOUL_FIRE) {
                 extinguishedAny = true;

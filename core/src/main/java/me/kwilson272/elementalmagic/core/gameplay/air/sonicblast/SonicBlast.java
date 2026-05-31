@@ -20,10 +20,10 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class SonicBlast extends AirAbility {
 
@@ -119,8 +119,8 @@ public class SonicBlast extends AirAbility {
 
             Block oldBlock = prev.getBlock();
             Block newBlock = location.getBlock();
-            if (BlockUtil.isSolid(newBlock) 
-                    || BlockUtil.collidesDiagonally(prev, location, BlockUtil::isSolid)) {
+            if (Blocks.isSolid(newBlock) 
+                    || Blocks.collidesDiagonally(prev, location, Blocks::isSolid)) {
                 return false;            
             }
 
@@ -152,7 +152,7 @@ public class SonicBlast extends AirAbility {
             new PotionEffect(PotionEffectType.NAUSEA, nauseaPower, nauseaDuration);
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-        for (Entity e : EntityUtil.getNearbyEntities(location, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(location, hitboxSize)) {
             if (e.equals(user().player()) || !(e instanceof LivingEntity le)) {
                 continue;
             }
@@ -184,10 +184,10 @@ public class SonicBlast extends AirAbility {
     private void initFired() {
         location = user().player().getEyeLocation();
         direction = location.getDirection();
-        Vector ortho = VectorUtil.getOrthogonal(direction);
+        Vector ortho = Vectors.getOrthogonal(direction);
         for (int i = 0; i < 360; i += 30) {
             double angle = Math.toRadians(i);
-            ringVecs.add(VectorUtil.rotateAroundVector(direction, ortho, angle));
+            ringVecs.add(Vectors.rotateAroundVector(direction, ortho, angle));
         }   
     }
     

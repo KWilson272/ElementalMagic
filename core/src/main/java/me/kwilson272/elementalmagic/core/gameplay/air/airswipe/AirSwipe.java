@@ -15,11 +15,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class AirSwipe extends AirAbility {
 
@@ -61,7 +61,7 @@ public class AirSwipe extends AirAbility {
 	@Override
 	public boolean start() {
         Block headBlock = user().player().getEyeLocation().getBlock();
-        if (BlockUtil.isSolid(headBlock) || BlockUtil.isLiquid(headBlock)) {
+        if (Blocks.isSolid(headBlock) || Blocks.isLiquid(headBlock)) {
             return false;
         }
 
@@ -103,7 +103,7 @@ public class AirSwipe extends AirAbility {
         int count = (int) Math.ceil(Math.toRadians(angle) / step);
         for (int i = -count/2; i <= count/2; ++i) {
             double rad = i * step;
-            Vector vec = VectorUtil.rotateAroundVector(axis, dir, rad);
+            Vector vec = Vectors.rotateAroundVector(axis, dir, rad);
             streams.add(new SwipeStream(eyeLoc.clone(), vec));
         }
     }
@@ -155,7 +155,7 @@ public class AirSwipe extends AirAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block) || BlockUtil.isLiquid(block);
+            return Blocks.isSolid(block) || Blocks.isLiquid(block);
 		}
 
 		@Override
@@ -176,7 +176,7 @@ public class AirSwipe extends AirAbility {
             Vector knock = direction.clone().multiply(modKnock);
 
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (!e.equals(user().player())) {
                     effectHandler.setVelocity(e, AirSwipe.this, knock);
                     effectHandler.damageEntity(e, AirSwipe.this, modDamage);

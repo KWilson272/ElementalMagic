@@ -8,7 +8,7 @@ public abstract class CoreAbility implements Ability {
         
     private AbilityUser user;
     private final AbilityController controller;
-   
+
     public CoreAbility(AbilityUser user, AbilityController controller) {
         this.user = user;
         this.controller = controller;

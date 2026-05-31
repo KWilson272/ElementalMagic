@@ -1,6 +1,5 @@
 package me.kwilson272.elementalmagic.core.gameplay.fire.firebreath;
 
-import java.awt.FontFormatException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -21,16 +20,14 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
-import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.water.icewall.IceWall;
 import me.kwilson272.elementalmagic.core.gameplay.water.icewave.IceWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.torrent.Torrent;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class FireBreath extends FireAbility {
 
@@ -95,7 +92,7 @@ public class FireBreath extends FireAbility {
 
         for (double i = 0; i <= range; i += spacing) {
             meltIce(loc);
-            if (BlockUtil.isSolid(loc.getBlock())) {
+            if (Blocks.isSolid(loc.getBlock())) {
                 break;
             }
 
@@ -111,7 +108,7 @@ public class FireBreath extends FireAbility {
     }
 
     private void meltIce(Location loc) {
-        for (Block b : BlockUtil.collectSphere(loc, meltRadius)) {
+        for (Block b : Blocks.collectSphere(loc, meltRadius)) {
             if (canMelt(b)) {
                 melt(b);
             }
@@ -119,7 +116,7 @@ public class FireBreath extends FireAbility {
     }
 
     private boolean canMelt(Block block) {
-        if (!AbilityUtil.isSnow(block) && !AbilityUtil.isIce(block)) {
+        if (!Blocks.isSnow(block) && !Blocks.isIce(block)) {
             return false;
         }
 
@@ -132,7 +129,7 @@ public class FireBreath extends FireAbility {
     }
 
     private void melt(Block block) {
-        if (AbilityUtil.isSnow(block)) {
+        if (Blocks.isSnow(block)) {
             BlockData data = Material.AIR.createBlockData();
             TempBlock.builder(this, data).setDuration(meltDuration).buildAt(block);
             return;
@@ -169,7 +166,7 @@ public class FireBreath extends FireAbility {
 
     private void affectEntities(Location loc, double radius) {
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-        for (Entity e : EntityUtil.getNearbyEntities(loc, radius)) {
+        for (Entity e : Entities.getNearbyEntities(loc, radius)) {
             if (canAffect(e)) {
                 effectHandler.damageEntity(e, this, damage);
                 effectHandler.setFireDuration(e, this, burnDuration);

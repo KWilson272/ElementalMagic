@@ -19,14 +19,13 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource.TravelState;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class WaterWave extends CoreAbility {
+public class WaterWave extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -86,7 +85,7 @@ public class WaterWave extends CoreAbility {
 
 	@Override
 	public boolean start() {
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange);
         return source != null;
 	}
     
@@ -118,7 +117,7 @@ public class WaterWave extends CoreAbility {
             initSourceTraveling();
         }
 
-        WaterUtil.playSourceSelectedEffect(source);
+        playSourceSelectedEffect(source);
         return true;
     }
 
@@ -129,7 +128,7 @@ public class WaterWave extends CoreAbility {
 
         return eyeLoc.getWorld().equals(sourceLoc.getWorld())
             && sourceLoc.distanceSquared(eyeLoc) <= maxDist
-            && WaterUtil.canUse(source, user());
+            && canUse(source, user());
     }
 
     private void initSourceTraveling() {
@@ -160,7 +159,7 @@ public class WaterWave extends CoreAbility {
 
     private void initCharging(Location loc) {
         Location eyes = user().player().getEyeLocation();
-        Vector toSource = VectorUtil.getDirection(eyes, loc);
+        Vector toSource = Vectors.getDirection(eyes, loc);
         animAngle = Math.atan2(-toSource.getX(), toSource.getY());
         chargedTime = System.currentTimeMillis() + chargeTime;
         state = State.CHARGING;
@@ -203,7 +202,7 @@ public class WaterWave extends CoreAbility {
             Location loc = user().player().getEyeLocation().add(x, 0, z);
             Block block = loc.getBlock();
 
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 continue;
             } else if (ringBlocks.containsKey(block)) {
                 toRevert.remove(block);
@@ -283,8 +282,8 @@ public class WaterWave extends CoreAbility {
             .setCollidable(!isIce && !isWaterCollidable)
             .setDuration(revertTime);
 
-        for (Block b : BlockUtil.collectSphere(lastLoc, waveRadius)) {
-            if (!BlockUtil.isSolid(b)) {
+        for (Block b : Blocks.collectSphere(lastLoc, waveRadius)) {
+            if (!Blocks.isSolid(b)) {
                 builder.buildAt(b);
             }
         }

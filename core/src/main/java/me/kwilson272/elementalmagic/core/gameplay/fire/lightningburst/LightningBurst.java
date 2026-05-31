@@ -22,11 +22,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class LightningBurst extends CoreAbility {
 
@@ -103,14 +103,14 @@ public class LightningBurst extends CoreAbility {
     private void playChargeAnimation() {
         Location loc = user().player().getEyeLocation();
         Vector dir = loc.getDirection();
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
         Location center = loc.add(dir);
 
         double spacing = Math.toRadians(15);
         for (int i = 0; i < 3; ++i) {
             animAngle += spacing;
-            Vector v1 = VectorUtil.rotateAroundVector(dir, ortho, animAngle);
-            Vector v2 = VectorUtil.rotateAroundVector(dir, ortho, animAngle + Math.PI);
+            Vector v1 = Vectors.rotateAroundVector(dir, ortho, animAngle);
+            Vector v2 = Vectors.rotateAroundVector(dir, ortho, animAngle + Math.PI);
             
             drawParticle(center.clone().add(v1));
             drawParticle(center.clone().add(v2));
@@ -176,7 +176,7 @@ public class LightningBurst extends CoreAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
 		}
 
 		@Override
@@ -212,7 +212,7 @@ public class LightningBurst extends CoreAbility {
     
         private void affectEntities(Location loc) {
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (e.equals(user().player()) || !(e instanceof LivingEntity)) {
                     continue;
                 }
@@ -224,7 +224,7 @@ public class LightningBurst extends CoreAbility {
             double spacing = 0.1;
 
             Location loc = start.clone();
-            Vector dir = VectorUtil.getDirection(start, end);
+            Vector dir = Vectors.getDirection(start, end);
             double dist = dir.lengthSquared();
             dir.multiply(spacing / dist);
 

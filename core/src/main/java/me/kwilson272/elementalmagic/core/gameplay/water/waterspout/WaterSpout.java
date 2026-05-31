@@ -25,11 +25,10 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
-public class WaterSpout extends CoreAbility {
+public class WaterSpout extends WaterAbility {
     
     private static final BlockFace[] SPIRAL_FACES = {
         BlockFace.NORTH, BlockFace.NORTH_EAST,
@@ -99,7 +98,7 @@ public class WaterSpout extends CoreAbility {
         for (int i = 0; i < breakHeight; ++i) {
             if (canSpoutOn(block)) {
                 return block;
-            } else if (BlockUtil.isSolid(block)) {
+            } else if (Blocks.isSolid(block)) {
                 return null;
             }
             block = block.getRelative(BlockFace.DOWN);
@@ -108,9 +107,9 @@ public class WaterSpout extends CoreAbility {
     }
 
     private boolean canSpoutOn(Block block) {
-        return (AbilityUtil.isWater(block) && !spoutBlocks.containsKey(block))
-            || AbilityUtil.isIce(block)
-            || AbilityUtil.isSnow(block);
+        return (Blocks.isWater(block) && !spoutBlocks.containsKey(block))
+            || Blocks.isIce(block)
+            || Blocks.isSnow(block);
     }
 
 	@Override
@@ -153,7 +152,7 @@ public class WaterSpout extends CoreAbility {
             if (spoutBlocks.containsKey(block)) {
                 toRevert.remove(block);
 
-            } else if (!BlockUtil.isSolid(block)) {
+            } else if (!Blocks.isSolid(block)) {
                 BlockData data = Material.WATER.createBlockData();
                 TempBlock.builder(this, data)
                     .setCollidable(false)
@@ -181,7 +180,7 @@ public class WaterSpout extends CoreAbility {
             Block block = loc.getBlock().getRelative(face);
             loc.add(0, spacing, 0);
 
-            if (!BlockUtil.isSolid(block)) {
+            if (!Blocks.isSolid(block)) {
                 TempBlock.builder(this, data)
                     .setCollidable(false)
                     .buildAt(block)

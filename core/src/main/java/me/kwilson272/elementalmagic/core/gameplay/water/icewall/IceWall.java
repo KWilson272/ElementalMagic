@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -33,13 +32,12 @@ import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class IceWall extends CoreAbility {
+public class IceWall extends WaterAbility {
     
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -88,8 +86,8 @@ public class IceWall extends CoreAbility {
             return false;
         }
 
-        var opts = new WaterSourceOptions(user()).noPlant();
-        Block source = WaterUtil.getSourceBlock(user(), selectRange, opts);
+        var opts = WaterUsePolicy.from(user()).setPlant(false);
+        Block source = selectSourceBlock(selectRange, opts);
         if (source == null) {
             return false;
         }
@@ -103,8 +101,8 @@ public class IceWall extends CoreAbility {
 	}
 
     private boolean popOtherIcewall() {
-        Block target = BlockUtil.getTargetBlock(user().player(),
-                selectRange, BlockUtil::isSolid);
+        Block target = Entities.getTargetBlock(user().player(),
+                selectRange, Blocks::isSolid);
         
         AbilityManager manager = ElementalMagicApi.abilityManager();
         IceWall toPop = manager.getAllOf(IceWall.class)
@@ -150,7 +148,7 @@ public class IceWall extends CoreAbility {
         Set<LivingEntity> entities = new HashSet<>();
         for (Block block : wallBlocks.keySet()) {
             BoundingVolume bv = AABB.fromBlock(block, hitboxSize);
-            for (Entity e : EntityUtil.getNearbyEntities(block.getWorld(), bv)) {
+            for (Entity e : Entities.getNearbyEntities(block.getWorld(), bv)) {
                 if (e instanceof LivingEntity le) {
                     entities.add(le);
                 }
@@ -204,14 +202,14 @@ public class IceWall extends CoreAbility {
     }
 
     private Block getWallBase(Block block) {
-        var opts = new WaterSourceOptions(user()).noPlant();
+        var opts = WaterUsePolicy.from(user()).setPlant(false);
         int limit = 15;
         
         for (int i = 0; i < limit; ++i) {
             Block above = block.getRelative(BlockFace.UP); 
-            if (WaterUtil.canUse(above, opts)) {
+            if (canUse(above, opts)) {
                 block = above;
-            } else if (WaterUtil.canUse(block, opts)) {
+            } else if (canUse(block, opts)) {
                 return block;
             } else {
                 block = block.getRelative(BlockFace.DOWN);
@@ -273,14 +271,14 @@ public class IceWall extends CoreAbility {
                 continue;
             }
 
-            if (BlockUtil.isSolid(block) && !WaterUtil.canUse(block, user())) {
+            if (Blocks.isSolid(block) && !canUse(block, user())) {
                 continue;
             }
 
             iceBuilder.buildAt(block).ifPresent(tb -> {
                 wallBlocks.put(tb.block(), tb);
                 if (ThreadLocalRandom.current().nextInt(5) == 0) {
-                    WaterUtil.playIceSound(tb.block().getLocation());
+                    playIceSound(tb.block().getLocation());
                 }
             });
                 

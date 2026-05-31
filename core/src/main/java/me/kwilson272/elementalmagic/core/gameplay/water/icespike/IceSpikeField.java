@@ -23,13 +23,12 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class IceSpikeField extends CoreAbility {
+public class IceSpikeField extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -81,10 +80,12 @@ public class IceSpikeField extends CoreAbility {
 
         // Don't place blocks within this radius, or we might suffocate the player
         double safe = 1.5;
-        WaterSourceOptions opts = new WaterSourceOptions(user()).noWater().noPlant();
+        WaterUsePolicy opts = WaterUsePolicy.from(user())
+            .setWater(false)
+            .setPlant(false);
         
         Location loc = user().player().getLocation();
-        for (Block b : BlockUtil.collectCircle(loc, radius)) {
+        for (Block b : Blocks.collectCircle(loc, radius)) {
             Location center = b.getLocation().add(0.5, 0.5, 0.5);
             if (center.distanceSquared(loc) <= safe * safe) {
                 continue;
@@ -94,14 +95,14 @@ public class IceSpikeField extends CoreAbility {
             // in the provided block column, to support diff/levels
             Block check = b.getRelative(BlockFace.DOWN, height-1);
             while (check.getY() - b.getY() < height) {
-                if (!BlockUtil.isSolid(check.getRelative(BlockFace.UP))
-                        && WaterUtil.canUse(check, opts)) {
+                if (!Blocks.isSolid(check.getRelative(BlockFace.UP))
+                        && canUse(check, opts)) {
                     break;
                 }
                 check = check.getRelative(BlockFace.UP);
             }
 
-            if (WaterUtil.canUse(check, opts)) {
+            if (canUse(check, opts)) {
                 blocks.add(check);
             }
         }
@@ -163,7 +164,7 @@ public class IceSpikeField extends CoreAbility {
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
     
             Vector knock = new Vector(0, knockUp, 0);
-            for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity e : Entities.getNearbyEntities(world, bv)) {
                 if (!e.equals(user().player())) {
                     effectHandler.setVelocity(e, IceSpikeField.this, knock);
                     effectHandler.damageEntity(e, IceSpikeField.this, damage);

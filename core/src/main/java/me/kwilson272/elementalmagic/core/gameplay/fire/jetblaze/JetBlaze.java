@@ -20,7 +20,7 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
 import me.kwilson272.elementalmagic.core.gameplay.fire.firejet.FireJet;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class JetBlaze extends FireAbility {
 
@@ -110,7 +110,7 @@ public class JetBlaze extends FireAbility {
     private void affectEntities() {
         Location loc = user().player().getLocation();
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (!noAffect.contains(e)) {
                 effectHandler.damageEntity(e, this, damage);
                 if (e.getFireTicks() * 50 < burnDuration) {

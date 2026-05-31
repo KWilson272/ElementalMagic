@@ -19,11 +19,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 /**
  * AirSuction push is sensitive, so a lot of the math and functionality from PK
@@ -81,14 +81,14 @@ public class AirSuction extends AirAbility {
         }
 
         isSourced = false;
-        Vector vec = VectorUtil.getDirection(target, sourceLoc).normalize();
+        Vector vec = Vectors.getDirection(target, sourceLoc).normalize();
         ray = new AirSuctionRay(target, vec);
         user().addCooldown(name(), cooldown);
     }
 
     private Location getTargetLoc(double range) {
         Player player = user().player();
-        Block block = BlockUtil.getTargetBlock(player, range, BlockUtil::isSolid);
+        Block block = Entities.getTargetBlock(player, range, Blocks::isSolid);
 
         Location eyeLoc = player.getEyeLocation();
         Vector direction = eyeLoc.getDirection();
@@ -179,7 +179,7 @@ public class AirSuction extends AirAbility {
     private Collection<Entity> getEntitiesAroundPoint(Location loc) {
         List<Entity> entities = new ArrayList<>();
         double maxDist = affectRadius * affectRadius;
-        for (Entity e : EntityUtil.getNearbyEntities(loc, maxDist)) {
+        for (Entity e : Entities.getNearbyEntities(loc, maxDist)) {
             if (e.getLocation().distanceSquared(loc) <= maxDist) {
                 entities.add(e);
             }
@@ -212,7 +212,7 @@ public class AirSuction extends AirAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
 		}
 
 		@Override

@@ -22,11 +22,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class Discharge extends FireAbility {
 
@@ -74,7 +74,7 @@ public class Discharge extends FireAbility {
     private void initBranches() {
         Location loc = user().player().getEyeLocation();
         Vector dir = loc.getDirection();
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
 
         // Always render at least once branch in the center so there 
         // aren't any 'bad splits' where branches avoid it entirely.
@@ -85,7 +85,7 @@ public class Discharge extends FireAbility {
         Random rand = ThreadLocalRandom.current();
         for (int i = 0; i < numBranches; ++i) {
             double angle = rand.nextDouble(2 * Math.PI); 
-            Vector rot = VectorUtil.rotateAroundVector(dir, ortho, angle);
+            Vector rot = Vectors.rotateAroundVector(dir, ortho, angle);
 
             double devAngle = rand.nextDouble(minAngle, maxAngle); 
             Vector vec = dir.clone().multiply(Math.cos(devAngle));
@@ -133,7 +133,7 @@ public class Discharge extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
 		}
 
 		@Override
@@ -152,8 +152,8 @@ public class Discharge extends FireAbility {
 
         private void renderElectricity(Location loc) {
             double angle = ThreadLocalRandom.current().nextDouble(2 * Math.PI);
-            Vector ortho = VectorUtil.getOrthogonal(direction);
-            Vector rot = VectorUtil.rotateAroundVector(direction, ortho, angle);
+            Vector ortho = Vectors.getOrthogonal(direction);
+            Vector rot = Vectors.rotateAroundVector(direction, ortho, angle);
 
             double offset = ThreadLocalRandom.current().nextDouble(maxOffset);
             Location midPoint = location.clone();
@@ -166,12 +166,12 @@ public class Discharge extends FireAbility {
     
         private void affectEntities(Location loc) {
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (e.equals(user().player()) || !(e instanceof LivingEntity)) {
                     continue;
                 }
 
-                Vector knock = VectorUtil.getDirection(loc, e.getLocation());
+                Vector knock = Vectors.getDirection(loc, e.getLocation());
                 knock.normalize().multiply(knockForce);
                 effectHandler.setVelocity(e, Discharge.this, knock);
                 effectHandler.damageEntity(e, Discharge.this, damage);
@@ -192,7 +192,7 @@ public class Discharge extends FireAbility {
             double spacing = 0.1;
 
             Location loc = start.clone();
-            Vector dir = VectorUtil.getDirection(start, end);
+            Vector dir = Vectors.getDirection(start, end);
             dir.normalize().multiply(spacing);
 
             int count = (int) Math.ceil(location.distance(end) / spacing);

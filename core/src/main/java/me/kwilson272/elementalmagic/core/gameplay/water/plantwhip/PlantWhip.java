@@ -20,16 +20,14 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.BlockStream;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class PlantWhip extends CoreAbility {
+public class PlantWhip extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -41,7 +39,8 @@ public class PlantWhip extends CoreAbility {
     private double knockback;
     private double hitboxSize;
     private long revertTime;
-    
+   
+    private WaterUsePolicy usePolicy;
     private Block source;
     private boolean isFired;
     private Whip whip;
@@ -63,8 +62,12 @@ public class PlantWhip extends CoreAbility {
 
 	@Override
 	public boolean start() {
-        var opts = new WaterSourceOptions(user()).noWater().noIce().noSnow();
-        source = WaterUtil.getSourceBlock(user(), selectRange, opts);
+        usePolicy = WaterUsePolicy.from(user())
+            .setWater(false)
+            .setIce(false)
+            .setSnow(false);
+
+        source = selectSourceBlock(selectRange, usePolicy);
         return source != null;
 	}
 
@@ -78,7 +81,7 @@ public class PlantWhip extends CoreAbility {
             if (!isSourceViable()) {
                 return false;
             }
-            WaterUtil.playSourceSelectedEffect(source);
+            playSourceSelectedEffect(source);
             return true;
         }
          
@@ -93,9 +96,8 @@ public class PlantWhip extends CoreAbility {
         }
 
         double maxDist = Math.pow(selectRange + 1, 2);
-        var opts = new WaterSourceOptions(user()).noWater().noIce().noSnow();
         return eyeLoc.distanceSquared(sourceLoc) <= maxDist
-            && WaterUtil.canUse(source, opts);
+            && canUse(source, usePolicy);
     }
 
 	@Override
@@ -113,9 +115,9 @@ public class PlantWhip extends CoreAbility {
         }
 
         double targRange = selectRange + range;
-        Location target = EntityUtil.getTarget(user().player(), targRange);
+        Location target = Entities.getTargetLocation(user().player(), targRange);
         Location start = source.getLocation().add(0.5, 0.5, 0.5);
-        Vector direction = VectorUtil.getDirection(start, target).normalize();
+        Vector direction = Vectors.getDirection(start, target).normalize();
         
         isFired = true;
         whip = new Whip(start, direction);
@@ -134,12 +136,12 @@ public class PlantWhip extends CoreAbility {
         public Whip(Location location, Vector direction) {
             super(location, speed, range);
             this.direction = direction;
-            this.data = AbilityUtil.getSolidPlant(location.getBlock());
+            this.data = getSolidPlant(location.getBlock());
         }
 
 		@Override
 		public boolean collidesWith(Block block) {
-            if (!BlockUtil.isSolid(block) || block.equals(source)) {
+            if (!Blocks.isSolid(block) || block.equals(source)) {
                 return false;
             }
 
@@ -158,7 +160,7 @@ public class PlantWhip extends CoreAbility {
                 .setUsable(true)
                 .buildAt(block)
                 .ifPresent(tb -> {
-                    WaterUtil.playPlantSound(tb.block().getLocation());
+                    playPlantSound(tb.block().getLocation());
                 });
         }
 
@@ -168,7 +170,7 @@ public class PlantWhip extends CoreAbility {
             World world = block.getWorld();
 
             Vector knock = direction.clone().multiply(knockback);
-            for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity e : Entities.getNearbyEntities(world, bv)) {
                 if (e instanceof LivingEntity le && !e.equals(user().player())) {
                     handler.setVelocity(le, PlantWhip.this, knock);
                     handler.damageEntity(le, PlantWhip.this, damage);

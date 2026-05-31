@@ -24,11 +24,10 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.api.user.UserManager;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class Lightning extends FireAbility {
 
@@ -195,8 +194,8 @@ public class Lightning extends FireAbility {
         double angleRot = rand.nextDouble(2 * Math.PI);
 
         Vector base = mainBolt.direction;
-        Vector ortho = VectorUtil.getOrthogonal(base);
-        Vector rot = VectorUtil.rotateAroundVector(base, ortho, angleRot);
+        Vector ortho = Vectors.getOrthogonal(base);
+        Vector rot = Vectors.rotateAroundVector(base, ortho, angleRot);
 
         Vector vec = base.clone();
         vec.multiply(Math.cos(angleDev));
@@ -249,7 +248,7 @@ public class Lightning extends FireAbility {
         }
 
         private boolean progress() {
-            particleDir = VectorUtil.rotateAroundVector(axis, particleDir, LENGTH_INCREMENT);
+            particleDir = Vectors.rotateAroundVector(axis, particleDir, LENGTH_INCREMENT);
             Location spawnLoc = user().player().getLocation().add(0, 1, 0).add(particleDir);
             drawParticle(spawnLoc);
             
@@ -296,14 +295,14 @@ public class Lightning extends FireAbility {
                     break;
                 }
 
-                if (BlockUtil.isSolid(location.getBlock()) 
-                        || BlockUtil.collidesDiagonally(prevLoc, location, BlockUtil::isSolid)) {
+                if (Blocks.isSolid(location.getBlock()) 
+                        || Blocks.collidesDiagonally(prevLoc, location, Blocks::isSolid)) {
                     location = prevLoc;
                     rangeCounter = range;
                     break;
                 }
 
-                if (AbilityUtil.isWater(location.getBlock()) 
+                if (Blocks.isWater(location.getBlock()) 
                         && isMainBolt && subArcInWater) {
                     rangeCounter = range;
                     hitWater = true;
@@ -334,12 +333,12 @@ public class Lightning extends FireAbility {
                 return;
             }
 
-            Vector dir = VectorUtil.getDirection(start, end).multiply(0.5);
+            Vector dir = Vectors.getDirection(start, end).multiply(0.5);
             Location midPoint = start.clone().add(dir);
 
             double angle = ThreadLocalRandom.current().nextDouble(2 * Math.PI);
-            Vector ortho = VectorUtil.getOrthogonal(dir);
-            Vector offset = VectorUtil.rotateAroundVector(dir, ortho, angle);
+            Vector ortho = Vectors.getOrthogonal(dir);
+            Vector offset = Vectors.rotateAroundVector(dir, ortho, angle);
             Location offsetPoint = midPoint.add(offset.multiply(offDist));
 
             --subDivisions;
@@ -351,7 +350,7 @@ public class Lightning extends FireAbility {
         }
 
         private void drawBetween(Location start, Location end) {
-            Vector drawVec = VectorUtil.getDirection(start, end);
+            Vector drawVec = Vectors.getDirection(start, end);
             drawVec.normalize().multiply(particleSpacing);
 
             Location loc = start.clone();
@@ -363,7 +362,7 @@ public class Lightning extends FireAbility {
 
         private void affectEntities() {
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-            for (Entity e : EntityUtil.getNearbyEntities(location, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(location, hitboxSize)) {
                 if (!e.equals(user().player()) && e instanceof LivingEntity le) {
                     affect(le);
                     effectHandler.damageEntity(e, Lightning.this, damage);

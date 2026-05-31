@@ -11,8 +11,8 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpout;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public class FastSwim extends CoreAbility {
 
@@ -20,10 +20,11 @@ public class FastSwim extends CoreAbility {
 
     private long cooldown;
     private long duration;
-    private long endTime;
-    private boolean isInfinite;
     private double swimSpeed;
 
+    private boolean isInfinite;
+    private long endTime;
+    
     public FastSwim(AbilityUser user, AbilityController controller) {
         super(user, controller);
         cooldown = CONFIG.cooldown;
@@ -61,7 +62,7 @@ public class FastSwim extends CoreAbility {
 
         Player player = user().player();
         Block foot = player.getLocation().getBlock();
-        if (AbilityUtil.isWater(foot)) {
+        if (Blocks.isWater(foot)) {
             Vector dir = player.getEyeLocation().getDirection();
             dir.multiply(swimSpeed);
             ElementalMagicApi.effectHandler().setVelocity(player, this, dir);

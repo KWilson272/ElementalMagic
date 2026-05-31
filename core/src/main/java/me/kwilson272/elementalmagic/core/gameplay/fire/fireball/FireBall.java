@@ -17,10 +17,10 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class FireBall extends FireAbility {
 
@@ -80,7 +80,7 @@ public class FireBall extends FireAbility {
     private boolean affectEntities(Location loc) {
         boolean affected = false;
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player())) {
                 affected |= effectHandler.damageEntity(e, this, damage);
                 if (e.getFireTicks() * 50 < burnDuration) {
@@ -103,7 +103,7 @@ public class FireBall extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block) || BlockUtil.isLiquid(block);
+            return Blocks.isSolid(block) || Blocks.isLiquid(block);
 		}
 
 		@Override

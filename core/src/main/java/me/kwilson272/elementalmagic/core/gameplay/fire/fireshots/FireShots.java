@@ -16,10 +16,10 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class FireShots extends FireAbility {
 
@@ -130,8 +130,8 @@ public class FireShots extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block) 
-                || BlockUtil.isLiquid(block);
+            return Blocks.isSolid(block) 
+                || Blocks.isLiquid(block);
 		}
 
 		@Override
@@ -141,7 +141,7 @@ public class FireShots extends FireAbility {
 
             boolean damaged = false;
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (!e.equals(user().player())) {
                     damaged |= effectHandler.damageEntity(e, FireShots.this, damage);
                 }

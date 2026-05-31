@@ -19,11 +19,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 /**
  * AirBlast push is sensitive, so a lot of the math and functionality from PK
@@ -71,7 +71,7 @@ public class AirBlast extends AirAbility {
         }
 
         Block eyeBlock = user().player().getEyeLocation().getBlock();
-        if (BlockUtil.isLiquid(eyeBlock)) {
+        if (Blocks.isLiquid(eyeBlock)) {
             return false;
         }
 
@@ -86,10 +86,10 @@ public class AirBlast extends AirAbility {
         Player player = user().player();
         Location target = getTargetLoc(range);
         if (target == null) {
-            target = EntityUtil.getTarget(player, range);
+            target = Entities.getTargetLocation(player, range);
         }
 
-       Vector vec = VectorUtil.getDirection(sourceLoc, target).normalize();
+       Vector vec = Vectors.getDirection(sourceLoc, target).normalize();
        ray = new AirBlastRay(sourceLoc, vec);
 
        user().addCooldown(name(), cooldown);
@@ -97,10 +97,10 @@ public class AirBlast extends AirAbility {
 
     private Location getTargetLoc(double range) {
         Player player = user().player();
-        Block block = BlockUtil.getTargetBlock(player, range, 
-                b -> BlockUtil.isSolid(b) || BlockUtil.isLiquid(b));
+        Block block = Entities.getTargetBlock(player, range, 
+                b -> Blocks.isSolid(b) || Blocks.isLiquid(b));
         
-        if (BlockUtil.isLiquid(block)) {
+        if (Blocks.isLiquid(block)) {
             return null;
         }
 
@@ -193,7 +193,7 @@ public class AirBlast extends AirAbility {
     private Collection<Entity> getEntitiesAroundPoint(Location loc) {
         List<Entity> entities = new ArrayList<>();
         double maxDist = affectRadius * affectRadius;
-        for (Entity e : EntityUtil.getNearbyEntities(loc, maxDist)) {
+        for (Entity e : Entities.getNearbyEntities(loc, maxDist)) {
             if (e.getLocation().distanceSquared(loc) <= maxDist) {
                 entities.add(e);
             }
@@ -226,7 +226,7 @@ public class AirBlast extends AirAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
 		}
 
 		@Override

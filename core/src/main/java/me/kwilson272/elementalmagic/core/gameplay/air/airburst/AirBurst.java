@@ -15,11 +15,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class AirBurst extends AirAbility {
 
@@ -167,7 +167,7 @@ public class AirBurst extends AirAbility {
         Location loc = user().player().getEyeLocation();
        
         Vector dir = user().player().getEyeLocation().getDirection();
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
 
         double spacing = Math.toRadians(coneSpacing);
         double angle = Math.toRadians(coneAngle / 2);
@@ -183,7 +183,7 @@ public class AirBurst extends AirAbility {
 
             double step = spacing / magRot; 
             for (double j = 0; j <= 2 * Math.PI; j += step) {
-                Vector rot = VectorUtil.rotateAroundVector(dir, ortho, j);
+                Vector rot = Vectors.rotateAroundVector(dir, ortho, j);
                 Vector vec = dir.clone().multiply(magDir);
                 vec.add(rot.multiply(magRot));
 
@@ -203,7 +203,7 @@ public class AirBurst extends AirAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
 		}
 
 		@Override
@@ -221,7 +221,7 @@ public class AirBurst extends AirAbility {
             Vector baseKnock = direction.clone().multiply(knockback);
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (!e.equals(user().player())) {
                     Vector velocity = e.getVelocity().multiply(0.4);
                     Vector knock = baseKnock.clone().add(velocity);

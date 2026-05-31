@@ -26,14 +26,12 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.BlockBlast;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class WaterManipulation extends CoreAbility {
+public class WaterManipulation extends WaterAbility {
 
     private static final int STREAM_SIZE = 3;
     private static final int HEAD_LEVEL = 0;
@@ -80,7 +78,7 @@ public class WaterManipulation extends CoreAbility {
 
     @Override
     public boolean start() {
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange); 
         if (source == null) {
             return false;
         }
@@ -101,7 +99,7 @@ public class WaterManipulation extends CoreAbility {
         Player player = user().player();
         World world = player.getWorld();
 
-        Block block = BlockUtil.getTargetBlock(player, range, BlockUtil::isSolid);
+        Block block = Entities.getTargetBlock(player, range, Blocks::isSolid);
 
         Location start = player.getEyeLocation();
         Vector dir = start.getDirection();
@@ -160,7 +158,7 @@ public class WaterManipulation extends CoreAbility {
             // This is technically overkill for most situations, the tether
             // distance check will ensure that the blast is removed accurately
             double max = selectRange + range;
-            targetBlock = BlockUtil.getTargetBlock(player, max, BlockUtil::isSolid);
+            targetBlock = Entities.getTargetBlock(player, max, Blocks::isSolid);
         } else {
             tether = user.player().getEyeLocation();
         }
@@ -181,7 +179,7 @@ public class WaterManipulation extends CoreAbility {
                 && tether.distanceSquared(blast.getLocation()) <= range * range;
         }
         
-        WaterUtil.playSourceSelectedEffect(source);
+        playSourceSelectedEffect(source);
         return isSourceViable();
     }
 
@@ -218,7 +216,7 @@ public class WaterManipulation extends CoreAbility {
         Vector knock = blast.getDirection().multiply(knockBack);
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-        for (Entity entity : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity entity : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (entity.equals(user().player())) {
                 continue;
             }
@@ -235,7 +233,7 @@ public class WaterManipulation extends CoreAbility {
         double dist = eyeLoc.distanceSquared(loc);
         // + 1 makes it less strict to those sourcing at the edge of the range
         double removalDist = Math.pow(selectRange + 1, 2);
-        return dist <= removalDist && WaterUtil.canUse(source, user());
+        return dist <= removalDist && canUse(source, user());
     }
 
     @Override
@@ -263,12 +261,12 @@ public class WaterManipulation extends CoreAbility {
 
         @Override
         public boolean isCollidable(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
         }
 
         @Override
         public void moveTo(Block block) {
-            if (AbilityUtil.isWater(block)) {
+            if (Blocks.isWater(block)) {
                 Location display = block.getLocation().add(0.5, 0.5, 0.5);
                 world.spawnParticle(Particle.BUBBLE, display, 3, 0.5, 0.5, 0.5, 0);
             }
@@ -278,11 +276,11 @@ public class WaterManipulation extends CoreAbility {
                     && TempBlock.isActive(streamBlocks.peekFirst())) {
                 TempBlock oldHead = streamBlocks.peekFirst();
                 Block b = oldHead.block();
-                BlockData bData = WaterUtil.getFilledData(b, BODY_LEVEL);
+                BlockData bData = getFilledData(b, BODY_LEVEL);
                 b.setBlockData(bData, false);
             }
 
-            BlockData headData = WaterUtil.getFilledData(block, HEAD_LEVEL);
+            BlockData headData = getFilledData(block, HEAD_LEVEL);
             TempBlock.builder(WaterManipulation.this, headData)
                     .setCollidable(false)
                     .buildAt(block)
@@ -310,8 +308,8 @@ public class WaterManipulation extends CoreAbility {
             Location riseLoc = loc.clone();
             riseLoc.setY(riseY);
 
-            WaterUtil.playWaterSound(loc);
-            WaterUtil.consumeSource(WaterManipulation.this, loc.getBlock(), srcRevertTime);
+            playWaterSound(loc);
+            consumeSource(loc.getBlock(), srcRevertTime);
             user().addCooldown(controller().name(), cooldown);
 
             // Ensure we render water AT the current block or manip will appear

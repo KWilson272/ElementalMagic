@@ -16,11 +16,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class AirSweep extends AirAbility {
     
@@ -68,7 +68,7 @@ public class AirSweep extends AirAbility {
         headPos1 = user().player().getEyeLocation();
 
         Block head = headPos1.getBlock();
-        if (BlockUtil.isSolid(head) || BlockUtil.isLiquid(head)) {
+        if (Blocks.isSolid(head) || Blocks.isLiquid(head)) {
             return false;
         }
 
@@ -111,11 +111,11 @@ public class AirSweep extends AirAbility {
         Location end = user().player().getEyeLocation().add(endDir);
         
         Location feet = user().player().getLocation();
-        Vector vec = VectorUtil.getDirection(start, end);
+        Vector vec = Vectors.getDirection(start, end);
         for (int i = 0; i < streamCount; ++i) {
             double t = (i + 1.0) / streamCount;
             Location loc = start.clone().add(vec.clone().multiply(t));
-            Vector dir = VectorUtil.getDirection(feet, loc).normalize();
+            Vector dir = Vectors.getDirection(feet, loc).normalize();
             queuedStreams.add(new SweepStream(feet.clone(), dir));
         }
     }
@@ -140,7 +140,7 @@ public class AirSweep extends AirAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
 		}
 
 		@Override
@@ -149,7 +149,7 @@ public class AirSweep extends AirAbility {
 		    
             Vector knock = direction.clone().multiply(knockback);
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (!e.equals(user().player())) {
                     effectHandler.setVelocity(e, AirSweep.this, knock);
                     effectHandler.damageEntity(e, AirSweep.this, damage);

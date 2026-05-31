@@ -15,7 +15,7 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public class Blaze extends FireAbility {
 
@@ -94,12 +94,12 @@ public class Blaze extends FireAbility {
                 block = block.getRelative(BlockFace.UP);
             } else if (!block.getRelative(BlockFace.DOWN).getType().isSolid()) {
                 block = block.getRelative(BlockFace.DOWN);
-            } else if (!AbilityUtil.isWater(block)) {
+            } else if (!Blocks.isWater(block)) {
                 return block;
             }
         }
 
-        if (!block.getType().isSolid() && !AbilityUtil.isWater(block)
+        if (!block.getType().isSolid() && !Blocks.isWater(block)
                 && block.getRelative(BlockFace.DOWN).getType().isSolid()) {
             return block;
         }
@@ -159,7 +159,7 @@ public class Blaze extends FireAbility {
                 double travel = Math.min(remainder, 1);
                 location.add(direction.clone().multiply(travel));
                 Block block = getSafeBlock(location);
-                if (block == null || AbilityUtil.isWater(block)) {
+                if (block == null || Blocks.isLiquid(block)) {
                     return false;
                 }
 

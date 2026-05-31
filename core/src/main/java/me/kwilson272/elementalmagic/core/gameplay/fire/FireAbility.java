@@ -11,9 +11,9 @@ import org.bukkit.block.data.BlockData;
 
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public abstract class FireAbility extends CoreAbility {
 
@@ -21,7 +21,7 @@ public abstract class FireAbility extends CoreAbility {
 		super(user, controller);
 	}
 
-    public void playFireSound(Location location) {
+    public static void playFireSound(Location location) {
         World world = location.getWorld();
         world.playSound(location, Sound.BLOCK_FIRE_AMBIENT, 1.2f, 1);
     }
@@ -42,7 +42,7 @@ public abstract class FireAbility extends CoreAbility {
     }
 
     public boolean canIgnite(Block block) {
-        return !BlockUtil.isSolid(block) && !BlockUtil.isLiquid(block)
-            && BlockUtil.isSolid(block.getRelative(BlockFace.DOWN));
+        return !Blocks.isSolid(block) && !Blocks.isLiquid(block)
+            && Blocks.isSolid(block.getRelative(BlockFace.DOWN));
     }
 }

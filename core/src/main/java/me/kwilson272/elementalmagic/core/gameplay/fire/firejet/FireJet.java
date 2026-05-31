@@ -12,8 +12,8 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public class FireJet extends FireAbility {
 
@@ -41,7 +41,7 @@ public class FireJet extends FireAbility {
 	@Override
 	public boolean start() {
         Block footBlock = user().player().getLocation().getBlock();
-        if (BlockUtil.isLiquid(footBlock)) {
+        if (Blocks.isLiquid(footBlock)) {
             return false;
         }
         
@@ -59,7 +59,7 @@ public class FireJet extends FireAbility {
         }
 
         Block footBlock = user().player().getLocation().getBlock();
-        if (!canUseInLiquid && BlockUtil.isLiquid(footBlock)) {
+        if (!canUseInLiquid && Blocks.isLiquid(footBlock)) {
             return false;
         }
 

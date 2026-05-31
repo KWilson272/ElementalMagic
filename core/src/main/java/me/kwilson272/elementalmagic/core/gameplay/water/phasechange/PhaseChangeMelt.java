@@ -1,7 +1,5 @@
 package me.kwilson272.elementalmagic.core.gameplay.water.phasechange;
 
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,15 +15,14 @@ import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
 import me.kwilson272.elementalmagic.core.gameplay.water.icewave.IceWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.surge.SurgeWave;
 import me.kwilson272.elementalmagic.core.gameplay.water.torrent.Torrent;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class PhaseChangeMelt extends CoreAbility {
+public class PhaseChangeMelt extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -62,10 +59,10 @@ public class PhaseChangeMelt extends CoreAbility {
         }
 
         Player player = user().player();
-        Block target = BlockUtil.getTargetBlock(player, range, BlockUtil::isSolid);
+        Block target = Entities.getTargetBlock(player, range, Blocks::isSolid);
         Location center = target.getLocation().add(0.5, 0.5, 0.5);
         if (meltSphere(center)) {
-            WaterUtil.playWaterSound(center);
+            playWaterSound(center);
         }
 
         return true;
@@ -81,13 +78,13 @@ public class PhaseChangeMelt extends CoreAbility {
             .setUsable(true);
 
         boolean melted = false;
-        for (Block block : BlockUtil.collectSphere(center, radius)) {
+        for (Block block : Blocks.collectSphere(center, radius)) {
             if (!isMeltable(block)) {
                 continue;
             }
     
-            melted = false;
-            BlockData data = AbilityUtil.isIce(block) ? waterData : airData;
+            melted = true;
+            BlockData data = Blocks.isIce(block) ? waterData : airData;
             TempBlock.get(block).ifPresentOrElse(revertManager::revert,
                 () -> blockBuilder.setData(data).buildAt(block));
         }
@@ -96,7 +93,7 @@ public class PhaseChangeMelt extends CoreAbility {
     }
 
     private boolean isMeltable(Block block) {
-        if (!AbilityUtil.isIce(block) && !AbilityUtil.isSnow(block)) {
+        if (!Blocks.isIce(block) && !Blocks.isSnow(block)) {
             return false;
         }
         

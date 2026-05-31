@@ -22,11 +22,11 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class FireBurst extends FireAbility {
 
@@ -120,7 +120,7 @@ public class FireBurst extends FireAbility {
         Vector dir = loc.getDirection();
         loc.add(dir.clone().multiply(1.5));
 
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
         Particle particle = getFireParticle();
         World world = loc.getWorld();
 
@@ -128,7 +128,7 @@ public class FireBurst extends FireAbility {
         double step = 2 * Math.PI / count;
         for (int i = 0; i < count; ++i) {
             double angle = step * i;
-            Vector vec = VectorUtil.rotateAroundVector(dir, ortho, angle);
+            Vector vec = Vectors.rotateAroundVector(dir, ortho, angle);
             Location spawnLoc = loc.clone().add(vec.clone().multiply(0.5));
             world.spawnParticle(particle, spawnLoc, 0, vec.getX(), vec.getY(), vec.getZ(), 0.2);    
         }
@@ -173,7 +173,7 @@ public class FireBurst extends FireAbility {
         Location loc = user().player().getEyeLocation();
        
         Vector dir = user().player().getEyeLocation().getDirection();
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
 
         double spacing = Math.toRadians(coneSpacing);
         double angle = Math.toRadians(coneAngle / 2);
@@ -189,7 +189,7 @@ public class FireBurst extends FireAbility {
 
             double step = spacing / magRot; 
             for (double j = 0; j <= 2 * Math.PI; j += step) {
-                Vector rot = VectorUtil.rotateAroundVector(dir, ortho, j);
+                Vector rot = Vectors.rotateAroundVector(dir, ortho, j);
                 Vector vec = dir.clone().multiply(magDir);
                 vec.add(rot.multiply(magRot));
 
@@ -203,7 +203,7 @@ public class FireBurst extends FireAbility {
 
     private void initSafeBlocks() {
         Location loc = user().player().getLocation();
-        for (Block block : BlockUtil.collectSphere(loc, 3.0)) {
+        for (Block block : Blocks.collectSphere(loc, 3.0)) {
             safeBlocks.add(block);
         }
     }
@@ -230,13 +230,13 @@ public class FireBurst extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 Location loc = block.getLocation().add(0.5, 0.5, 0.5);
                 igniteAroundPoint(loc);
                 return false;
             }
 
-            return BlockUtil.isLiquid(block);
+            return Blocks.isLiquid(block);
 		}
 
         private void igniteAroundPoint(Location loc) {
@@ -245,7 +245,7 @@ public class FireBurst extends FireAbility {
                 .setDuration(fireDuration)
                 .setDamage(fireDamage);
 
-            for (Block b : BlockUtil.collectSphere(loc, fireRadius)) {
+            for (Block b : Blocks.collectSphere(loc, fireRadius)) {
                 if (canIgnite(b) && !safeBlocks.contains(b)) {
                     builder.buildAt(b);
                 }
@@ -274,7 +274,7 @@ public class FireBurst extends FireAbility {
 
         private void affectEntities(Location loc) {
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (!e.equals(user().player())) {
                     effectHandler.damageEntity(e, FireBurst.this, damage);
                 }

@@ -17,9 +17,9 @@ import me.kwilson272.elementalmagic.api.collision.Sphere;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 // TODO: Fix the particle spam 
 public class FireShieldSphere extends FireAbility {
@@ -111,7 +111,7 @@ public class FireShieldSphere extends FireAbility {
             }
 
             Block block = display.getBlock();
-            if (!BlockUtil.isSolid(block)) {
+            if (!Blocks.isSolid(block)) {
                 world.spawnParticle(particle, display, 1, 0.2, 0.2, 0.2, 0.0125);
             }
         }
@@ -120,7 +120,7 @@ public class FireShieldSphere extends FireAbility {
     private void burnEntities(Location loc) {
         World world = loc.getWorld();
         BoundingVolume bv = Sphere.at(loc, radius);
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             if (!e.equals(user().player()) 
                     && e.getFireTicks() * 50 < burnDuration) {
                 ElementalMagicApi.effectHandler().setFireDuration(e, this, burnDuration);        

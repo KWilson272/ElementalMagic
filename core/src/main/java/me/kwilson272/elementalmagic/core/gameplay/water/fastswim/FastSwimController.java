@@ -72,6 +72,5 @@ public class FastSwimController extends CoreAbilityController {
     public boolean canActivateBy(Action action) {
         return action == Action.SNEAK_DOWN;
     }
-
 }
 

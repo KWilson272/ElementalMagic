@@ -14,7 +14,7 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class AirShield extends AirAbility {
 
@@ -101,7 +101,7 @@ public class AirShield extends AirAbility {
 
         World world = user().player().getWorld();
         BoundingVolume bv = Sphere.at(center, radius);
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             if (e.equals(user().player())) {
                 continue;
             }

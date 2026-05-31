@@ -14,8 +14,8 @@ import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class TravelingSource {
 
@@ -128,11 +128,11 @@ public class TravelingSource {
             return new Vector(0, yDiff, 0).normalize();
         }
 
-        return VectorUtil.getDirection(location, target).normalize();
+        return Vectors.getDirection(location, target).normalize();
     }
 
     private boolean isCollidable(Block block) {
-        return BlockUtil.isSolid(block) 
+        return Blocks.isSolid(block) 
             && !affectedBlocks.contains(block)
             && !block.equals(source); 
     }

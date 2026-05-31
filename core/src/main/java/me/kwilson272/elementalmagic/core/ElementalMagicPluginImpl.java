@@ -9,6 +9,7 @@ import me.kwilson272.elementalmagic.api.ElementalMagicPlugin;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.ability.AbilityStorage;
 import me.kwilson272.elementalmagic.core.user.UserManagerImpl;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 import me.kwilson272.elementalmagic.core.ability.AbilityManagerImpl;
 import me.kwilson272.elementalmagic.core.ability.AbilityStorageImpl;
 import me.kwilson272.elementalmagic.core.ability.CoreElement;
@@ -105,6 +106,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         // Enable these first so the other managers can use it
         ElementalMagicApi.configManager().enable();
         ElementalMagicApi.userStorage().enable();
+        Blocks.configure(); // I want the blocks config at the top
         storeCoreElements();
         storeCoreAbilities();
 
@@ -125,6 +127,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.activationManager().enable();
         ElementalMagicApi.revertibleManager().enable();
         ElementalMagicApi.userManager().enable();
+
     }
     
     private void tick() {

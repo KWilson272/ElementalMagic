@@ -13,7 +13,6 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
 
 public class AirSlam extends AirAbility {
 

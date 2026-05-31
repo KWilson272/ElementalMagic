@@ -32,16 +32,14 @@ import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource.TravelState;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class Torrent extends CoreAbility {
+public class Torrent extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -146,7 +144,7 @@ public class Torrent extends CoreAbility {
     @Override
     public boolean start() {
         freezeRadius = freezeRadiusStart;
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange);
         return source != null;
     }
 
@@ -249,7 +247,7 @@ public class Torrent extends CoreAbility {
             initTravelingSource();
         }
     
-        WaterUtil.playSourceSelectedEffect(source);
+        playSourceSelectedEffect(source);
         return true;
     }
 
@@ -264,7 +262,7 @@ public class Torrent extends CoreAbility {
         
         return eyeLoc.getWorld().equals(sourceLoc.getWorld())
             && eyeLoc.distanceSquared(sourceLoc) <= maxDist
-            && WaterUtil.canUse(source, user());
+            && canUse(source, user());
     }
 
 /*********************************
@@ -277,7 +275,7 @@ public class Torrent extends CoreAbility {
             .setCollidable(collidableRing);
         movingSource = new TravelingSource(loc, 1, true, builder);
 
-        WaterUtil.consumeSource(this, source, sourceRevertTime);
+        consumeSource(source, sourceRevertTime);
         state = State.SOURCE_TRAVELING;
     }
 
@@ -305,7 +303,7 @@ public class Torrent extends CoreAbility {
 
     private void initializeRingAngle(Location startLoc) {
         Location eyeLoc = user().player().getEyeLocation();
-        Vector toSource = VectorUtil.getDirection(eyeLoc, startLoc);
+        Vector toSource = Vectors.getDirection(eyeLoc, startLoc);
         startAngle = Math.atan2(toSource.getX(), toSource.getZ());
         startAngle = Math.toDegrees(startAngle);
     }
@@ -321,7 +319,7 @@ public class Torrent extends CoreAbility {
 
         progressRing();
         if (ThreadLocalRandom.current().nextInt(7) == 0) {
-            WaterUtil.playWaterSound(user().player().getLocation());
+            playWaterSound(user().player().getLocation());
         }
         return !blocks.isEmpty();
     }
@@ -340,7 +338,7 @@ public class Torrent extends CoreAbility {
             double z = Math.cos(i) * ringRadius;
             Block block = center.clone().add(x, 0, z).getBlock();
 
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 continue;
             }
 
@@ -349,7 +347,7 @@ public class Torrent extends CoreAbility {
                 // re-insert to keep order
                 blocks.remove(tb);
                 blocks.offerFirst(tb);
-            } else if (chargeUnderwater || !AbilityUtil.isWater(block)) {
+            } else if (chargeUnderwater || !Blocks.isWater(block)) {
                 placeWater(block);
             }
 
@@ -382,7 +380,7 @@ public class Torrent extends CoreAbility {
         
         World world = user().player().getWorld();
         BoundingVolume bv = AABB.fromBlock(block, ringHitbox);
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             if (!e.equals(user().player())) {
                 ElementalMagicApi.effectHandler().setVelocity(e, this, knock);
                 ElementalMagicApi.effectHandler().damageEntity(e, this, ringDamage);
@@ -420,7 +418,7 @@ public class Torrent extends CoreAbility {
         }
 
         Location target = getTargetedLocation();
-        direction = VectorUtil.getDirection(location, target).normalize();
+        direction = Vectors.getDirection(location, target).normalize();
         Block oldBlock = location.getBlock();
         Block newBlock = location.add(direction).getBlock();
 
@@ -430,7 +428,7 @@ public class Torrent extends CoreAbility {
             collided = true;
             freeze = false; // No freezes in air
             doDoubleHit = false;
-        } else if (BlockUtil.isSolid(newBlock)) {
+        } else if (Blocks.isSolid(newBlock)) {
             collided = true;    
         }
 
@@ -445,7 +443,7 @@ public class Torrent extends CoreAbility {
         double range = streamRange + 2;
 
         LivingEntity entity = user().player();
-        Block targBlock = BlockUtil.getTargetBlock(entity, range, BlockUtil::isSolid);
+        Block targBlock = Entities.getTargetBlock(entity, range, Blocks::isSolid);
         Location blockLoc = targBlock.getLocation().add(0.5, 0.5, 0.5);
 
         World world = entity.getWorld();
@@ -481,13 +479,13 @@ public class Torrent extends CoreAbility {
         for (TempBlock tb : blocks) {
             Block block = tb.block();
             Vector knock = before == null ? direction.clone() :
-                VectorUtil.getDirection(block.getLocation(), before.getLocation());
+                Vectors.getDirection(block.getLocation(), before.getLocation());
             knock.normalize().multiply(streamDrag);
             
 
             World world = block.getWorld();
             BoundingVolume bv = AABB.fromBlock(block, streamHitbox);
-            for (Entity entity : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity entity : Entities.getNearbyEntities(world, bv)) {
                 if (entity.equals(user().player())) {
                     continue;
                 }
@@ -520,16 +518,16 @@ public class Torrent extends CoreAbility {
             user().addCooldown("GlobalFreeze", freezeCooldown);
         }
 
-        for (Block b : BlockUtil.collectSphere(location, freezeRadius)) {
+        for (Block b : Blocks.collectSphere(location, freezeRadius)) {
             freezeBlock(b);
         }
 
-        WaterUtil.playIceSound(location);
+        playIceSound(location);
         ++freezeRadius;
     }
 
     private void freezeBlock(Block block) {
-        if (frozenBlocks.containsKey(block) || BlockUtil.isSolid(block)) {
+        if (frozenBlocks.containsKey(block) || Blocks.isSolid(block)) {
             return;
         }
 

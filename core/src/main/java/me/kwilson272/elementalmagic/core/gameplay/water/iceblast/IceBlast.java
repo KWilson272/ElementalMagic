@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import org.bukkit.Location;
@@ -24,14 +25,14 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class IceBlast extends CoreAbility {
+public class IceBlast extends WaterAbility {
     
     protected static final ConfigValues CONFIG = new ConfigValues();
     
@@ -44,9 +45,12 @@ public class IceBlast extends CoreAbility {
     private double hitboxSize;
     private int slowPower;
     private int slowDuration;
+    private boolean allowWaterSource;
+    private boolean allowPlantSource;
 
     private boolean isSourced;
     private Block source;
+    private WaterUsePolicy usePolicy;
 
     private boolean isRising;
     private Block riseDest;
@@ -67,6 +71,8 @@ public class IceBlast extends CoreAbility {
         hitboxSize = CONFIG.hitboxSize;
         slowPower = CONFIG.slowPower;
         slowDuration = CONFIG.slowDuration;
+        allowWaterSource = CONFIG.allowWaterSource;
+        allowPlantSource = CONFIG.allowWaterSource;
 
         isSourced = true;
         isRising = true;
@@ -74,13 +80,13 @@ public class IceBlast extends CoreAbility {
 
 	@Override
 	public boolean start() {
-        var opts = new WaterSourceOptions(user()).noWater().noPlant().noSnow();
-        source = WaterUtil.getSourceBlock(user(), selectRange, opts);
-        if (source == null) {
-            return false;
-        }
+        usePolicy = new WaterUsePolicy();
+        usePolicy.setWater(allowWaterSource)
+                 .setPlant(allowPlantSource)
+                 .validate(user());
 
-        return true;
+        source = selectSourceBlock(selectRange, usePolicy);
+        return source != null;
 	}
 
     protected boolean isSourced() {
@@ -92,19 +98,42 @@ public class IceBlast extends CoreAbility {
             return;        
         }
         
-        Player player = user().player();
-        Location target = EntityUtil.getTarget(player, range + selectRange); 
+        Location target = getTarget(); 
         riseDest = getRiseDestination(target);
         // Avoids vector math errors and disappearing blasts if target is in range
-        finalDirection = VectorUtil.getDirection(riseDest.getLocation(), target);
+        finalDirection = Vectors.getDirection(riseDest.getLocation(), target);
         finalDirection.normalize();
         location = source.getLocation().add(0.5, 0.5, 0.5);
     
-        WaterUtil.playIceSound(location);
-        WaterUtil.consumeSource(this, source, sourceRevertTime);
+        playIceSound(location);
+        consumeSource(source, sourceRevertTime);
 
         isSourced = false;
         user().addCooldown("IceBlast", cooldown);
+    }
+
+    private Location getTarget() {
+        World world = user().player().getWorld();
+        Location start = user().player().getEyeLocation();
+        Vector direction = user().player().getEyeLocation().getDirection(); 
+        double targRange = selectRange + range;
+
+        RayTraceResult result = world.rayTraceEntities(
+                start,
+                direction,
+                targRange,
+                2.0,
+                e -> !e.equals(user().player()) 
+                    && ElementalMagicApi.effectHandler().canAffect(e)
+        );
+
+
+        if (result != null && result.getHitEntity() != null) {
+            return result.getHitEntity().getLocation().add(0, 1, 0);
+        }
+
+        Player player = user().player();
+        return Entities.getTargetLocation(player, targRange);
     }
 
     private Block getRiseDestination(Location target) {
@@ -127,7 +156,7 @@ public class IceBlast extends CoreAbility {
         }
         
         if (isSourced) {
-            WaterUtil.playSourceSelectedEffect(source);
+            playSourceSelectedEffect(source);
             return isSourceViable();
         } else {
             return advanceBlast();
@@ -143,8 +172,7 @@ public class IceBlast extends CoreAbility {
             return false;
         }
 
-        var opts = new WaterSourceOptions(user()).noWater().noPlant().noSnow();
-        return WaterUtil.canUse(source, opts);
+        return canUse(source, usePolicy);
     }
 
     private boolean advanceBlast() {
@@ -157,7 +185,7 @@ public class IceBlast extends CoreAbility {
             Block oldBlock = location.getBlock();
             Block newBlock = location.add(dir).getBlock();
             if (!oldBlock.equals(newBlock)) {
-                if (BlockUtil.isSolid(newBlock) && !newBlock.equals(source)) {
+                if (Blocks.isSolid(newBlock) && !newBlock.equals(source)) {
                     return false;
                 }
 
@@ -219,7 +247,7 @@ public class IceBlast extends CoreAbility {
 
         World world = block.getWorld();
         BoundingVolume bv = AABB.fromBlock(block, hitboxSize);
-        for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
             if (e.equals(user().player()) || !(e instanceof LivingEntity le)) {
                 continue;
             }
@@ -271,6 +299,9 @@ public class IceBlast extends CoreAbility {
         private int slowPower = 3;
         @Configure(path = CONFIG_PATH + "SlowDuration", config = Config.ABILITIES)       
         private int slowDuration = 75;
-
+        @Configure(path = CONFIG_PATH + "AllowWaterSource", config = Config.ABILITIES)
+        private boolean allowWaterSource = false;
+        @Configure(path = CONFIG_PATH + "AllowPlantSource", config = Config.ABILITIES)
+        private boolean allowPlantSource = false;
     }
 }

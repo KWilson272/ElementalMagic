@@ -7,10 +7,10 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class PhaseChangeFreeze extends CoreAbility {
+public class PhaseChangeFreeze extends WaterAbility {
     
     private static final BlockFace[] CHECK_FACES = {
         BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, 
@@ -56,12 +56,12 @@ public class PhaseChangeFreeze extends CoreAbility {
         user().addCooldown("PhaseChangeFreeze", cooldown);
 
         Player player = user().player();
-        Block target = BlockUtil.getTargetBlock(player, range, this::isCollidable);
+        Block target = Entities.getTargetBlock(player, range, this::isCollidable);
         Location center = target.getLocation().add(0.5, 0.5, 0.5);
 
         freezeSphere(center);
         if (!tempBlocks.isEmpty()) {
-            WaterUtil.playIceSound(center);
+            playIceSound(center);
         }
 
         return true;
@@ -70,23 +70,26 @@ public class PhaseChangeFreeze extends CoreAbility {
     private boolean isCollidable(Block block) {
         // Don't collide on water that we couldn't freeze, it feels better if
         // PhaseChange works through un-usable abilities like WaterSpout
-        return BlockUtil.isSolid(block) || (BlockUtil.isLiquid(block)
+        return Blocks.isSolid(block) || (Blocks.isLiquid(block)
                 && TempBlock.get(block).map(TempBlock::isUsable).orElse(true));
     }
     
     private void freezeSphere(Location center) {
         BlockData data = Material.ICE.createBlockData();
         var iceBuilder = TempBlock.builder(this, data).setUsable(true);
-        var opts = new WaterSourceOptions(user()).noPlant().noIce().noSnow();
+        var opts = WaterUsePolicy.from(user())
+            .setIce(false)
+            .setSnow(false)
+            .setPlant(false);
         
         Location eyeLoc = user().player().getEyeLocation();
         double revertDistSqrd = revertDistance * revertDistance;
 
-        for (Block block : BlockUtil.collectSphere(center, radius)) {
+        for (Block block : Blocks.collectSphere(center, radius)) {
             // Ensure we don't freeze blocks that get instantly reverted
             Location loc = block.getLocation().add(0.5, 0.5, 0.5);
             double distSqrd = loc.distanceSquared(eyeLoc);
-            if (!WaterUtil.canUse(block, opts) || distSqrd >= revertDistSqrd) {
+            if (!canUse(block, opts) || distSqrd >= revertDistSqrd) {
                 continue;
             }
 

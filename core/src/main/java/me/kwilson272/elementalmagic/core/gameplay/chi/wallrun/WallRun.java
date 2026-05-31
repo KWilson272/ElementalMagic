@@ -1,6 +1,5 @@
 package me.kwilson272.elementalmagic.core.gameplay.chi.wallrun;
 
-import java.awt.Taskbar.Feature;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public class WallRun extends CoreAbility {
 
@@ -55,7 +54,7 @@ public class WallRun extends CoreAbility {
 	public boolean start() {
         Location loc = user().player().getLocation();
         Block feetBlock = loc.getBlock();
-        if (!user().player().isSprinting() && !AbilityUtil.isWater(feetBlock)) {
+        if (!user().player().isSprinting() && !Blocks.isWater(feetBlock)) {
             return false;
         }
 

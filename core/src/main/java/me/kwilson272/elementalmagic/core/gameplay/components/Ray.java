@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public abstract class Ray {
 
@@ -38,7 +38,7 @@ public abstract class Ray {
             location.add(dir);
 
             if (collides(location.getBlock()) 
-                    || BlockUtil.collidesDiagonally(prev, location, this::collides)) {
+                    || Blocks.collidesDiagonally(prev, location, this::collides)) {
                 return false; 
             }
 

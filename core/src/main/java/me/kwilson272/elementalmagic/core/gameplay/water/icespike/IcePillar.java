@@ -18,7 +18,7 @@ import me.kwilson272.elementalmagic.api.ability.Ability;
 import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 public abstract class IcePillar {
 
@@ -53,9 +53,9 @@ public abstract class IcePillar {
     }
 
     private BlockData getPillarData() {
-        if (AbilityUtil.isSnow(base)) {
+        if (Blocks.isSnow(base)) {
              return Material.SNOW_BLOCK.createBlockData();
-        } else if (AbilityUtil.isIce(base)) {
+        } else if (Blocks.isIce(base)) {
             return base.getBlockData();
         } else {
             return Material.ICE.createBlockData();

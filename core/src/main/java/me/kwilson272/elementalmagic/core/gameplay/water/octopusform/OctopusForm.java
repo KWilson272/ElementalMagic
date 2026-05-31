@@ -24,15 +24,14 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource.TravelState;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class OctopusForm extends CoreAbility {
+public class OctopusForm extends WaterAbility {
 
     protected static ConfigValues CONFIG = new ConfigValues();
 
@@ -85,7 +84,7 @@ public class OctopusForm extends CoreAbility {
 	@Override
 	public boolean start() {
         angleInc = Math.toRadians(angleInc);
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange);
         return source != null;
 	}
 
@@ -111,7 +110,7 @@ public class OctopusForm extends CoreAbility {
             initSourceTraveling();
         }
         
-        WaterUtil.playSourceSelectedEffect(source);
+        playSourceSelectedEffect(source);
         return true;
     }
     
@@ -122,7 +121,7 @@ public class OctopusForm extends CoreAbility {
 
         return loc.getWorld().equals(source.getWorld())
             && loc.distanceSquared(sourceLoc) <= maxDist
-            && WaterUtil.canUse(source, user());
+            && canUse(source, user());
     }
 
     private void initSourceTraveling() {
@@ -148,7 +147,7 @@ public class OctopusForm extends CoreAbility {
 
     private void initForm(Location location) {
         Location feet = user().player().getLocation();
-        Vector toSource = VectorUtil.getDirection(feet, location);
+        Vector toSource = Vectors.getDirection(feet, location);
         double angle = Math.atan2(-toSource.getX(), toSource.getZ());
         double yaw = user().player().getEyeLocation().getYaw();
         angleOffset = Math.toRadians(yaw) - angle;
@@ -198,7 +197,7 @@ public class OctopusForm extends CoreAbility {
             double z = Math.cos(rad) * radius;
             Block b = center.clone().add(x, 0, z).getBlock();
 
-            if (!BlockUtil.isSolid(b)) {
+            if (!Blocks.isSolid(b)) {
                 addWater(b, 0);
             }
         }
@@ -237,7 +236,7 @@ public class OctopusForm extends CoreAbility {
         if (animIndex != 0) {
             Location center = user().player().getEyeLocation();
             Location blockLoc = block.getLocation().add(0.5, 0.5, 0.5);
-            Vector toCenter = VectorUtil.getDirection(blockLoc, center);
+            Vector toCenter = Vectors.getDirection(blockLoc, center);
             toCenter.setY(0);
             toCenter.normalize().multiply(animIndex == 1 ? -1 : 1);
             addWater(blockLoc.add(toCenter).getBlock(), 0);
@@ -259,13 +258,13 @@ public class OctopusForm extends CoreAbility {
 
         for (Block b : affectedBlocks.keySet()) {
             BoundingVolume bv = AABB.fromBlock(b, hitboxSize); 
-            Vector knock = VectorUtil.getDirection(center, b.getLocation());
+            Vector knock = Vectors.getDirection(center, b.getLocation());
             knock.normalize();
             knock.setY(knockup);
             knock.multiply(knockback);
             
             World world = b.getWorld();
-            for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity e : Entities.getNearbyEntities(world, bv)) {
                 if (!noAffect.contains(e)) {
                     ElementalMagicApi.effectHandler().setVelocity(e, this, knock);
                     ElementalMagicApi.effectHandler().damageEntity(e, this, damage);

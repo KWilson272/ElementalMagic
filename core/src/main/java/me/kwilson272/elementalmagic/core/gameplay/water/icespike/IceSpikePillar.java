@@ -18,12 +18,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
-public class IceSpikePillar extends CoreAbility {
+public class IceSpikePillar extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -65,15 +64,18 @@ public class IceSpikePillar extends CoreAbility {
             Entity entity = result.getHitEntity();
             source = entity.getLocation().getBlock().getRelative(BlockFace.DOWN);
         }
+        
+        WaterUsePolicy opts = WaterUsePolicy.from(user())
+            .setWater(false)
+            .setPlant(false);
 
-        var opts = new WaterSourceOptions(user()).noWater().noPlant();
-        if (source == null || !WaterUtil.canUse(source, opts)) {
-            source = WaterUtil.getSourceBlock(user(), selectRange, opts);
+        if (source == null || !canUse(source, opts)) {
+            source = selectSourceBlock(selectRange, opts);
         }
 
         if (source != null) {
             pillar = new Pillar(height, source, this);
-            WaterUtil.playIceSound(source.getLocation());
+            playIceSound(source.getLocation());
             return true;
         }
         return false;
@@ -108,7 +110,7 @@ public class IceSpikePillar extends CoreAbility {
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
     
             Vector knock = new Vector(0, knockUp, 0);
-            for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity e : Entities.getNearbyEntities(world, bv)) {
                 if (!e.equals(user().player())) {
                     effectHandler.setVelocity(e, IceSpikePillar.this, knock);
                     effectHandler.damageEntity(e, IceSpikePillar.this, damage);

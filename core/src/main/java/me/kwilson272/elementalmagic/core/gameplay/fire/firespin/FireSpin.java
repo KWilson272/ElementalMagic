@@ -20,10 +20,11 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class FireSpin extends FireAbility {
 
@@ -66,12 +67,8 @@ public class FireSpin extends FireAbility {
 	}
 
     private void initStreams() {
-        int count = 30;
-        double spacing = Math.PI * 2 / count;
-        Location loc = user().player().getLocation().add(0, 0.3, 0);
-        for (int i = 0; i < count; ++i) {
-            double angle = i * spacing;
-            Vector dir = new Vector(Math.cos(angle), 0, Math.sin(angle));
+        Location loc = user().player().getLocation().add(0, 0.5, 0);
+        for (Vector dir : Vectors.getRing(30)) {
             streams.add(new SpinStream(loc.clone(), dir));
         }
     }
@@ -110,7 +107,7 @@ public class FireSpin extends FireAbility {
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
         Vector knock = dir.clone().multiply(knockback);
 
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (e.equals(user().player())) {
                 continue;
             }
@@ -135,7 +132,7 @@ public class FireSpin extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            return BlockUtil.isSolid(block);
+            return Blocks.isSolid(block);
 		}
 
 		@Override

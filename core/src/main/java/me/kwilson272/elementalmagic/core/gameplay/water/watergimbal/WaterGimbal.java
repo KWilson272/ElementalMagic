@@ -1,10 +1,8 @@
 package me.kwilson272.elementalmagic.core.gameplay.water.watergimbal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -27,16 +25,15 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource;
 import me.kwilson272.elementalmagic.core.gameplay.components.TravelingSource.TravelState;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class WaterGimbal extends CoreAbility {
+public class WaterGimbal extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
     
@@ -48,6 +45,9 @@ public class WaterGimbal extends CoreAbility {
     private double speed;
     private double damage;
     private double hitboxSize;
+    private boolean allowIceSource;
+    private boolean allowSnowSource;
+    private boolean allowPlantSource;
 
     private boolean isSourced;
     private TravelingSource source;
@@ -91,8 +91,13 @@ public class WaterGimbal extends CoreAbility {
 
     @Override
     public boolean start() {
-        var opts = new WaterSourceOptions(user()).noIce().noSnow();
-        Block block = WaterUtil.getSourceBlock(user(), selectRange, opts);
+        var opts = new WaterUsePolicy();
+        opts.setIce(allowIceSource)
+            .setSnow(allowSnowSource)
+            .setPlant(allowPlantSource)
+            .validate(user());
+
+        Block block = selectSourceBlock(selectRange, opts); 
         if (block == null) {
             return false;
         }
@@ -182,7 +187,7 @@ public class WaterGimbal extends CoreAbility {
                 Vector compFirst = vecFirst.clone().multiply(sinRad);
                 locFirst = loc.clone().add(compFirst.add(compBase));
                 Block bFirst = locFirst.getBlock();
-                if (!BlockUtil.isSolid(bFirst)) {
+                if (!Blocks.isSolid(bFirst)) {
                     waterBuilder.buildAt(bFirst).ifPresent(ringBlocks::add);
                 }
             }
@@ -191,7 +196,7 @@ public class WaterGimbal extends CoreAbility {
                 Vector compSecond = vecSecond.clone().multiply(sinRad);
                 locSecond = loc.clone().add(compSecond.add(compBase));
                 Block bSecond = locSecond.getBlock();
-                if (!BlockUtil.isSolid(bSecond)) {
+                if (!Blocks.isSolid(bSecond)) {
                     waterBuilder.buildAt(bSecond).ifPresent(ringBlocks::add);
                 }
             }
@@ -204,13 +209,13 @@ public class WaterGimbal extends CoreAbility {
         Location eyeLoc = user().player().getEyeLocation();
         if (firedFirst && renderFirst 
                 && locFirst.getBlockY() <= eyeLoc.getBlockY()) {
-            WaterUtil.playWaterSound(locFirst);
+            playWaterSound(locFirst);
             streams.add(new GimbalStream(locFirst));
             renderFirst = false;
         } 
         if (firedSecond && renderSecond
                 && locSecond.getBlockY() <= eyeLoc.getBlockY()) {
-            WaterUtil.playWaterSound(locSecond);
+            playWaterSound(locSecond);
             streams.add(new GimbalStream(locSecond));
             renderSecond = false;
         }
@@ -257,7 +262,7 @@ public class WaterGimbal extends CoreAbility {
         boolean progress() {
             Player player = user().player();
             // The targeting is kind of weird unless we add the 5 
-            Block block = BlockUtil.getTargetBlock(player, range + 5, BlockUtil::isSolid);
+            Block block = Entities.getTargetBlock(player, range + 5, Blocks::isSolid);
             Location targ = block.getLocation().add(0.5, 0.5, 0.5);
             
             double remainder = speed;
@@ -265,15 +270,15 @@ public class WaterGimbal extends CoreAbility {
                 double travel = Math.min(remainder, 1);
                 remainder--;
 
-                Vector dir = VectorUtil.getDirection(location, targ);
+                Vector dir = Vectors.getDirection(location, targ);
                 dir.normalize().multiply(travel);
                 Block oldBlock = location.getBlock();
                 Block newBlock = location.add(dir).getBlock();
 
                 if (!oldBlock.equals(newBlock)) {
-                    if (BlockUtil.isSolid(newBlock)) {
+                    if (Blocks.isSolid(newBlock)) {
                         newBlock = newBlock.getRelative(BlockFace.UP);
-                        if (BlockUtil.isSolid(newBlock)) {
+                        if (Blocks.isSolid(newBlock)) {
                             return false;
                         }
                     }
@@ -295,7 +300,7 @@ public class WaterGimbal extends CoreAbility {
             BoundingVolume bv = AABB.at(location, hitboxSize);
             EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-            for (Entity e : EntityUtil.getNearbyEntities(world, bv)) {
+            for (Entity e : Entities.getNearbyEntities(world, bv)) {
                 if (!noAffect.contains(e)) {
                     effectHandler.damageEntity(e, WaterGimbal.this, damage);
                 }
@@ -323,6 +328,11 @@ public class WaterGimbal extends CoreAbility {
         private double damage = 2.0;
         @Configure(path = CONFIG_PATH + "HitboxSize", config = Config.ABILITIES)
         private double hitboxSize = 1.5;
+        @Configure(path = CONFIG_PATH + "AllowIceSource", config = Config.ABILITIES)
+        private boolean allowIceSource = false;
+        @Configure(path = CONFIG_PATH + "AllowSnowSource", config = Config.ABILITIES)
+        private boolean allowSnowSource = false;
+        @Configure(path = CONFIG_PATH + "AllowPlantSource", config = Config.ABILITIES)
+        private boolean allowPlantSource = false;
     }
-
 }

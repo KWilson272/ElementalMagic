@@ -16,9 +16,9 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.air.AirAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class AirBreath extends AirAbility {
 
@@ -85,7 +85,7 @@ public class AirBreath extends AirAbility {
             Location newLoc = loc.clone().add(dir);
             Block block = newLoc.getBlock();
 
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 hitSolidBlock = true;
                 break;
             }
@@ -109,7 +109,7 @@ public class AirBreath extends AirAbility {
         Vector knock = direction.clone().normalize().multiply(pushOthers);
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player())) {
                 effectHandler.setVelocity(e, this, knock);
             }
@@ -125,7 +125,7 @@ public class AirBreath extends AirAbility {
         TempBlockBuilder builder = TempBlock.builder(this, data)
             .setDuration(extinguishTime);
 
-        for (Block b : BlockUtil.collectSphere(loc, extinguishRadius)) {
+        for (Block b : Blocks.collectSphere(loc, extinguishRadius)) {
             if (b.getType() == Material.FIRE || b.getType() == Material.SOUL_FIRE) {
                 builder.buildAt(b);
             }
@@ -137,7 +137,7 @@ public class AirBreath extends AirAbility {
         TempBlockBuilder builder = TempBlock.builder(this, data)
             .setDuration(solidifyTime);
 
-        for (Block b : BlockUtil.collectSphere(loc, solidifyRadius)) {
+        for (Block b : Blocks.collectSphere(loc, solidifyRadius)) {
             if (b.getType() == Material.LAVA) {
                 builder.buildAt(b);
             }

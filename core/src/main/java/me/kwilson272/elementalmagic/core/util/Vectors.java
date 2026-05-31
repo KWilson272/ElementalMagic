@@ -1,4 +1,4 @@
-package me.kwilson272.elementalmagic.core.gameplay.util;
+package me.kwilson272.elementalmagic.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
-public class VectorUtil {
+public class Vectors {
 
     public static Vector getDirection(Location from, Location to) {
         double x = to.getX() - from.getX();

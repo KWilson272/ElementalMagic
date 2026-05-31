@@ -20,10 +20,10 @@ import me.kwilson272.elementalmagic.api.collision.BoundingVolume;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class WallOfFire extends FireAbility {
 
@@ -100,7 +100,7 @@ public class WallOfFire extends FireAbility {
                 Vector vert =  axis1.clone().multiply(h);
                 Location l = center.clone().add(vert).add(horiz);
                 
-                if (!BlockUtil.isSolid(l.getBlock())) {
+                if (!Blocks.isSolid(l.getBlock())) {
                     BoundingVolume bv = AABB.at(l, hitboxSize);
                     wallLocs.put(l, bv);    
                 }
@@ -114,8 +114,8 @@ public class WallOfFire extends FireAbility {
         Vector dir = loc.getDirection().multiply(spacing);        
         for (double i = 0; i <= placeRange; i += spacing) {
             Location newLoc = loc.clone().add(dir);
-            if (BlockUtil.isSolid(newLoc.getBlock()) || 
-                BlockUtil.collidesDiagonally(loc, newLoc, BlockUtil::isSolid)) {
+            if (Blocks.isSolid(newLoc.getBlock()) || 
+                Blocks.collidesDiagonally(loc, newLoc, Blocks::isSolid)) {
                 break;    
             }
             loc = newLoc;
@@ -162,7 +162,7 @@ public class WallOfFire extends FireAbility {
 
         Vector knock = new Vector();
         double boxSize = Math.max(width, height) + 2; // Account for entities just outside the wall
-        for (Entity e : EntityUtil.getNearbyEntities(center, boxSize)) {
+        for (Entity e : Entities.getNearbyEntities(center, boxSize)) {
             if (e.equals(user().player())) {
                 continue;
             }
@@ -203,7 +203,7 @@ public class WallOfFire extends FireAbility {
         Location newLoc = entity.getLocation();
 
         double eWidth = entity.getWidth();
-        Vector dir = VectorUtil.getDirection(loc, newLoc);
+        Vector dir = Vectors.getDirection(loc, newLoc);
         dir.normalize().multiply(-eWidth);
 
         List<BoundingVolume> entityBoxes = new ArrayList<>();

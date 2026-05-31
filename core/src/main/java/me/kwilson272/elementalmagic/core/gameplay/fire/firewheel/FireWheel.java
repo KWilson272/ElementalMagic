@@ -17,10 +17,9 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class FireWheel extends FireAbility {
 
@@ -77,10 +76,10 @@ public class FireWheel extends FireAbility {
         Block block = location.getBlock();
         for (int i = 0; i < maxClimb; ++i) {
             Block above = block.getRelative(BlockFace.UP);
-            if (!BlockUtil.isSolid(above) && BlockUtil.isSolid(block)
-                    && !AbilityUtil.isWater(above)) {
+            if (!Blocks.isSolid(above) && Blocks.isSolid(block)
+                    && !Blocks.isWater(above)) {
                 return block;
-            } else if (BlockUtil.isSolid(above)) {
+            } else if (Blocks.isSolid(above)) {
                 block = above;   
             } else {
                 block = block.getRelative(BlockFace.DOWN);
@@ -88,8 +87,8 @@ public class FireWheel extends FireAbility {
         } 
       
         Block above = block.getRelative(BlockFace.UP);
-        if (BlockUtil.isSolid(block) && !BlockUtil.isSolid(above)
-                && !BlockUtil.isLiquid(above)) {
+        if (Blocks.isSolid(block) && !Blocks.isSolid(above)
+                && !Blocks.isLiquid(above)) {
             return block;
         }
         return null;
@@ -165,7 +164,7 @@ public class FireWheel extends FireAbility {
         Vector knock = direction.clone().multiply(knockback);
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-        for (Entity e : EntityUtil.getNearbyEntities(location, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(location, hitboxSize)) {
             if (e.equals(user().player())) {
                 continue;
             }

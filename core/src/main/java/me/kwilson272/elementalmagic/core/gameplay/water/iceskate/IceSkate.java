@@ -7,13 +7,11 @@ import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -42,7 +40,7 @@ public class IceSkate extends CoreAbility {
 
     public boolean isOnIce() {
         Location loc = user().player().getLocation().add(0, -0.2, 0);
-        return (AbilityUtil.isIce(loc.getBlock()));
+        return (Blocks.isIce(loc.getBlock()));
     }
 
     @Override

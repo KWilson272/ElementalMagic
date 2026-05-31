@@ -19,10 +19,10 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.gameplay.components.Ray;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class FireBlast extends FireAbility {
 
@@ -59,7 +59,7 @@ public class FireBlast extends FireAbility {
 	@Override
 	public boolean start() {
         Location eyeLoc = user().player().getEyeLocation();
-        if (BlockUtil.isLiquid(eyeLoc.getBlock())) {
+        if (Blocks.isLiquid(eyeLoc.getBlock())) {
             return false;
         }
         
@@ -87,7 +87,7 @@ public class FireBlast extends FireAbility {
         Vector knock = ray.direction.clone().multiply(knockback);
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
 
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player()) && e instanceof LivingEntity) {
                 affected |= effectHandler.setVelocity(e, this, knock);
                 affected |= effectHandler.damageEntity(e, this, damage);
@@ -104,9 +104,9 @@ public class FireBlast extends FireAbility {
         TempBlockBuilder builder = TempBlock.builder(this, getFireData())
             .setDuration(fireDuration).setDamage(fireDamage);
 
-        for (Block b : BlockUtil.collectSphere(location, fireRadius)) {
-            if (!BlockUtil.isSolid(b) && !BlockUtil.isLiquid(b) 
-                    && BlockUtil.isSolid(b.getRelative(BlockFace.DOWN))) {
+        for (Block b : Blocks.collectSphere(location, fireRadius)) {
+            if (!Blocks.isSolid(b) && !Blocks.isLiquid(b) 
+                    && Blocks.isSolid(b.getRelative(BlockFace.DOWN))) {
                 builder.buildAt(b);
             }
         }
@@ -123,13 +123,13 @@ public class FireBlast extends FireAbility {
 
 		@Override
 		public boolean collides(Block block) {
-            if (BlockUtil.isSolid(block)) {
+            if (Blocks.isSolid(block)) {
                 Location loc = block.getLocation().add(0.5, 0.5, 0.5);
                 igniteAround(loc);
                 return true;
             }
 
-            return BlockUtil.isLiquid(block);
+            return Blocks.isLiquid(block);
 		}
 
 		@Override

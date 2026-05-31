@@ -14,8 +14,8 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.gameplay.fire.FireAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
 public class FireShieldRing extends FireAbility {
 
@@ -68,14 +68,14 @@ public class FireShieldRing extends FireAbility {
         World world = loc.getWorld();
         Particle particle = getFireParticle();
         Vector dir = user().player().getEyeLocation().getDirection();
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
 
         double spacing = 0.3;
         double step = Math.asin(spacing / (2 * radius));
         int count = (int) Math.ceil(Math.toRadians(45) / step);
         for (int i = 0; i < count; ++i) {
             animAngle += i * step;
-            Vector vec = VectorUtil.rotateAroundVector(dir, ortho, animAngle);
+            Vector vec = Vectors.rotateAroundVector(dir, ortho, animAngle);
             // Want the fire to spray away from the rotation direction
             Vector move = vec.clone().crossProduct(dir).normalize();
 
@@ -100,7 +100,7 @@ public class FireShieldRing extends FireAbility {
     }
 
     private void burnEntities(Location loc) {
-        for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+        for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
             if (!e.equals(user().player()) 
                     && e.getFireTicks() * 50 < burnDuration) {
                 ElementalMagicApi.effectHandler().setFireDuration(e, this, burnDuration);        

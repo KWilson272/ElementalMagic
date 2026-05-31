@@ -24,17 +24,15 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
 import me.kwilson272.elementalmagic.core.gameplay.components.BlockStream;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterSourceOptions;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterUsePolicy;
 import me.kwilson272.elementalmagic.core.gameplay.water.phasechange.PhaseChangeFreeze;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class Icicle extends CoreAbility {
+public class Icicle extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
     
@@ -49,7 +47,11 @@ public class Icicle extends CoreAbility {
     private double knockback;
     private double breakRadius;
     private boolean breakUnusableIce;
-   
+    private boolean allowWaterSource;
+    private boolean allowSnowSource;
+    private boolean allowPlantSource;
+  
+    private WaterUsePolicy usePolicy;
     private boolean hasFired;
     private boolean canFire;
     private Block source;
@@ -69,6 +71,9 @@ public class Icicle extends CoreAbility {
         knockback = CONFIG.knockback;
         breakRadius = CONFIG.breakRadius;
         breakUnusableIce = CONFIG.breakUnusableIce;
+        allowWaterSource = CONFIG.allowWaterSource;
+        allowSnowSource = CONFIG.allowSnowSource;
+        allowPlantSource = CONFIG.allowPlantSource;
 
         hasFired = false;
         canFire = true;
@@ -77,8 +82,13 @@ public class Icicle extends CoreAbility {
 
 	@Override
 	public boolean start() {
-        var opts = new WaterSourceOptions(user()).noPlant();
-        source = WaterUtil.getSourceBlock(user(), range, opts);
+        usePolicy = new WaterUsePolicy();
+        usePolicy.setWater(allowWaterSource)
+                 .setSnow(allowSnowSource)
+                 .setPlant(allowPlantSource)
+                 .validate(user());
+
+        source = selectSourceBlock(selectRange, usePolicy);
         return source != null;
 	}
 
@@ -96,9 +106,9 @@ public class Icicle extends CoreAbility {
 
         // So no configs make targeting awkward
         double targRange = selectRange + range;
-        Location target = EntityUtil.getTarget(user().player(), targRange);
+        Location target = Entities.getTargetLocation(user().player(), targRange);
         Location start = source.getLocation().add(0.5, 0.5, 0.5);
-        Vector direction = VectorUtil.getDirection(start, target).normalize();
+        Vector direction = Vectors.getDirection(start, target).normalize();
         
         spikes.add(new Spike(start, direction));
     }
@@ -110,7 +120,7 @@ public class Icicle extends CoreAbility {
             return false;
         }
         
-        WaterUtil.playSourceSelectedEffect(source);
+        playSourceSelectedEffect(source);
         spikes.removeIf(spike -> !spike.progress());
         return canFire || !spikes.isEmpty();
 	}
@@ -119,9 +129,9 @@ public class Icicle extends CoreAbility {
         Location eyeLoc = user().player().getEyeLocation();
         Location sourceLoc = source.getLocation().add(0.5, 0.5, 0.5);
         double maxDist = Math.pow(selectRange + 1, 2);
-        var opts = new WaterSourceOptions(user()).noPlant();
+        
         return eyeLoc.distanceSquared(sourceLoc) <= maxDist 
-            && WaterUtil.canUse(source, opts);
+            && canUse(source, usePolicy);
     }
 
 	@Override
@@ -147,7 +157,7 @@ public class Icicle extends CoreAbility {
     
         @Override
         public boolean collidesWith(Block block) {
-            if (block.equals(source) || !BlockUtil.isSolid(block) 
+            if (block.equals(source) || !Blocks.isSolid(block) 
                     || canBreak(block)) {
                 return false;
             }
@@ -177,7 +187,7 @@ public class Icicle extends CoreAbility {
 		}
 
         private boolean canBreak(Block block) {
-            if (!AbilityUtil.isIce(block)) {
+            if (!Blocks.isIce(block)) {
                 return false;
             }
 
@@ -206,7 +216,7 @@ public class Icicle extends CoreAbility {
 
 
             Location loc = block.getLocation().add(0.5, 0.5, 0.5);
-            for (Block b : BlockUtil.collectSphere(loc, breakRadius)) {
+            for (Block b : Blocks.collectSphere(loc, breakRadius)) {
                 if (!canBreak(block)) continue;
 
                 airBuilder.buildAt(b).ifPresent(tb -> {
@@ -224,7 +234,7 @@ public class Icicle extends CoreAbility {
             Location loc = block.getLocation().add(0.5, 0.5, 0.5);
             EffectHandler handler = ElementalMagicApi.effectHandler();
 
-            for (Entity e : EntityUtil.getNearbyEntities(loc, hitboxSize)) {
+            for (Entity e : Entities.getNearbyEntities(loc, hitboxSize)) {
                 if (!e.equals(user().player()) && e instanceof LivingEntity le) {
                     handler.setVelocity(le, Icicle.this, knock);
                     handler.damageEntity(le, Icicle.this, damage);
@@ -235,7 +245,7 @@ public class Icicle extends CoreAbility {
         private void playEffects(TempBlock tb) {
             Block block = tb.block();
             // If it's been reverted or isn't the active block - looks weird
-            if (!AbilityUtil.isIce(block)) {
+            if (!Blocks.isIce(block)) {
                 return;
             }
 
@@ -282,5 +292,11 @@ public class Icicle extends CoreAbility {
         private double breakRadius = 2.0;
         @Configure(path = CONFIG_PATH + "BreakUnusableIce", config = Config.ABILITIES)
         private boolean breakUnusableIce = true;
+        @Configure(path = CONFIG_PATH + "AllowWaterSource", config = Config.ABILITIES)
+        private boolean allowWaterSource = false;
+        @Configure(path = CONFIG_PATH + "AllowSnowSource", config = Config.ABILITIES)
+        private boolean allowSnowSource = true;
+        @Configure(path = CONFIG_PATH + "AllowPlantSource", config = Config.ABILITIES)
+        private boolean allowPlantSource = false;
     }
 }

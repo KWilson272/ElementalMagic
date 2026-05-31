@@ -20,12 +20,12 @@ import me.kwilson272.elementalmagic.api.revertible.RevertibleManager;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
-import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.VectorUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.WaterUtil;
+import me.kwilson272.elementalmagic.core.gameplay.water.WaterAbility;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
+import me.kwilson272.elementalmagic.core.util.Vectors;
 
-public class SurgeWall extends CoreAbility {
+public class SurgeWall extends WaterAbility {
 
     protected static final ConfigValues CONFIG = new ConfigValues();
 
@@ -60,7 +60,7 @@ public class SurgeWall extends CoreAbility {
 
     @Override
     public boolean start() {
-        source = WaterUtil.getSourceBlock(user(), selectRange);
+        source = selectSourceBlock(selectRange); 
         return source != null;
     }
 
@@ -97,21 +97,21 @@ public class SurgeWall extends CoreAbility {
         double maxDist = Math.pow(selectRange + 1, 2);
 
         return loc.distanceSquared(eye) <= maxDist 
-            && WaterUtil.canUse(source, user());
+            && canUse(source, user());
     }
 
     private void setHolding() {
         isSourced = false;
         isInfinite = duration < 0;
         endTime = System.currentTimeMillis() + duration;
-        WaterUtil.consumeSource(this, source, sourceRevertTime);
-        WaterUtil.playIceSound(user().player().getEyeLocation());
+        consumeSource(source, sourceRevertTime);
+        playIceSound(user().player().getEyeLocation());
     }
 
     private void manageWall() {
         Location center = getWallCenter();
         Vector dir = user().player().getEyeLocation().getDirection();
-        Vector ortho = VectorUtil.getOrthogonal(dir);
+        Vector ortho = Vectors.getOrthogonal(dir);
 
         Set<Block> toRevert = new HashSet<>(affectedBlocks.keySet());
         BlockData iceData = Material.ICE.createBlockData();
@@ -120,7 +120,7 @@ public class SurgeWall extends CoreAbility {
         double blockSpacing = 0.5;
         double step = 2 * Math.asin(blockSpacing / (2 * radius));
         for (double angle = 0; angle < Math.PI * 2; angle += step) {
-            Vector vec = VectorUtil.rotateAroundVector(dir, ortho, angle);
+            Vector vec = Vectors.rotateAroundVector(dir, ortho, angle);
             vec.multiply(0.5);
 
             Location loc = center.clone();
@@ -130,7 +130,7 @@ public class SurgeWall extends CoreAbility {
 
                 if (affectedBlocks.containsKey(block)) {
                     toRevert.remove(block);
-                } else if (!BlockUtil.isSolid(block)) {
+                } else if (!Blocks.isSolid(block)) {
                     ice.buildAt(block)
                         .ifPresent(tb ->affectedBlocks.put(block, tb));
                 }
@@ -145,13 +145,13 @@ public class SurgeWall extends CoreAbility {
     
     private Location getWallCenter() {
         Player player = user().player();
-        Block target = BlockUtil.getTargetBlock(player, holdRange, b ->
-            BlockUtil.isSolid(b) && !affectedBlocks.containsKey(b)
+        Block target = Entities.getTargetBlock(player, holdRange, b ->
+            Blocks.isSolid(b) && !affectedBlocks.containsKey(b)
         );
         
         Vector dir = user().player().getEyeLocation().getDirection();
         Location center = target.getLocation().add(0.5, 0.5, 0.5);
-        if (BlockUtil.isSolid(target) && !affectedBlocks.containsKey(target)) {
+        if (Blocks.isSolid(target) && !affectedBlocks.containsKey(target)) {
             center.subtract(dir);
         }
 

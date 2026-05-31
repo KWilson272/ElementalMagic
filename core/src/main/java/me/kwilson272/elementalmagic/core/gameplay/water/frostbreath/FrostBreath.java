@@ -23,11 +23,10 @@ import me.kwilson272.elementalmagic.api.effect.EffectHandler;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock.TempBlockBuilder;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
-import me.kwilson272.elementalmagic.api.util.BlockUtil;
 import me.kwilson272.elementalmagic.core.ability.CoreAbility;
-import me.kwilson272.elementalmagic.core.gameplay.util.AbilityUtil;
-import me.kwilson272.elementalmagic.core.gameplay.util.EntityUtil;
 import me.kwilson272.elementalmagic.core.gameplay.water.waterspout.WaterSpout;
+import me.kwilson272.elementalmagic.core.util.Blocks;
+import me.kwilson272.elementalmagic.core.util.Entities;
 
 public class FrostBreath extends CoreAbility {
 
@@ -89,7 +88,7 @@ public class FrostBreath extends CoreAbility {
         Vector dir = loc.getDirection().multiply(spacing);
 
         for (double i = 0; i <= range; i += spacing) {
-            if (BlockUtil.isSolid(loc.getBlock())) {
+            if (Blocks.isSolid(loc.getBlock())) {
                 break;
             }
 
@@ -131,16 +130,17 @@ public class FrostBreath extends CoreAbility {
             .setUsable(true)
             .setDuration(frostDuration);
 
-        for (Block b : BlockUtil.collectSphere(loc, radius)) {
+        for (Block b : Blocks.collectSphere(loc, radius)) {
             Block above = b.getRelative(BlockFace.UP);
-            if (BlockUtil.isSolid(above) && !AbilityUtil.isWater(above)) {
+            if (Blocks.isSolid(above) && !Blocks.isWater(above)) {
                 continue;
             }
 
-            if (AbilityUtil.isWater(b) && isWaterFreezable(b)) {
+            if (Blocks.isWater(b) && isWaterFreezable(b)) {
                 builder.setData(iceData).buildAt(b);
-            } else if (!BlockUtil.isSolid(b) 
-                    && BlockUtil.isSolid(b.getRelative(BlockFace.DOWN))) {
+
+            } else if (!Blocks.isSolid(b) 
+                    && Blocks.isSolid(b.getRelative(BlockFace.DOWN))) {
                 builder.setData(snowData).buildAt(b);        
             }
         }
@@ -163,7 +163,7 @@ public class FrostBreath extends CoreAbility {
         }
 
         EffectHandler effectHandler = ElementalMagicApi.effectHandler();
-        for (Entity entity : EntityUtil.getNearbyEntities(loc, radius)) {
+        for (Entity entity : Entities.getNearbyEntities(loc, radius)) {
             if (entity.equals(user().player()) 
                     || !(entity instanceof LivingEntity le) 
                     || !effectHandler.canAffect(le)) {
@@ -180,8 +180,8 @@ public class FrostBreath extends CoreAbility {
             .setDuration(iceTrapDuration);
     
         // TODO: Figure out ice trap shape later
-        for (Block block : BlockUtil.collectSphere(entity.getLocation(), 2)) {
-            if (!BlockUtil.isSolid(block)) {
+        for (Block block : Blocks.collectSphere(entity.getLocation(), 2)) {
+            if (!Blocks.isSolid(block)) {
                 trapBuilder.buildAt(block);
             }
         }
