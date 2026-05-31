@@ -26,6 +26,7 @@ import me.kwilson272.elementalmagic.core.gameplay.air.airburst.AirBurstControlle
 import me.kwilson272.elementalmagic.core.gameplay.air.airscooter.AirScooterController;
 import me.kwilson272.elementalmagic.core.gameplay.air.airshield.AirShieldController;
 import me.kwilson272.elementalmagic.core.gameplay.air.airspout.AirSpoutController;
+import me.kwilson272.elementalmagic.core.gameplay.air.airsuction.AirSuctionController;
 import me.kwilson272.elementalmagic.core.gameplay.air.airsweep.AirSweepController;
 import me.kwilson272.elementalmagic.core.gameplay.air.airswipe.AirSwipeController;
 import me.kwilson272.elementalmagic.core.gameplay.air.gracefuldescent.GracefulDescentController;
@@ -193,6 +194,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new AirScooterController());
         registerAbility(new AirShieldController());
         registerAbility(new AirSpoutController());
+        registerAbility(new AirSuctionController());
         registerAbility(new AirSweepController());
         registerAbility(new AirSwipeController());
         registerAbility(new GracefulDescentController());
