@@ -84,7 +84,7 @@ public class AirSpout extends AirAbility {
         Block block = loc.getBlock();
 
         for (int i = 0; i <= breakHeight; ++i) {
-            if (BlockUtil.isSolid(block)) {
+            if (BlockUtil.isSolid(block) || BlockUtil.isLiquid(block)) {
                 return block;
             }
             block = block.getRelative(BlockFace.DOWN);
