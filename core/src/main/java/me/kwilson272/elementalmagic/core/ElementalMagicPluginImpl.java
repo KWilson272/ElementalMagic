@@ -29,6 +29,7 @@ import me.kwilson272.elementalmagic.core.gameplay.air.airspout.AirSpoutControlle
 import me.kwilson272.elementalmagic.core.gameplay.air.airsweep.AirSweepController;
 import me.kwilson272.elementalmagic.core.gameplay.air.airswipe.AirSwipeController;
 import me.kwilson272.elementalmagic.core.gameplay.air.gracefuldescent.GracefulDescentController;
+import me.kwilson272.elementalmagic.core.gameplay.air.sonicblast.SonicBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.chi.wallrun.WallRunController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.blaze.BlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.combustion.CombustionController;
@@ -195,6 +196,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new AirSweepController());
         registerAbility(new AirSwipeController());
         registerAbility(new GracefulDescentController());
+        registerAbility(new SonicBlastController());
 
         // -- Chi --
         registerAbility(new WallRunController());
