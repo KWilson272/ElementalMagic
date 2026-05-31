@@ -19,9 +19,9 @@ public class FireKickController extends CoreAbilityController implements Sequenc
 
     protected static final String CONFIG_PATH = "Abilities.Fire.FireKick.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Skilled fire users can kick out highly damaging streams from their feet.";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "FireBlast (Left-Click Twice) > FireBlast (Hold-Sneak) > FireBlast (Left-Click)";
 
     public FireKickController() {

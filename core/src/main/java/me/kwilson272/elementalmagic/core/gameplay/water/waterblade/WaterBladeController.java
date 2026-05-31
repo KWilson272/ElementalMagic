@@ -20,9 +20,9 @@ public class WaterBladeController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Water.WaterBlade.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Use water, ice, or plants to slice through your enemies.";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Left-click a block to source from it, hold sneak and then release once you see swirling particles to fire";
 
     public WaterBladeController() {

@@ -21,9 +21,9 @@ public class WallOfFireController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Fire.WallOfFire.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Create a wall of flames to keep your enemies at bay.";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Left-click to create the wall.";
 
     public WallOfFireController() {

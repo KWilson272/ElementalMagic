@@ -19,9 +19,9 @@ public class AirBreathController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Air.AirBreath.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Air users can augment their breath with high moving air currents.";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Hold-Sneak.";
 
     public AirBreathController() {

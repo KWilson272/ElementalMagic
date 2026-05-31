@@ -21,9 +21,9 @@ public class OctopusFormController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Water.OctopusForm.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES) 
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE) 
     private String description = "A fundamental ability to the element of water; users can create highly defensive tentacles to deal damage and keep enemies at bay!";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Left-click at a water block to source, hold-sneak to activate, and left-click to deal damage.";
 
     public OctopusFormController() {

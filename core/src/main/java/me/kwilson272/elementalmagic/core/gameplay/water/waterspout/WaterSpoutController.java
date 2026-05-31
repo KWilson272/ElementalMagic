@@ -21,9 +21,9 @@ public class WaterSpoutController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Water.WaterSpout.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Lift yourself high above your enemies on towers of water, or soar over terrain with the ocean itself beneath your feet!";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = """
         (Spout) - Left-Click while not looking at a source to toggle on/off.
         (Wave) - Left-Click while looking at a source, then hold sneak. Release sneak after charging to begin flying.

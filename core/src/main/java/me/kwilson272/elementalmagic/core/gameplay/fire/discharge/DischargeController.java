@@ -19,9 +19,9 @@ public class DischargeController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Fire.Discharge.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "To conserve energy, Fire users can create smaller bolts of lightning for quick use.";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Left-Click";
 
     public DischargeController() {

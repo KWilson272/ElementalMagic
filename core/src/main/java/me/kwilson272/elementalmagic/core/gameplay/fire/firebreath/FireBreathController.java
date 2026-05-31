@@ -19,9 +19,9 @@ public class FireBreathController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Fire.FireBreath.";
     
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "Breathe fire like a dragon and broil your enemies alive!";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Hold-Sneak.";
 
     public FireBreathController() {

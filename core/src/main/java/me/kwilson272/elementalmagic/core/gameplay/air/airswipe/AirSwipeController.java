@@ -20,9 +20,9 @@ public class AirSwipeController extends CoreAbilityController {
 
     protected static final String CONFIG_PATH = "Abilities.Air.AirSwipe.";
 
-    @Configure(path = CONFIG_PATH + "Description", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Description", config = Config.LANGUAGE)
     private String description = "The fundamental ability for any air user, create a rapid arc of air and blow enemies away!";
-    @Configure(path = CONFIG_PATH + "Instructions", config = Config.ABILITIES)
+    @Configure(path = CONFIG_PATH + "Instructions", config = Config.LANGUAGE)
     private String instructions = "Left-Click, or hold-sneak to charge and then release to fire.";
 
     public AirSwipeController() {
