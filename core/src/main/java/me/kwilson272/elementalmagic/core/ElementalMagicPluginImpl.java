@@ -35,6 +35,7 @@ import me.kwilson272.elementalmagic.core.gameplay.air.airswipe.AirSwipeControlle
 import me.kwilson272.elementalmagic.core.gameplay.air.gracefuldescent.GracefulDescentController;
 import me.kwilson272.elementalmagic.core.gameplay.air.sonicblast.SonicBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.chi.wallrun.WallRunController;
+import me.kwilson272.elementalmagic.core.gameplay.earth.lavaflow.LavaFlowController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.blaze.BlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.combustion.CombustionController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.discharge.DischargeController;
@@ -231,6 +232,9 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new LightningController());
         registerAbility(new LightningBurstController());
         registerAbility(new WallOfFireController());
+
+        // -- Earth --
+        registerAbility(new LavaFlowController());
 
         // -- Water --
         registerAbility(new FastSwimController());
