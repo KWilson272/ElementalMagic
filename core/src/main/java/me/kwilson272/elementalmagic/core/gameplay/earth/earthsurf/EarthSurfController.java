@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.entity.FallingBlock;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.Ability;
@@ -39,11 +40,20 @@ public class EarthSurfController extends CoreAbilityController {
                                              ActionActivation activation) {
         AbilityManager abilityManager = ElementalMagicApi.abilityManager();
         if (!canActivateBy(activation.action())
-                || !user.canUse(this, true, true)
-                || abilityManager.hasAbility(user, EarthSurf.class)) {
+                || !user.canUse(this, true, true)) {
             return List.of();        
         }
 
+        // Toggle
+        if (activation.action() != Action.SNEAK_DOWN
+                && !abilityManager.destroyAbilities(user, EarthSurf.class).isEmpty()) {
+            return List.of();
+        }
+
+        if (abilityManager.hasAbility(user, EarthSurf.class)) {
+            return List.of();
+        }
+        
         // Ensure user is jumping
         Location loc = user.player().getLocation().add(0, -0.3, 0);
         if (Blocks.isSolid(loc.getBlock())) {
