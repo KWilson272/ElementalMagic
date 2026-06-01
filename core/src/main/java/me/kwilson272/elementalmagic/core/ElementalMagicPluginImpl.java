@@ -38,6 +38,7 @@ import me.kwilson272.elementalmagic.core.gameplay.chi.wallrun.WallRunController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.densityshift.DensityShiftController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthline.EarthLineController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthshard.EarthShardController;
+import me.kwilson272.elementalmagic.core.gameplay.earth.earthsurf.EarthSurfController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.lavaflow.LavaFlowController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.blaze.BlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.combustion.CombustionController;
@@ -240,6 +241,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new DensityShiftController());
         registerAbility(new EarthLineController());
         registerAbility(new EarthShardController());
+        registerAbility(new EarthSurfController());
         registerAbility(new LavaFlowController());
 
         // -- Water --
