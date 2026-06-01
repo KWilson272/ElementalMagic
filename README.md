@@ -10,7 +10,7 @@ First and foremost, this plugin will be intended for use on LegacyBending;
 however, anyone is welcome to use it if it fits their needs.
 
 **This port is currently in-progress and missing key features that make it 
-appropriate for use in a server environment.*
+inappropriate for use in a server environment.*
 
 ## Installation
 - ``Java Version`` 21
@@ -18,7 +18,8 @@ appropriate for use in a server environment.*
 
 Run ``./gradlew build`` in the root directory to build this plugin.
 
-## Planned Features
+## Key Missing Features
+The following important features are missing, but are planned for addition.
 - Collision System
 - Commands
 - Region Protection
