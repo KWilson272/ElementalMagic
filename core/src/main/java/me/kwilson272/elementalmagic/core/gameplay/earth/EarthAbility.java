@@ -125,7 +125,7 @@ public abstract class EarthAbility extends CoreAbility {
 
     public static void playEarthSound(Location location) {
         World world = location.getWorld();
-        world.playSound(location, Sound.ENTITY_GHAST_SHOOT, 1, 0);
+        world.playSound(location, Sound.ENTITY_GHAST_SHOOT, 1, 1);
     }
 
     public static void playSandSound(Location location) {
