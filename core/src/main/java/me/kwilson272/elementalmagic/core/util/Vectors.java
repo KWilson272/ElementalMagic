@@ -16,6 +16,55 @@ public class Vectors {
     }
 
     /**
+     * Creates a unit {@link Vector} from the provided pitch and yaw. This method 
+     * returns vectors aligned with the way Spigot handles pitch and yaw.
+     *
+     * @param pitchDeg the Double pitch in degrees.
+     * @param yawDeg the Double yaw in degrees.
+     * @return a unit {@code Vector}
+     */
+    public static Vector fromRotations(double pitchDeg, double yawDeg) {
+        double pitchRad = Math.toRadians(pitchDeg);
+        double yawRad = Math.toRadians(yawDeg);
+
+        double y = Math.sin(-pitchRad);
+        double xzMag = Math.cos(-pitchRad);
+        double x = -Math.sin(yawRad) * xzMag;
+        double z = Math.cos(yawRad) * xzMag;
+
+        return new Vector(x, y, z);
+    }
+
+    /**
+     * Creates a unit {@link Vector} from the provided horizontal and vertical
+     * angles in degrees.
+     *
+     * @param angleHoriz the Double angle for the x-z components in degrees.
+     * @param angleVecrt the Double angle for the y component in degrees.
+     * @return a unit {@code Vector}
+     */
+    public static Vector fromDegrees(Double angleHoriz, double angleVert) {
+        return fromRadians(Math.toRadians(angleHoriz), Math.toRadians(angleVert));
+    }
+
+    /**
+     * Creates a unit {@link Vector} from the provided horizontal and vertical
+     * angles in radians.
+     *
+     * @param angleHoriz the Double angle for the x-z components in radians.
+     * @param angleVecrt the Double angle for the y component in radians.
+     * @return a unit {@code Vector}
+     */
+    public static Vector fromRadians(double angleHoriz, double angleVert) {
+        double y = Math.sin(angleVert);
+        double xzMag = Math.cos(angleVert);
+        double x = Math.cos(angleHoriz) * xzMag;
+        double z = Math.sin(angleHoriz) * xzMag;
+        
+        return new Vector(x, y, z);
+    }
+
+    /**
      * Returns a Vector 'V2' orthogonal to the provided Vector 'V1'. The
      * returned vector will be a unit vector.
      *
