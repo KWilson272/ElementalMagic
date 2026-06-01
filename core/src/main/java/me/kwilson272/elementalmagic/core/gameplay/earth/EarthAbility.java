@@ -1,9 +1,11 @@
 package me.kwilson272.elementalmagic.core.gameplay.earth;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
@@ -141,5 +143,17 @@ public abstract class EarthAbility extends CoreAbility {
     public static void playLavaSound(Location location) {
         World world = location.getWorld();
         world.playSound(location, Sound.BLOCK_LAVA_AMBIENT, 1, 0.7f);
+    }
+
+    /**
+     * @return the {@link BlockData} to indicate the provided block is selected
+     * as a source.
+     */
+    public static BlockData getSourceFocusData(Block block) {
+        if (block.getType() == Material.STONE) {
+            return Material.COBBLESTONE.createBlockData();
+        } else {
+            return Material.STONE.createBlockData();
+        }
     }
 }
