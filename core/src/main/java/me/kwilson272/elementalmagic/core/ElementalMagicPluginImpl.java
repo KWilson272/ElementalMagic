@@ -40,6 +40,7 @@ import me.kwilson272.elementalmagic.core.gameplay.earth.earthkick.EarthKickContr
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthline.EarthLineController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthshard.EarthShardController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthsurf.EarthSurfController;
+import me.kwilson272.elementalmagic.core.gameplay.earth.lavadisc.LavaDiscController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.lavaflow.LavaFlowController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.blaze.BlazeController;
 import me.kwilson272.elementalmagic.core.gameplay.fire.combustion.CombustionController;
@@ -244,6 +245,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new EarthLineController());
         registerAbility(new EarthShardController());
         registerAbility(new EarthSurfController());
+        registerAbility(new LavaDiscController());
         registerAbility(new LavaFlowController());
 
         // -- Water --
