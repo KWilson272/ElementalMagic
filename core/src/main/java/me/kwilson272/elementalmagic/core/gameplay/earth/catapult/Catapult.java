@@ -117,7 +117,7 @@ public class Catapult extends EarthAbility {
         @Configure(path = CONFIG_PATH + "Cooldown", config = Config.ABILITIES)
         private long cooldown = 0;
         @Configure(path = CONFIG_PATH + "Push", config = Config.ABILITIES)
-        private double push = 3.7;
+        private double push = 2.8;
         @Configure(path = CONFIG_PATH + "SneakModifier", config = Config.ABILITIES)
         private double sneakModifier = 0.5;
         @Configure(path = CONFIG_PATH + "MaxBlockFactor", config = Config.ABILITIES)
