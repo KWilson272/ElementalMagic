@@ -35,6 +35,7 @@ import me.kwilson272.elementalmagic.core.gameplay.air.airswipe.AirSwipeControlle
 import me.kwilson272.elementalmagic.core.gameplay.air.gracefuldescent.GracefulDescentController;
 import me.kwilson272.elementalmagic.core.gameplay.air.sonicblast.SonicBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.chi.wallrun.WallRunController;
+import me.kwilson272.elementalmagic.core.gameplay.earth.catapult.CatapultController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.densityshift.DensityShiftController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthblade.EarthBladeController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthgrab.EarthGrabController;
@@ -243,6 +244,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new WallOfFireController());
 
         // -- Earth --
+        registerAbility(new CatapultController());
         registerAbility(new DensityShiftController());
         registerAbility(new EarthBladeController());
         registerAbility(new EarthGrabController());
