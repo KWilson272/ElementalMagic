@@ -25,7 +25,7 @@ public class EarthPillar {
     
     private static final List<EarthPillar> pillars = new ArrayList<>();
 
-    private enum State {
+    public static enum PillarState {
         RISING,
         IDLE,
         COLLAPSING
@@ -37,7 +37,7 @@ public class EarthPillar {
     private Consumer<Location> moveCallback;
     private Consumer<Block> placeCallback;
     
-    private State state;
+    private PillarState state;
     private boolean wasRising;
     private int movementCounter;
     private Location location;
@@ -50,7 +50,7 @@ public class EarthPillar {
         this.height = height;
         this.speed = speed;
 
-        this.state = isRising ? State.RISING : State.COLLAPSING;
+        this.state = isRising ? PillarState.RISING : PillarState.COLLAPSING;
         this.wasRising = isRising;
         this.movementCounter = 0;
     
@@ -67,7 +67,7 @@ public class EarthPillar {
     }
 
     private void initBlocks(Block start) {
-        BlockFace face = state == State.RISING ? BlockFace.DOWN : BlockFace.UP;
+        BlockFace face = state == PillarState.RISING ? BlockFace.DOWN : BlockFace.UP;
         for (int i = 0; i < height; ++i) {
             Block block = start.getRelative(face, i);
             if (!isUsable(block)) {
@@ -89,8 +89,8 @@ public class EarthPillar {
     }
 
     public boolean progress() {
-        if (blocks.isEmpty() || state == State.IDLE) {
-            state = State.IDLE;
+        if (blocks.isEmpty() || state == PillarState.IDLE) {
+            state = PillarState.IDLE;
             return false;
         }
 
@@ -99,18 +99,18 @@ public class EarthPillar {
             double travel = Math.min(remainder, 1);
             remainder -= 1;
 
-            double y = state == State.RISING ? 1 : -1;
+            double y = state == PillarState.RISING ? 1 : -1;
             Vector dir = new Vector(0, y * travel, 0);
 
             Block prev = location.getBlock();
             Block next = location.add(dir).getBlock();
             if (!next.equals(prev)) {
                 if (Blocks.isSolid(next)) {
-                    state = State.IDLE;
+                    state = PillarState.IDLE;
                     return false;
                 }
 
-                BlockFace face = state == State.RISING ? BlockFace.UP : BlockFace.DOWN;
+                BlockFace face = state == PillarState.RISING ? BlockFace.UP : BlockFace.DOWN;
                 for (PillarBlock block : blocks) {
                     block.moveBlock(face);
                 }
@@ -121,12 +121,11 @@ public class EarthPillar {
 
                 if (anyAtOrigin()) {
                     revert();
-                    state = State.IDLE;
                     return false;
                 }
 
                 if (++movementCounter >= height) {
-                    state = State.IDLE;
+                    state = PillarState.IDLE;
                     remainder = 0;
                 }
             }
@@ -160,8 +159,8 @@ public class EarthPillar {
         return !blocks.isEmpty();
     }
 
-    public boolean isIdle() {
-        return state == State.IDLE;
+    public PillarState getState() {
+        return state; 
     }
 
     public void setMoveCallback(Consumer<Location> callback) {
@@ -170,6 +169,22 @@ public class EarthPillar {
 
     public void setBlockPlaceCallback(Consumer<Block> callback) {
         this.placeCallback = callback;
+    }
+
+    public void collapse() {
+        if (state == PillarState.COLLAPSING || !wasRising) {
+            return;
+        }
+
+        // Need to reverse the deque to ensure reversion order is proper
+        Deque<PillarBlock> newBlocks = new ArrayDeque<>();
+        while (!blocks.isEmpty()) {
+            newBlocks.addLast(blocks.pollLast());
+        }
+        blocks = newBlocks;
+
+        movementCounter = 0;
+        state = PillarState.COLLAPSING;
     }
 
     public static EarthPillar getFromBlock(Block block) {

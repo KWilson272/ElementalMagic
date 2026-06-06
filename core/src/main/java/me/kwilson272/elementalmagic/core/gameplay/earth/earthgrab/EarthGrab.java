@@ -1,6 +1,5 @@
 package me.kwilson272.elementalmagic.core.gameplay.earth.earthgrab;
 
-import java.awt.font.NumericShaper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,6 +19,7 @@ import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.user.AbilityUser;
 import me.kwilson272.elementalmagic.core.gameplay.components.EarthPillar;
+import me.kwilson272.elementalmagic.core.gameplay.components.EarthPillar.PillarState;
 import me.kwilson272.elementalmagic.core.gameplay.earth.EarthAbility;
 import me.kwilson272.elementalmagic.core.util.Blocks;
 import me.kwilson272.elementalmagic.core.util.Entities;
@@ -167,7 +167,7 @@ public class EarthGrab extends EarthAbility {
 
         boolean roseAny = false;
         for (EarthPillar pillar : pillars) {
-            if (!pillar.isIdle()) {
+            if (pillar.getState() != PillarState.IDLE) {
                 pillar.progress();
                 roseAny = true;
             }
