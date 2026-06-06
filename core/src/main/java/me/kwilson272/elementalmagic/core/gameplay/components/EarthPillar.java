@@ -38,7 +38,6 @@ public class EarthPillar {
     private Consumer<Block> placeCallback;
     
     private PillarState state;
-    private boolean wasRising;
     private int movementCounter;
     private Location location;
 
@@ -51,7 +50,6 @@ public class EarthPillar {
         this.speed = speed;
 
         this.state = isRising ? PillarState.RISING : PillarState.COLLAPSING;
-        this.wasRising = isRising;
         this.movementCounter = 0;
     
         this.blocks = new ArrayDeque<>();
@@ -172,19 +170,27 @@ public class EarthPillar {
     }
 
     public void collapse() {
-        if (state == PillarState.COLLAPSING || !wasRising) {
+        if (state == PillarState.COLLAPSING) {
             return;
         }
 
         // Need to reverse the deque to ensure reversion order is proper
         Deque<PillarBlock> newBlocks = new ArrayDeque<>();
         while (!blocks.isEmpty()) {
-            newBlocks.addLast(blocks.pollLast());
+            newBlocks.addFirst(blocks.pollFirst());
         }
+        
         blocks = newBlocks;
+        if (!blocks.isEmpty()) {
+            location = blocks.peekFirst().current.getLocation().add(0.5, 0.5, 0.5);
+        }
 
         movementCounter = 0;
         state = PillarState.COLLAPSING;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 
     public static EarthPillar getFromBlock(Block block) {

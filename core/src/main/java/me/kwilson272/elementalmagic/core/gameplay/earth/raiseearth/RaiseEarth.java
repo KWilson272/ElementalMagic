@@ -162,7 +162,7 @@ public class RaiseEarth extends EarthAbility {
 
         boolean roseAny = false;
         for (EarthPillar pillar : pillars) {
-            if (pillar.getState() != PillarState.IDLE) {
+            if (pillar.getState() == PillarState.RISING) {
                 pillar.progress();
                 roseAny = true; 
             }
