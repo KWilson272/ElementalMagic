@@ -10,12 +10,15 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
+import me.kwilson272.elementalmagic.api.collision.AABB;
+import me.kwilson272.elementalmagic.api.collision.BoundingVolume;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
 import me.kwilson272.elementalmagic.api.revertible.TempBlock;
@@ -42,6 +45,7 @@ public class LavaThrow extends EarthAbility {
     private long burnDuration;
 
     private int remainingThrows;
+    private boolean threwAny;
 
     private Block source;
     private List<Block> candidateSources;
@@ -60,7 +64,8 @@ public class LavaThrow extends EarthAbility {
         damage = CONFIG.damage;
         lavaDamage = CONFIG.lavaDamage;
         burnDuration = CONFIG.burnDuration;
-
+    
+        threwAny = false;
         candidateSources = new ArrayList<>();
         streams = new ArrayList<>();
     }
@@ -75,6 +80,10 @@ public class LavaThrow extends EarthAbility {
 
         List<Block> blocks = getSourceBlocks();
         selectCandidateSources(blocks);
+        if (candidateSources.isEmpty()) {
+            return false;
+        }
+
         return !candidateSources.isEmpty();
     }
 
@@ -153,7 +162,9 @@ public class LavaThrow extends EarthAbility {
 
     @Override
     public void onDestruction() {
-        user().addCooldown(name(), cooldown);
+        if (threwAny) {
+            user().addCooldown(name(), cooldown);
+        }
     }
 
     @Override
@@ -165,7 +176,9 @@ public class LavaThrow extends EarthAbility {
         if (remainingThrows <= 0 || candidateSources.isEmpty()) {
             return;
         }
-
+        
+        threwAny = true;
+        remainingThrows--;
         Block block = candidateSources.removeLast();
         streams.add(new LavaStream(block, getTarget()));
     }
@@ -190,6 +203,16 @@ public class LavaThrow extends EarthAbility {
             return result.getHitEntity().getLocation();
         } else {
            return Entities.getTargetLocation(player, targetRange);
+        }
+    }
+
+    private void affectEntities(Block block) {
+        World world = block.getWorld();
+        BoundingVolume bv = AABB.fromBlock(block, hitboxSize);
+        for (Entity e : Entities.getNearbyEntities(world, bv)) {
+            if (!e.equals(user().player())) {
+                ElementalMagicApi.effectHandler().damageEntity(e, this, damage);
+            }
         }
     }
 
@@ -246,6 +269,8 @@ public class LavaThrow extends EarthAbility {
             if (isRising && block.getY() >= riseBlock.getY()) {
                 isRising = false;
             }
+
+            affectEntities(block);
         }
 
         @Override

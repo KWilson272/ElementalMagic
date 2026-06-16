@@ -34,7 +34,7 @@ public class LavaThrowController extends CoreAbilityController {
     private Collection<Ability> handleAction(AbilityUser user,
                                              ActionActivation activation) {
         if (!canActivateBy(activation.action())
-            || !user.canUse(this, true, true)) {
+                || !user.canUse(this, true, true)) {
             return List.of();
         }
 
