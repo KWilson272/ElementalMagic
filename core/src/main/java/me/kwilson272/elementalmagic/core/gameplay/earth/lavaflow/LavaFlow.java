@@ -129,7 +129,8 @@ public class LavaFlow extends EarthAbility {
         BlockData lavaData = Material.LAVA.createBlockData();
         TempBlockBuilder lavaBuilder = TempBlock.builder(this, lavaData)
             .setDuration(lavaDuration)
-            .setDamage(lavaDamage);
+            .setDamage(lavaDamage)
+            .setUsable(true);
 
         BlockData airData = Material.AIR.createBlockData();
         TempBlockBuilder airBuilder = TempBlock.builder(this, airData)
