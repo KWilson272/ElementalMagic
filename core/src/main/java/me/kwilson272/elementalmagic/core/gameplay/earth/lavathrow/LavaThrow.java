@@ -67,6 +67,7 @@ public class LavaThrow extends EarthAbility {
 
     @Override
     public boolean start() {
+        remainingThrows = throwCount;
         source = selectLavaSource(selectRange);
         if (source == null) {
             return false;
