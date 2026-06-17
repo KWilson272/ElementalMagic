@@ -1,14 +1,14 @@
 package me.kwilson272.elementalmagic.core.gameplay.earth.crevice;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import me.kwilson272.elementalmagic.api.ElementalMagicApi;
-import me.kwilson272.elementalmagic.api.collision.AABB;
-import me.kwilson272.elementalmagic.api.collision.BoundingVolume;
-import me.kwilson272.elementalmagic.api.effect.EffectHandler;
-import me.kwilson272.elementalmagic.api.revertible.TempBlock;
-import me.kwilson272.elementalmagic.core.util.Entities;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,6 +18,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import me.kwilson272.elementalmagic.api.ElementalMagicApi;
+import me.kwilson272.elementalmagic.api.collision.AABB;
+import me.kwilson272.elementalmagic.api.collision.BoundingVolume;
+import me.kwilson272.elementalmagic.api.effect.EffectHandler;
+import me.kwilson272.elementalmagic.api.revertible.TempBlock;
+import me.kwilson272.elementalmagic.core.util.Entities;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.api.config.Configure;
@@ -38,6 +44,7 @@ public class Crevice extends EarthAbility {
 
     private long cooldown;
     private int range;
+    private double speed;
     private int depth;
     private int width;
     private long duration;
@@ -45,11 +52,12 @@ public class Crevice extends EarthAbility {
     private double knockup;
     private double closeRange;
     private double closeRadius;
+    private int closeCount;
 
     private State state;
 
-    private int rangeCounter;
-    private Block curBlock;
+    private double rangeCounter;
+    private Location location;
     private Vector travelDir;
     private Vector sideDir;
     private long revertTime;
@@ -64,6 +72,7 @@ public class Crevice extends EarthAbility {
 
         cooldown = CONFIG.cooldown;
         range = CONFIG.range;
+        speed = CONFIG.speed;
         depth = CONFIG.depth;
         width = CONFIG.width;
         duration = CONFIG.duration;
@@ -71,6 +80,7 @@ public class Crevice extends EarthAbility {
         knockup = CONFIG.knockup;
         closeRange = CONFIG.closeRange;
         closeRadius = CONFIG.closeRadius;
+        closeCount = CONFIG.closeCount;
 
         state = State.OPENING;
         openPillars = new ArrayDeque<>();
@@ -87,9 +97,13 @@ public class Crevice extends EarthAbility {
         travelDir = Vectors.fromRotations(0, eyes.getYaw());
         sideDir = Vectors.fromRotations(0, eyes.getYaw() + 90);
 
-        Block block = eyes.add(travelDir).getBlock();
-        curBlock = getTopBlock(block);
-        return curBlock != null;
+        Block block = getTopBlock(eyes.add(travelDir).getBlock());
+        if (block == null) {
+            return false;
+        }
+
+        location = block.getLocation().add(0.5, 0.5, 0.5);
+        return true;
     }
 
     @Override
@@ -100,10 +114,7 @@ public class Crevice extends EarthAbility {
         }
 
         if (state == State.OPENING) {
-            if (rangeCounter > 0) {
-                createPillars();
-                advanceLocation();
-            }
+            advanceLocation();
             manageOpeningPillars();
 
             if (rangeCounter <= 0 && openPillars.isEmpty()) {
@@ -113,7 +124,7 @@ public class Crevice extends EarthAbility {
             }
 
         } else if (state == State.CLOSING) {
-            if (!idlePillars.isEmpty()) {
+            for (int i = 0; i < closeCount && !idlePillars.isEmpty(); ++i) {
                 closePillars.add(idlePillars.pollFirst());
             }
             closePillars.removeIf(pillar -> !pillar.close());
@@ -127,21 +138,15 @@ public class Crevice extends EarthAbility {
     }
 
     private void createPillars() {
-        Set<Block> created = new HashSet<>();
-        Location loc = curBlock.getLocation().add(0.5, 0.5, 0.5);
         for (double i = -width; i <= width; i += 0.5) {
             Vector offset = sideDir.clone().multiply(i);
-            Block spawn = loc.clone().add(offset).getBlock();
-            if (affectedBlocks.contains(spawn) || created.contains(spawn)) {
-                continue;
-            }
-
+            Block spawn = location.clone().add(offset).getBlock();
             spawn = getTopBlock(spawn);
-            if (spawn == null) {
+            if (spawn == null || affectedBlocks.contains(spawn)) {
                 continue;
             }
 
-            created.add(spawn);
+            affectedBlocks.add(spawn);
             openPillars.offerLast(new CrevicePillar(spawn));
             if (ThreadLocalRandom.current().nextInt(Math.max(1, width)) == 0) {
                 playEarthSound(spawn.getLocation());
@@ -150,15 +155,34 @@ public class Crevice extends EarthAbility {
     }
 
     private void advanceLocation() {
-        rangeCounter--;
-        Location loc = curBlock.getLocation().add(0.5, 0.5, 0.5);
-        // We either have -1 or 1 for random offset, or 0 for no offset
-        int offset = ThreadLocalRandom.current().nextInt(-1, 2);
-        loc.add(travelDir).add(sideDir.clone().multiply(offset));
+        double remainder = speed;
+        while (remainder > 0) {
+            // Advance by 0.5 so we can avoid gaps in the crevice
+            double travel = Math.min(0.5, remainder);
+            remainder -= 0.5;
+            rangeCounter -= travel;
 
-        curBlock = getTopBlock(loc.getBlock());
-        if (curBlock == null) {
-            rangeCounter = 0;
+            Block oldBlock = location.getBlock();
+            location.add(travelDir.clone().multiply(travel));
+            Block newBlock = location.getBlock();
+            
+            if (!newBlock.equals(oldBlock)) {
+                newBlock = getTopBlock(newBlock);
+                if (newBlock == null) {
+                    rangeCounter = 0;
+                    return;
+                }
+
+                location.setY(newBlock.getY());
+                // shifs us one block to the left right or not at all 
+                double offset = ThreadLocalRandom.current().nextInt(-1, 2); 
+                location.add(sideDir.clone().multiply(offset));
+            }
+
+            createPillars();
+            if (rangeCounter <= 0) {
+                return;
+            }
         }
     }
 
@@ -170,7 +194,7 @@ public class Crevice extends EarthAbility {
             } else if (Blocks.isSolid(above)) {
                 block = above;
             } else {
-                block = block.getRelative(BlockFace.UP);
+                block = block.getRelative(BlockFace.DOWN);
             }
         }
 
@@ -280,6 +304,8 @@ public class Crevice extends EarthAbility {
         private long cooldown = 15000;
         @Configure(path = CONFIG_PATH + "Range", config = Config.ABILITIES)
         private int range = 100;
+        @Configure(path = CONFIG_PATH + "Speed", config = Config.ABILITIES)
+        private double speed = 0.8;
         @Configure(path = CONFIG_PATH + "Depth", config = Config.ABILITIES)
         private int depth = 10;
         @Configure(path = CONFIG_PATH + "SideWidth", config = Config.ABILITIES)
@@ -294,5 +320,7 @@ public class Crevice extends EarthAbility {
         private double closeRange = 10;
         @Configure(path = CONFIG_PATH + "CloseRadius", config = Config.ABILITIES)
         private double closeRadius = 2.0;
+        @Configure(path = CONFIG_PATH + "CloseCount", config = Config.ABILITIES)
+        private int closeCount = 3;
     }
 }
