@@ -45,6 +45,7 @@ import me.kwilson272.elementalmagic.core.gameplay.earth.earthgrab.EarthGrabContr
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthkick.EarthKickController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthline.EarthLineController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthshard.EarthShardController;
+import me.kwilson272.elementalmagic.core.gameplay.earth.earthsmash.EarthSmashController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthsurf.EarthSurfController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.lavadisc.LavaDiscController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.lavaflow.LavaFlowController;
@@ -259,6 +260,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new EarthKickController());
         registerAbility(new EarthLineController());
         registerAbility(new EarthShardController());
+        registerAbility(new EarthSmashController());
         registerAbility(new EarthSurfController());
         registerAbility(new LavaDiscController());
         registerAbility(new LavaFlowController());
