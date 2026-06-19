@@ -41,6 +41,7 @@ import me.kwilson272.elementalmagic.core.gameplay.earth.crevice.CreviceControlle
 import me.kwilson272.elementalmagic.core.gameplay.earth.crumble.CrumbleController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.densityshift.DensityShiftController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthblade.EarthBladeController;
+import me.kwilson272.elementalmagic.core.gameplay.earth.earthblast.EarthBlastController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthgrab.EarthGrabController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthkick.EarthKickController;
 import me.kwilson272.elementalmagic.core.gameplay.earth.earthline.EarthLineController;
@@ -256,6 +257,7 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         registerAbility(new CrumbleController());
         registerAbility(new DensityShiftController());
         registerAbility(new EarthBladeController());
+        registerAbility(new EarthBlastController());
         registerAbility(new EarthGrabController());
         registerAbility(new EarthKickController());
         registerAbility(new EarthLineController());
