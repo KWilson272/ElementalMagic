@@ -50,6 +50,7 @@ public class WaterGimbal extends WaterAbility {
     private boolean allowPlantSource;
 
     private boolean isSourced;
+    private boolean addedCooldown;
     private TravelingSource source;
 
     private double ringAngle;
@@ -78,6 +79,7 @@ public class WaterGimbal extends WaterAbility {
        
         ringAngle = 0;
         isSourced = true;
+        addedCooldown = false;
         firedFirst = false;
         firedSecond = false;
         renderFirst = true;
@@ -123,6 +125,12 @@ public class WaterGimbal extends WaterAbility {
             clearRings();
             progressRings();
             fireBlasts();
+
+            if (firedFirst && firedSecond && !addedCooldown) {
+                user().addCooldown(name(), cooldown);
+                addedCooldown = true;
+            }
+
             streams.removeIf(stream -> !stream.progress());
             return renderFirst || renderSecond || !streams.isEmpty();
         }
@@ -236,7 +244,7 @@ public class WaterGimbal extends WaterAbility {
         if (source != null) {
             source.revertBlocks();
         }
-        if (!isSourced) {
+        if (!isSourced && !addedCooldown) {
             user().addCooldown("WaterGimbal", cooldown);
         }
         
