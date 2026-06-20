@@ -8,6 +8,7 @@ import me.kwilson272.elementalmagic.api.ElementalMagicApi;
 import me.kwilson272.elementalmagic.api.ElementalMagicPlugin;
 import me.kwilson272.elementalmagic.api.ability.AbilityController;
 import me.kwilson272.elementalmagic.api.ability.AbilityStorage;
+import me.kwilson272.elementalmagic.api.config.Config;
 import me.kwilson272.elementalmagic.core.user.UserManagerImpl;
 import me.kwilson272.elementalmagic.core.util.Blocks;
 import me.kwilson272.elementalmagic.core.ability.AbilityManagerImpl;
@@ -145,7 +146,12 @@ public class ElementalMagicPluginImpl extends ElementalMagicPlugin {
         ElementalMagicApi.activationManager().enable();
         ElementalMagicApi.revertibleManager().enable();
         ElementalMagicApi.userManager().enable();
-
+       
+        // Save these after everything uses them so any new additions
+        // are rendered in the correct yml file
+        ElementalMagicApi.configManager().save(Config.ABILITIES);
+        ElementalMagicApi.configManager().save(Config.LANGUAGE);
+        ElementalMagicApi.configManager().save(Config.PLUGIN_PROPERTIES);
     }
     
     private void tick() {

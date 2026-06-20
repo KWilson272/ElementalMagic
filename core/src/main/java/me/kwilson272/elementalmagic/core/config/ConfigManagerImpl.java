@@ -52,9 +52,6 @@ public class ConfigManagerImpl implements ConfigManager {
 
     @Override
     public void disable(boolean shutDown) {
-        save(Config.ABILITIES);
-        save(Config.LANGUAGE);
-        save(Config.PLUGIN_PROPERTIES);
         configs.clear();
     }
 
