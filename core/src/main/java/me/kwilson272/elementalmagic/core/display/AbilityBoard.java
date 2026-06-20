@@ -1,12 +1,16 @@
 package me.kwilson272.elementalmagic.core.display;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class AbilityBoard {
    
@@ -18,6 +22,10 @@ public class AbilityBoard {
     private final Objective header;
     private final BoardSlot[] slots;
     private int selected;
+    
+    private BoardSlot miscHeader;
+    private int openNumber;
+    private final Map<String, BoardSlot> miscSlots;
 
     public AbilityBoard() {
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -25,6 +33,9 @@ public class AbilityBoard {
         header.setDisplaySlot(DisplaySlot.SIDEBAR);
         slots = new BoardSlot[9];
         selected = 0;
+        
+        openNumber = 11;
+        miscSlots = new HashMap<>();
 
         createEmptySlots();
     }   
@@ -55,6 +66,62 @@ public class AbilityBoard {
         selected = slotNumber;
     }
 
+    public void addMiscCooldown(String cooldownId, String display) {
+        // Cannot display more than 16 entries
+        // Don't overwrite old slots or we will lose reference to them
+        if (miscSlots.size() >= 5 || miscSlots.containsKey(cooldownId)) {
+            return;
+        }
+
+        if (miscSlots.isEmpty()) {
+            miscHeader = new BoardSlot(10); 
+            header.getScore(miscHeader.entry).setScore(-10);
+            miscHeader.team.setPrefix("");
+            miscHeader.team.setSuffix(" -----");
+        }
+        
+        createMiscSlot(cooldownId, display);
+    }
+
+    private void createMiscSlot(String cooldownId, String display) {
+        BoardSlot miscSlot = new BoardSlot(openNumber);
+        header.getScore(miscSlot.entry).setScore(-openNumber);
+        miscSlot.team.setPrefix("  ");
+        miscSlot.team.setSuffix(display);
+        miscSlots.put(cooldownId, miscSlot);   
+        openNumber++;
+    }
+
+    public void removeMiscCooldown(String cooldownId) {
+        BoardSlot removal = miscSlots.remove(cooldownId);
+        if (removal == null) {
+            return;
+        }
+
+        scoreboard.resetScores(removal.entry);
+        removal.team.unregister();
+
+        // To avoid errors, redraw the misc portion of the board
+        Map<String, String> keep = new HashMap<>();
+        for (String id : miscSlots.keySet()) {
+            BoardSlot slot = miscSlots.get(id);
+            keep.put(id, slot.team.getSuffix());
+            scoreboard.resetScores(slot.entry);
+            slot.team.unregister();
+        }
+    
+        openNumber = 11;
+        for (String id : keep.keySet()) {
+            createMiscSlot(id, keep.get(id));
+        }
+
+        if (miscSlots.isEmpty() && miscHeader != null) {
+            scoreboard.resetScores(miscHeader.entry);
+            miscHeader.team.unregister();
+            miscHeader = null;
+        }
+    }
+
     public Scoreboard getScoreboard() {
         return scoreboard; 
     }
@@ -77,7 +144,14 @@ public class AbilityBoard {
         }
 
         private String hashEntry() {
-            return ChatColor.values()[slotNumber].toString(); 
+            String hex = "#";
+            if (slotNumber < 10) {
+                hex += slotNumber + "00000";
+            } else {
+                hex += slotNumber + "0000";
+            }
+            
+            return ChatColor.of(hex).toString();
         }
     }
 }
