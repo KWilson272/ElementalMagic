@@ -295,7 +295,11 @@ public class WaterGimbal extends WaterAbility {
                             return false;
                         }
                     }
-                    waterBuilder.setDuration(250).buildAt(newBlock);
+                    
+                    BlockData data = getFilledData(newBlock, 0);
+                    TempBlock.builder(WaterGimbal.this, data)
+                        .setDuration(250)
+                        .buildAt(newBlock);
                 }
                
                 affectEntities();
@@ -304,7 +308,8 @@ public class WaterGimbal extends WaterAbility {
                     return false;
                 }
             }
-
+            
+            playWaterSound(location);
             return true;
         }
 
