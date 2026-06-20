@@ -186,23 +186,33 @@ public class WaterGimbal extends WaterAbility {
             if (renderFirst) {
                 Vector compFirst = vecFirst.clone().multiply(sinRad);
                 locFirst = loc.clone().add(compFirst.add(compBase));
-                Block bFirst = locFirst.getBlock();
-                if (!Blocks.isSolid(bFirst)) {
-                    waterBuilder.buildAt(bFirst).ifPresent(ringBlocks::add);
-                }
+                addRingBlock(locFirst.getBlock());
             }
 
             if (renderSecond) {
                 Vector compSecond = vecSecond.clone().multiply(sinRad);
                 locSecond = loc.clone().add(compSecond.add(compBase));
-                Block bSecond = locSecond.getBlock();
-                if (!Blocks.isSolid(bSecond)) {
-                    waterBuilder.buildAt(bSecond).ifPresent(ringBlocks::add);
-                }
+                addRingBlock(locSecond.getBlock());
             }
         }
 
         ringAngle += animAngle;
+    }
+
+    private void addRingBlock(Block block) {
+        Block eyeBlock = user().player().getEyeLocation().getBlock();
+        double yDiff = eyeBlock.getY() - block.getY();
+        double y = Math.copySign(1, yDiff);
+
+        while (Blocks.isSolid(block) && block.getY() != eyeBlock.getY()) {
+            block = block.getLocation().add(0, y, 0).getBlock();
+        }
+
+        if (!Blocks.isSolid(block)) {
+            BlockData data = Material.WATER.createBlockData();
+            TempBlock.builder(this, data).buildAt(block)
+                .ifPresent(ringBlocks::add);
+        }
     }
 
     private void fireBlasts() {
@@ -277,7 +287,10 @@ public class WaterGimbal extends WaterAbility {
 
                 if (!oldBlock.equals(newBlock)) {
                     if (Blocks.isSolid(newBlock)) {
-                        newBlock = newBlock.getRelative(BlockFace.UP);
+                        // Attempt to slide over ground if not at destination
+                        BlockFace safeFace = !newBlock.equals(targ.getBlock()) ?
+                            BlockFace.UP : BlockFace.SELF;
+                        newBlock = newBlock.getRelative(safeFace);
                         if (Blocks.isSolid(newBlock)) {
                             return false;
                         }
