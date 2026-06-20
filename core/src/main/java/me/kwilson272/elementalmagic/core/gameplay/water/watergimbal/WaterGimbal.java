@@ -330,9 +330,9 @@ public class WaterGimbal extends WaterAbility {
         @Configure(path = CONFIG_PATH + "SelectRange", config = Config.ABILITIES)
         private double selectRange = 16;
         @Configure(path = CONFIG_PATH + "RingSize", config = Config.ABILITIES)
-        private double ringSize = 3.5;
+        private double ringSize = 3.1;
         @Configure(path = CONFIG_PATH + "AnimAngle", config = Config.ABILITIES)
-        private double animAngle = 25;
+        private double animAngle = 30;
         @Configure(path = CONFIG_PATH + "Range", config = Config.ABILITIES)
         private double range = 30;
         @Configure(path = CONFIG_PATH + "Speed", config = Config.ABILITIES)
